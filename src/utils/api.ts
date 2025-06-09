@@ -1,9 +1,10 @@
 const SERVER_URLS = {
   local: "http://localhost:3001/api",
   ngrok: "https://45f9-102-210-56-246.ngrok-free.app/api",
+  production: "https://commersely-starterup-server-1.onrender.com/api",
 };
 
-export const API_BASE_URL = SERVER_URLS.local;
+export const API_BASE_URL = SERVER_URLS.production;
 
 export const API_ROUTES = {
   AUTH: `${API_BASE_URL}/auth`,
