@@ -21,6 +21,7 @@ import {
 import { useRouter } from "next/navigation";
 import { SiSimpleanalytics } from "react-icons/si";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useAdminNotificationStore } from "@/store/useAdminNotificationStore"; // Import the notification store
 
 interface SidebarProps {
   isOpen: Boolean;
@@ -83,7 +84,6 @@ const menuItems = [
     icon: DollarSign,
     href: "/super-admin/payments",
   },
-
   {
     name: "Settings",
     icon: Settings,
@@ -99,6 +99,10 @@ const menuItems = [
 function SuperAdminSidebar({ isOpen, toggle }: SidebarProps) {
   const router = useRouter();
   const { logout } = useAuthStore();
+  const { notifications } = useAdminNotificationStore(); // Access notifications from the store
+
+  // Check if there are any unread notifications
+  const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
 
   async function handleLogout() {
     await logout();
@@ -128,7 +132,12 @@ function SuperAdminSidebar({ isOpen, toggle }: SidebarProps) {
               "flex cursor-pointer items-center px-4 py-2 text-sm hover:bg-accent hover:text-accent-foreground"
             )}
           >
-            <item.icon className="h-4 w-4" />
+            <item.icon
+              className={cn(
+                "h-4 w-4",
+                item.name === "Notifications" && hasUnreadNotifications && "text-red-500" // Highlight bell icon if there are unread notifications
+              )}
+            />
             <span className={cn("ml-3", !isOpen && "hidden")}>{item.name}</span>
           </div>
         ))}

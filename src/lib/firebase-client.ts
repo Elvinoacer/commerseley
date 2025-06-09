@@ -1,7 +1,12 @@
 // src/lib/firebase-client.ts
-import { API_BASE_URL } from "@/utils/api";
-import { FirebaseApp, getApps, initializeApp } from "firebase/app";
-import { getMessaging, getToken, isSupported, Messaging, onMessage } from "firebase/messaging";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import {
+  getMessaging,
+  Messaging,
+  getToken,
+  onMessage,
+  isSupported,
+} from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -37,11 +42,13 @@ export const getFCMToken = async (): Promise<string | null> => {
     }
 
     // Register service worker first
-    const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", {
-      scope: "/",
-      type: "module", // Add this if using ES modules in your SW
-      // scope: "/firebase-cloud-messaging-push-scope",
-    });
+    const registration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js",
+      {
+        scope: "/",
+        // scope: "/firebase-cloud-messaging-push-scope",
+      }
+    );
     console.log("Service Worker registered:", registration);
 
     const status = await Notification.requestPermission();
@@ -55,8 +62,9 @@ export const getFCMToken = async (): Promise<string | null> => {
       serviceWorkerRegistration: registration, // Pass the registration explicitly
     });
 
+    // const response = await fetch(`/api/logtoken/${currentToken}`);
+    // const data = await response.json();
     if (currentToken) {
-      //   fetch(`${API_BASE_URL}/`);
       console.log("FCM Token:", currentToken);
       return currentToken;
     } else {
@@ -85,7 +93,7 @@ export const onForegroundMessage = (): Promise<unknown> => {
         if (Notification.permission === "granted") {
           new Notification(title || "New Message", {
             body: body,
-            icon: "https://i.pinimg.com/736x/5b/33/86/5b33869356e0d1fcf63c2ac7e7e8b358.jpg",
+            icon: "/icons/icon-192x192.png",
           });
         }
       }

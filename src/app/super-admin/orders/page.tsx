@@ -174,10 +174,10 @@ function SuperAdminManageOrdersPage() {
                     })}
                   </TableCell>
                   <TableCell>{order.user.name}</TableCell>
-                  <TableCell>${order.total.toFixed(2)}</TableCell>
+                  <TableCell>Kes&nbsp;{order.total.toFixed(2)}</TableCell>
                   <TableCell>
                     <Badge variant={order.paymentStatus === "COMPLETED" ? "default" : "secondary"}>
-                      {order.paymentStatus}
+                      {order.paymentStatus || "PENDING"}
                     </Badge>
                   </TableCell>
                   <TableCell>

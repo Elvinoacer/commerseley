@@ -22,4 +22,5 @@ export const API_ROUTES = {
   ADMIN: `${API_BASE_URL}/admin`,
   ADMIN_SETTINGS: `${API_BASE_URL}/admin-settings`,
   ANALYTICS: `${API_BASE_URL}/admin-analytics`,
+  SUBSCRIPTIONS: `${API_BASE_URL}/subscriptions`,
 };

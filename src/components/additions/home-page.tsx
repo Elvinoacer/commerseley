@@ -11,6 +11,10 @@ import { InfiniteMarquee } from "./infinite-marquee";
 import CategoriesGrid from "./home-categories";
 import StoreLocation from "./physical-address";
 import { useFCM } from "@/hooks/useFCM";
+import { getFCMToken } from "@/lib/firebase-client";
+import { useSubscriptionStore } from "@/store/useSubscription";
+import { useToast } from "@/hooks/use-toast";
+import { title } from "process";
 
 const gridItems = [
   {
@@ -42,8 +46,10 @@ const gridItems = [
 function HomePage() {
   useFCM();
   const [subscriptionEmail, setSubscriptionEmail] = useState("");
+  const { subscribe } = useSubscriptionStore();
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
+  const { toast } = useToast();
   const { banners, featuredProducts, fetchFeaturedProducts, fetchBanners } = useSettingsStore();
 
   useEffect(() => {
@@ -221,6 +227,7 @@ function HomePage() {
           >
             <input
               type="email"
+              value={subscriptionEmail}
               onChange={(e) => setSubscriptionEmail(e.target.value)}
               placeholder="Your email address"
               className="flex-1 px-6 py-4 rounded-full bg-white/10 backdrop-blur-sm text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-white"
@@ -229,10 +236,22 @@ function HomePage() {
               className="bg-white text-black hover:bg-gray-100 px-8 py-4 rounded-full"
               disabled={!subscriptionEmail}
               onClick={async () => {
-                // await initialize();
+                try {
+                  const token = await getFCMToken();
+                  const response = await subscribe(subscriptionEmail, token || "");
+                  console.log("Subscription:", response);
+                  setSubscriptionEmail("");
+                  if (response.success) {
+                    toast({
+                      title: "Thank you for subscribing with us!, we'll get in touch",
+                    });
+                  }
+                } catch (error: any) {
+                  toast({
+                    title: "An Error occured: " + error.message,
+                  });
+                }
               }}
-              // @ts-ignore
-
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

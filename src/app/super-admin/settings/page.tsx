@@ -10,6 +10,7 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { ImageIcon, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Product } from "@/types";
 
 interface Color {
   hex: string;
@@ -41,6 +42,7 @@ function SuperAdminCouponsPage() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const { products, fetchAllProductsForAdmin } = useProductStore();
+  const [sortedProducts, setSortedProducts] = useState<any[]>([]);
   const {
     featuredProducts,
     banners,
@@ -97,6 +99,16 @@ function SuperAdminCouponsPage() {
       });
     }
   };
+
+  useEffect(() => {
+    const sortedProducts = products.sort((a, b) => {
+      // Featured products (true) come first
+      if (a.isFeatured && !b.isFeatured) return -1;
+      if (!a.isFeatured && b.isFeatured) return 1;
+      return 0; // Keep original order if both have same `isFeatured`
+    });
+    setSortedProducts(sortedProducts);
+  }, [products]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -310,7 +322,7 @@ function SuperAdminCouponsPage() {
 
               {products.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                  {products.map((product) => {
+                  {sortedProducts.map((product) => {
                     const colors = parseColors(product.colors);
                     const isSelected = selectedProducts.includes(product.id);
 
@@ -359,7 +371,9 @@ function SuperAdminCouponsPage() {
                                   <div
                                     key={color.name}
                                     className="h-5 w-5 rounded-full border border-gray-200 shadow-xs"
-                                    style={{ backgroundColor: color.hex.startsWith("#") ? color.hex : `#${color.hex}` }}
+                                    style={{
+                                      backgroundColor: color.hex.startsWith("#") ? color.hex : `#${color.hex}`,
+                                    }}
                                     title={color.name}
                                   />
                                 ))}

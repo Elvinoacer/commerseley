@@ -1,5 +1,5 @@
 // src/store/useAdminActivityStore.ts
-import { AdminActivity } from "@/types";
+import { AdminActivity, NotificationAction } from "@/types";
 import { API_ROUTES } from "@/utils/api";
 import axios from "axios";
 import { create } from "zustand";
@@ -11,6 +11,7 @@ type AdminActivityStore = {
   error: string | null;
   currentPage: number;
   totalPages: number;
+  sendNotifications: (action: NotificationAction) => Promise<void>;
   searchQuery: string;
   fetchActivities: (page?: number, search?: string) => Promise<void>;
   clearActivities: () => void;
@@ -56,6 +57,23 @@ export const useAdminActivityStore = create<AdminActivityStore>()(
             error: axios.isAxiosError(error)
               ? error?.response?.data?.error || "Failed to fetch activities"
               : "Failed to fetch activities",
+          });
+        }
+      },
+      sendNotifications: async (action: NotificationAction) => {
+        try {
+          set({ isLoading: true, error: null });
+          const dataRes = await axiosInstance.post("/send-notifications", {
+            action,
+          });
+          console.log(dataRes);
+          set({ isLoading: false, error: null });
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: axios.isAxiosError(error)
+              ? error?.response?.data?.error || "Failed to send notifications"
+              : "Failed to send notifications",
           });
         }
       },

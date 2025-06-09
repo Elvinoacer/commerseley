@@ -279,3 +279,26 @@ export interface AnalyticsResponse {
     totalReviews: number;
   };
 }
+
+// src/interfaces/subscription.interface.ts
+export interface Subscription {
+  id: string;
+  email?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isSubscribed: boolean;
+  notificationToken?: string;
+}
+
+export interface SubscriptionRequest {
+  email?: string;
+  notificationToken?: string;
+}
+
+export enum NotificationAction {
+  ADDED_PRODUCT = "ADDED_PRODUCT",
+  REMOVED_CATEGORY = "REMOVED_CATEGORY",
+  UPDATED_CATEGORY = "UPDATED_CATEGORY",
+  OUT_OF_STOCK = "OUT_OF_STOCK",
+  ADDED_COLLECTION = "ADDED_COLLECTION", // Fixed this line
+}

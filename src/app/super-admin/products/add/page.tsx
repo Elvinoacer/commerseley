@@ -84,28 +84,29 @@ function SuperAdminManageProductPage() {
           setFormState({
             name: product.name,
             brand: product.brand,
-            description: product.description,
-            category: product.category.name,
+            description: product.description || "", // Fallback for null
+            category: product.category?.name || "", // Safe access
             gender: product.gender || "",
-            categoryId: product?.categoryId,
+            categoryId: product.categoryId,
             price: product.price.toString(),
             stock: product.stock.toString(),
             isOnOffer: product.isOnOffer || false,
             offerPrice: product.offerPrice?.toString() || "",
           });
-          setSelectSizes(product.sizes);
-          // Assuming product.colors is an array of objects with hex and name
-          setSelectColors(product.colors || []);
-          // If product has skus, initialize them
-          setSkus(product.skus || [{ key: "", value: "" }]);
+
+          setSelectSizes(product.sizes || []); // Fallback for null
+          setSelectColors(
+            // Handle both stringified JSON and array formats
+            typeof product.colors === "string" ? JSON.parse(product.colors) : product.colors || []
+          );
+          setSkus(
+            typeof product.skus === "string" ? JSON.parse(product.skus) : product.skus || [{ key: "", value: "" }] // Default empty SKU
+          );
         }
       });
     }
-    async function getCategories() {
-      await fetchCategories();
-    }
-    getCategories();
-  }, [isEditMode, getCurrentEditedProductId, getProductById]);
+    fetchCategories();
+  }, [isEditMode, getCurrentEditedProductId]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormState((prev) => ({
