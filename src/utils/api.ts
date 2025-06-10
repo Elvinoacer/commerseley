@@ -4,7 +4,7 @@ const SERVER_URLS = {
   production: "https://commersely-starterup-server-1.onrender.com/api",
 };
 
-export const API_BASE_URL = SERVER_URLS.local;
+export const API_BASE_URL = SERVER_URLS.production;
 
 export const API_ROUTES = {
   AUTH: `${API_BASE_URL}/auth`,
