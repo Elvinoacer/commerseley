@@ -75,9 +75,6 @@ const userRoutes = ["/home", "/listing"];
 //   return NextResponse.next();
 // }
 
-// export const config = {
-//   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-// };
 
 export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
@@ -127,3 +124,7 @@ export async function middleware(request: NextRequest) {
 
   return NextResponse.next();
 }
+
+  export const config = {
+    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  };
