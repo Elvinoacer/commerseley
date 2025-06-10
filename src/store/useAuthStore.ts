@@ -1,3 +1,4 @@
+// src/store/useAuthStore
 import { Wishlist } from "@/types";
 import { API_ROUTES } from "@/utils/api";
 import axios from "axios";
