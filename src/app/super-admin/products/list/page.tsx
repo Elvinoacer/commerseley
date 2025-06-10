@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useProductStore } from "@/store/useProductStore";
-import { Pencil, Trash2, Search, X, Star, BadgePercent } from "lucide-react";
+import { Pencil, Trash2, Search, X, Star, BadgePercent, ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
