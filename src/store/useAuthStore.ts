@@ -31,10 +31,13 @@ type AuthStore = {
   logout: () => Promise<void>;
   refreshAccessToken: () => Promise<Boolean>;
 };
-
 const axiosInstance = axios.create({
   baseURL: API_ROUTES.AUTH,
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 });
 
 export const useAuthStore = create<AuthStore>()(
