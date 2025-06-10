@@ -75,7 +75,6 @@ const userRoutes = ["/home", "/listing"];
 //   return NextResponse.next();
 // }
 
-
 export async function middleware(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken")?.value;
   const { pathname } = request.nextUrl;
@@ -96,17 +95,19 @@ export async function middleware(request: NextRequest) {
     } catch (e) {
       console.error("Token verification failed", e);
       // Attempt to refresh the token
-      const refreshResponse = await fetch(
-        `${API_ROUTES.AUTH}/refresh-token`, // Ensure API_ROUTES.AUTH is correct
-        {
-          method: "POST",
-          credentials: "include", // Send cookies
-        }
-      );
+      const refreshResponse = await fetch(`${API_ROUTES.AUTH}/refresh-token`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (refreshResponse.ok) {
-        // Cookies are automatically set by the browser
-        return NextResponse.next();
+        // Clone the response to modify cookies
+        const response = NextResponse.next();
+        // The refreshed cookies should be automatically set by the browser
+        return response;
       } else {
         // Refresh failed, redirect to login
         const response = NextResponse.redirect(new URL("/auth/login", request.url));
@@ -125,6 +126,6 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-  export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
-  };
+export const config = {
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+};
