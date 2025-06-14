@@ -107,14 +107,12 @@ export const useCategoryStore = create<CategoryStore>()(
         set({ pagination: { ...get().pagination, ...pagination } });
       },
 
-      createCategory: async (name: string, description?: string) => {
-        const { user } = useAuthStore.getState();
+      createCategory: async (name: string, description?: string, userRole?: string) => {
         const { pagination, searchTerm } = get();
-        if (user?.role !== "SUPER_ADMIN") {
+        if (userRole !== "SUPER_ADMIN") {
           set({ error: "Unauthorized request" });
           return null;
         }
-
         set({ isLoading: true, error: null });
         try {
           const response = await axiosInstance.post<CategoryResponse>("/", {

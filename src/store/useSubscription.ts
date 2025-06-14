@@ -119,7 +119,7 @@ export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
   getAllSubscriptions: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axiosInstance.get("/");
+      const response = await axiosInstance.get("/subscriptions");
 
       set({
         isLoading: false,
@@ -141,7 +141,8 @@ export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
     try {
       const params = new URLSearchParams();
       if (email) params.append("email", email);
-      if (notificationToken) params.append("notificationToken", notificationToken);
+      if (notificationToken)
+        params.append("notificationToken", notificationToken);
 
       const response = await axiosInstance.get("/subscription", { params });
 

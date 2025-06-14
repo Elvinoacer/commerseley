@@ -1,17 +1,17 @@
 "use client";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useProductStore } from "@/store/useProductStore";
+import { useReviewStore } from "@/store/useReviewStore";
+import { Product } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { PencilIcon, StarIcon, TrashIcon, XIcon, ArrowLeft, BadgePercent, Gem } from "lucide-react";
+import { ArrowLeft, BadgePercent, Gem, PencilIcon, StarIcon, TrashIcon, XIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import ReviewForm from "./ReviewForm";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useRouter } from "next/navigation";
-import { useReviewStore } from "@/store/useReviewStore";
-import { useProductStore } from "@/store/useProductStore";
-import { Product, Review } from "@/types";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 const ReviewPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const { id: productId } = React.use(params);
@@ -22,7 +22,8 @@ const ReviewPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
 
-  const { user } = useAuthStore();
+  const { data } = useSession();
+  const { user } = data;
   const { reviews, isLoading: isReviewLoading, fetchReviewsByProduct } = useReviewStore();
   const { getProductById } = useProductStore();
 

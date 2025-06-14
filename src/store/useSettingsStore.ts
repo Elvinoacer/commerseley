@@ -7,7 +7,7 @@ interface FeatureBanner {
   imageUrl: string;
 }
 
-interface FeaturedProduct {
+export interface FeaturedProduct {
   id: string;
   name: string;
   price: string;
@@ -35,7 +35,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   fetchBanners: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.SETTINGS}/get-banners`, {
+      const response = await axios.get(`${API_ROUTES.SETTINGS}/banners`, {
         withCredentials: true,
       });
       set({ banners: response.data.banners, isLoading: false });
@@ -81,7 +81,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   fetchFeaturedProducts: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.SETTINGS}/fetch-feature-products`, {
+      const response = await axios.get(`${API_ROUTES.SETTINGS}/feature-products`, {
         withCredentials: true,
       });
       set({
@@ -97,7 +97,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       // First fetch current banners to check count
-      const currentBanners = await axios.get(`${API_ROUTES.SETTINGS}/get-banners`, {
+      const currentBanners = await axios.get(`${API_ROUTES.SETTINGS}/banners`, {
         withCredentials: true,
       });
 
@@ -130,7 +130,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await axios.post(
-        `${API_ROUTES.SETTINGS}/update-feature-products`,
+        `${API_ROUTES.SETTINGS}/feature-products`,
         { productIds },
         {
           withCredentials: true,

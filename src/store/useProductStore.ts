@@ -65,7 +65,11 @@ interface ProductState {
   }) => Promise<void>;
   setCurrentPage: (page: number) => void;
   resetProducts: () => void;
-  fetchAllProductsForAdmin: (params?: { page?: number; limit?: number; search?: string }) => Promise<void>;
+  fetchAllProductsForAdmin: (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) => Promise<void>;
   createProduct: (productData: FormData) => Promise<any>;
   updateProduct: (id: string, productData: FormData) => Promise<any>;
   deleteProduct: (id: string) => Promise<boolean>;
@@ -111,10 +115,13 @@ export const useProductStore = create<ProductState>((set) => ({
         sortOrder,
       };
 
-      const response = await axios.get(`${API_ROUTES.PRODUCTS}/fetch-client-products`, {
-        params: queryParams,
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_ROUTES.PRODUCTS}/fetch-client-products`,
+        {
+          params: queryParams,
+          withCredentials: true,
+        }
+      );
 
       const newProducts = response.data.products || [];
       const total = response.data.totalProducts || 0;
@@ -130,7 +137,8 @@ export const useProductStore = create<ProductState>((set) => ({
         isLoading: false,
       }));
     } catch (e: any) {
-      const errorMessage = e.response?.data?.message || "Failed to fetch products";
+      const errorMessage =
+        e.response?.data?.message || "Failed to fetch products";
       console.error("Fetch error:", errorMessage);
       set({
         error: errorMessage,
@@ -149,15 +157,23 @@ export const useProductStore = create<ProductState>((set) => ({
     });
   },
   setCurrentPage: (page: number) => set({ currentPage: page }),
-  fetchAllProductsForAdmin: async ({ page = 1, limit = 10, search = "" } = {}) => {
+  fetchAllProductsForAdmin: async ({
+    page = 1,
+    limit = 10,
+    search = "",
+  } = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.PRODUCTS}/fetch-admin-products`, {
-        params: { page, limit, search },
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_ROUTES.PRODUCTS}/fetch-admin-products`,
+        {
+          params: { page, limit, search },
+          withCredentials: true,
+        }
+      );
 
-      const { products, totalPages, totalProducts, currentPage } = response.data;
+      const { products, totalPages, totalProducts, currentPage } =
+        response.data;
 
       set({
         products,
@@ -174,12 +190,16 @@ export const useProductStore = create<ProductState>((set) => ({
   createProduct: async (productData: FormData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_ROUTES.PRODUCTS}/create-new-product`, productData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${API_ROUTES.PRODUCTS}/create-new-product`,
+        productData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       set({ isLoading: false });
       return response.data;
@@ -190,12 +210,16 @@ export const useProductStore = create<ProductState>((set) => ({
   updateProduct: async (id: string, productData: FormData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.put(`${API_ROUTES.PRODUCTS}/${id}`, productData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `${API_ROUTES.PRODUCTS}/${id}`,
+        productData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       set({ isLoading: false });
       return response.data;
     } catch (e) {
@@ -231,6 +255,6 @@ export const useProductStore = create<ProductState>((set) => ({
 
 // Helper to access the current state inside store actions
 function get() {
-  // @ts-ignore
+  // @ts-expect-error something weird
   return useProductStore.getState();
 }

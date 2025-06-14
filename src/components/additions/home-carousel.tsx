@@ -1,9 +1,11 @@
 "use client";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { SetStateAction } from "react";
+import { useTheme } from "next-themes";
 
-// Framer Motion variants
+// Framer Motion variants (unchanged from original)
 const staggerContainer = (staggerChildren: any, delayChildren: any) => ({
   hidden: {},
   show: {
@@ -47,12 +49,13 @@ const textVariant = (delay: any) => ({
     },
   },
 });
+
 interface BannerCarouselProps {
   gridItems: {
     title: string;
     subtitle: string;
     image: string;
-    gradient: string;
+    gradient?: string;
   }[];
   currentSlide: number;
   setCurrentSlide: (value: SetStateAction<number>) => void;
@@ -60,9 +63,10 @@ interface BannerCarouselProps {
 
 const BannerCarousel = ({ gridItems, currentSlide, setCurrentSlide }: BannerCarouselProps) => {
   const router = useRouter();
+  const { theme } = useTheme();
 
   return (
-    <section className="relative h-screen overflow-hidden" aria-label="Promotional banner carousel">
+    <section className="relative h-[90vh] sm:h-screen overflow-hidden" aria-label="Promotional banner carousel">
       <AnimatePresence mode="wait">
         {gridItems.map(
           (bannerItem, index) =>
@@ -80,47 +84,60 @@ const BannerCarousel = ({ gridItems, currentSlide, setCurrentSlide }: BannerCaro
                   <img
                     src={bannerItem.image}
                     alt={`Background for ${bannerItem.title}`}
-                    className="w-full h-full object-cover filter blur-md"
+                    className="w-full h-full object-cover filter blur-sm md:blur-md"
                   />
-                  <div className="absolute inset-0 bg-black/20" /> {/* Slight overlay for contrast */}
+                  <div className={`absolute inset-0 ${theme === "dark" ? "bg-black/40" : "bg-white/30"}`} />
                 </div>
+
                 {/* Clear Foreground Image */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <motion.img
                     src={bannerItem.image}
                     alt={bannerItem.title}
-                    className="w-full h-full object-contain max-w-[90%] max-h-[90%] md:max-w-[80%] md:max-h-[80%]"
+                    className="w-full h-full object-contain max-w-[90%] max-h-[70%] sm:max-w-[80%] sm:max-h-[80%]"
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 1.5, ease: "easeOut" }}
                   />
                 </div>
+
                 {/* Text Content */}
                 <motion.div
                   variants={staggerContainer(0.1, 0.1)}
                   initial="hidden"
                   animate="show"
-                  className="relative h-full container mx-auto px-4 flex items-center"
+                  className="relative h-full container mx-auto px-4 sm:px-6 flex items-center"
                 >
                   <motion.div
                     variants={fadeIn("right", "tween", 0.2, 1)}
-                    className="text-white space-y-6 max-w-2xl bg-black/50 backdrop-blur-sm p-6 rounded-lg"
+                    className={`space-y-4 sm:space-y-6 max-w-2xl p-6 sm:p-8 rounded-lg ${
+                      theme === "dark"
+                        ? "bg-black/50 backdrop-blur-sm text-white"
+                        : "bg-white/70 backdrop-blur-sm text-gray-900"
+                    }`}
                   >
                     <motion.span
                       variants={textVariant(0.4)}
-                      className="text-sm uppercase tracking-wider bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full inline-block"
+                      className={`text-xs sm:text-sm uppercase tracking-wider px-3 py-1 rounded-full inline-block ${
+                        theme === "dark" ? "bg-white/20 text-white" : "bg-black/10 text-gray-800"
+                      }`}
                     >
                       New Collection
                     </motion.span>
                     <motion.h1
                       variants={textVariant(0.6)}
-                      className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
+                      className={`text-3xl sm:text-4xl md:text-5xl font-bold leading-tight ${
+                        theme === "dark" ? "text-white" : "text-gray-900"
+                      }`}
                     >
                       BEST SELLING
                       <br />
                       E-COMMERCE WEBSITE
                     </motion.h1>
-                    <motion.p variants={textVariant(0.8)} className="text-base sm:text-lg text-gray-100">
+                    <motion.p
+                      variants={textVariant(0.8)}
+                      className={`text-sm sm:text-base ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                    >
                       A Creative, Flexible, Clean, Easy to use and
                       <br />
                       High Performance E-Commerce Theme
@@ -128,7 +145,11 @@ const BannerCarousel = ({ gridItems, currentSlide, setCurrentSlide }: BannerCaro
                     <motion.div variants={textVariant(1)}>
                       <motion.button
                         onClick={() => router.push("/listing")}
-                        className="bg-white text-black hover:bg-gray-100 px-6 py-3 text-base sm:text-lg shadow-lg hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
+                        className={`px-6 py-3 text-sm sm:text-base font-medium rounded-md shadow-lg ${
+                          theme === "dark"
+                            ? "bg-white text-gray-900 hover:bg-gray-100"
+                            : "bg-gray-900 text-white hover:bg-gray-800"
+                        }`}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         aria-label="Shop now for new collection"
@@ -144,19 +165,29 @@ const BannerCarousel = ({ gridItems, currentSlide, setCurrentSlide }: BannerCaro
       </AnimatePresence>
 
       {/* Navigation Dots */}
-      <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-2" role="tablist">
+      <div
+        className="absolute bottom-6 sm:bottom-12 left-1/2 transform -translate-x-1/2 flex space-x-2 sm:space-x-3"
+        role="tablist"
+      >
         {gridItems.map((_, index) => (
           <motion.button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
-              currentSlide === index ? "bg-white" : "bg-white/50 hover:bg-white/75"
-            } focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black`}
+            className={`rounded-full ${
+              currentSlide === index
+                ? theme === "dark"
+                  ? "bg-white"
+                  : "bg-gray-900"
+                : theme === "dark"
+                ? "bg-white/50"
+                : "bg-gray-900/50"
+            }`}
             whileHover={{ scale: 1.2 }}
             animate={{
               width: currentSlide === index ? 24 : 12,
-              opacity: currentSlide === index ? 1 : 0.7,
+              height: currentSlide === index ? 8 : 6,
             }}
+            transition={{ type: "spring", stiffness: 300 }}
             aria-label={`Go to slide ${index + 1}`}
             role="tab"
             aria-selected={currentSlide === index}

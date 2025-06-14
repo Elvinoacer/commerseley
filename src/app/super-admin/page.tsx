@@ -1,6 +1,7 @@
+import { getServerSession } from "next-auth";
 import SuperAdminProductListingPage from "./products/list/page";
 
-function SuperAdmin() {
+async function SuperAdmin() {
   return <SuperAdminProductListingPage />;
 }
 

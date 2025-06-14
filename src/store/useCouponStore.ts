@@ -25,7 +25,9 @@ interface CouponStore {
   error: string | null;
   pagination: Pagination;
   fetchCoupons: (page?: number, limit?: number) => Promise<void>;
-  createCoupon: (coupon: Omit<Coupon, "id" | "usageCount">) => Promise<Coupon | null>;
+  createCoupon: (
+    coupon: Omit<Coupon, "id" | "usageCount">
+  ) => Promise<Coupon | null>;
   deleteCoupon: (id: string) => Promise<boolean>;
   setPagination: (pagination: Partial<Pagination>) => void;
 }
@@ -44,9 +46,12 @@ export const useCouponStore = create<CouponStore>((set, get) => ({
   fetchCoupons: async (page = 1, limit = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.COUPON}/fetch-all-coupons?page=${page}&limit=${limit}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_ROUTES.COUPON}?page=${page}&limit=${limit}`,
+        {
+          withCredentials: true,
+        }
+      );
       set({
         couponList: response.data.couponList,
         isLoading: false,
@@ -66,7 +71,9 @@ export const useCouponStore = create<CouponStore>((set, get) => ({
     const { pagination } = get();
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_ROUTES.COUPON}/create-coupon`, coupon, { withCredentials: true });
+      const response = await axios.post(`${API_ROUTES.COUPON}`, coupon, {
+        withCredentials: true,
+      });
       // Refresh current page after creation
       await get().fetchCoupons(pagination.currentPage, pagination.itemsPerPage);
       return response.data.coupon;

@@ -5,13 +5,16 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "res.cloudinary.com",
+        protocol: "http", // Include http if you need to support non-HTTPS images
+        hostname: "**", // Matches any hostname, including subdomains
+        port: "", // Leave empty to match any port
+        pathname: "/**", // Matches any path
       },
       {
-        hostname: "images.unsplash.com",
-      },
-      {
-        hostname: "i.pinimg.com",
+        protocol: "https",
+        hostname: "**",
+        port: "",
+        pathname: "/**",
       },
     ],
   },
@@ -21,31 +24,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Access-Control-Allow-Credentials",
-            value: "true",
-          },
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "https://commersely-starterup-server-1.onrender.com",
-          },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",
-          },
-          {
-            key: "Access-Control-Allow-Headers",
-            value:
-              "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-          },
-        ],
-      },
-    ];
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
   },
 };
 

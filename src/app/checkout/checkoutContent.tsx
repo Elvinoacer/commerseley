@@ -8,20 +8,40 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/hooks/use-toast";
 import { useAddressStore } from "@/store/useAddressStore";
-import { useAuthStore } from "@/store/useAuthStore";
 import { CartItem, useCartStore } from "@/store/useCartStore";
 import { Coupon, useCouponStore } from "@/store/useCouponStore";
 import { useOrderStore } from "@/store/useOrderStore";
-import { useProductStore } from "@/store/useProductStore";
-import { Product } from "@/store/useProductStore";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { Product, useProductStore } from "@/store/useProductStore";
 import { API_ROUTES } from "@/utils/api";
+import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
 function CheckoutContent() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+
+  // Theme-aware colors
+  const bgGradient = isDark
+    ? "bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900"
+    : "bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50";
+  const cardBg = isDark ? "bg-gray-800/90" : "bg-white/90";
+  const cardBorder = isDark ? "border-gray-700" : "border-indigo-100";
+  const textColor = isDark ? "text-gray-100" : "text-gray-800";
+  const secondaryTextColor = isDark ? "text-gray-300" : "text-gray-600";
+  const primaryGradient = isDark ? "from-indigo-500 to-purple-500" : "from-indigo-600 to-purple-600";
+  const accentGradient = isDark ? "from-pink-500 to-rose-500" : "from-pink-500 to-rose-500";
+  const hoverGradient = isDark
+    ? "hover:from-indigo-600 hover:to-purple-600"
+    : "hover:from-indigo-700 hover:to-purple-700";
+  const accentHoverGradient = isDark
+    ? "hover:from-pink-600 hover:to-rose-600"
+    : "hover:from-pink-600 hover:to-rose-600";
+
   const { addresses, fetchAddresses } = useAddressStore();
   const [selectedAddress, setSelectedAddress] = useState("");
   const [checkoutEmail, setCheckoutEmail] = useState("");
@@ -34,7 +54,8 @@ function CheckoutContent() {
   const { fetchCoupons, couponList } = useCouponStore();
   const { createFinalOrder, isPaymentProcessing, fetchCashOnDeliverySetting, isCashOnDeliveryEnabled } =
     useOrderStore();
-  const { user } = useAuthStore();
+  const { data } = useSession();
+  const { user } = data || {};
   const router = useRouter();
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"CASH_ON_DELIVERY" | "PAY_NOW">();
@@ -126,8 +147,8 @@ function CheckoutContent() {
           userId: user?.id,
           email: checkoutEmail,
           amount: total,
-          firstName: user?.name.split(" ")[0] || "Customer",
-          lastName: user?.name.split(" ")[1] || "",
+          firstName: user?.name?.split(" ")[0] || "Customer",
+          lastName: user?.name?.split(" ")[1] || "",
           redirectUrl: `${window.location.origin}/order-confirmation`,
         },
         { withCredentials: true }
@@ -207,14 +228,16 @@ function CheckoutContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-pink-50"
+        className={`min-h-screen flex items-center justify-center ${
+          isDark ? "bg-gray-900" : "bg-gradient-to-br from-indigo-50 to-pink-50"
+        }`}
       >
-        <Skeleton className="w-full max-w-2xl h-[400px] rounded-2xl">
+        <Skeleton className={`w-full max-w-2xl h-[400px] rounded-2xl ${isDark ? "bg-gray-800" : "bg-white"}`}>
           <div className="h-full flex justify-center items-center">
             <motion.h1
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className="text-2xl md:text-3xl font-bold text-indigo-800"
+              className={`text-2xl md:text-3xl font-bold ${isDark ? "text-indigo-400" : "text-indigo-800"}`}
             >
               Processing your order...
             </motion.h1>
@@ -225,7 +248,7 @@ function CheckoutContent() {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 ${bgGradient} transition-colors duration-300`}>
       {/* Payment Modal */}
       <AnimatePresence>
         {showPaymentModal && (
@@ -251,9 +274,15 @@ function CheckoutContent() {
               exit={{ scale: 0.9, y: 20 }}
               className="relative z-10 w-full max-w-md"
             >
-              <div className="relative overflow-hidden rounded-2xl bg-white shadow-xl">
+              <div className={`relative overflow-hidden rounded-2xl shadow-xl ${isDark ? "bg-gray-800" : "bg-white"}`}>
                 {/* Radial gradient background */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-purple-100 via-pink-50 to-indigo-100 opacity-70" />
+                <div
+                  className={`absolute inset-0 ${
+                    isDark
+                      ? "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-purple-900/20 via-pink-900/20 to-indigo-900/20"
+                      : "bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-purple-100 via-pink-50 to-indigo-100"
+                  } opacity-70`}
+                />
 
                 <div className="relative z-10 p-8">
                   <motion.div
@@ -262,7 +291,9 @@ function CheckoutContent() {
                     transition={{ delay: 0.2 }}
                     className="flex justify-center mb-6"
                   >
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                    <div
+                      className={`w-20 h-20 rounded-full bg-gradient-to-r ${accentGradient} flex items-center justify-center`}
+                    >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="32"
@@ -283,7 +314,7 @@ function CheckoutContent() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="text-center text-2xl font-bold text-gray-900 mb-2"
+                    className={`text-center text-2xl font-bold mb-2 ${isDark ? "text-white" : "text-gray-900"}`}
                   >
                     Ready to Complete Payment
                   </motion.h3>
@@ -292,7 +323,7 @@ function CheckoutContent() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="text-center text-gray-600 mb-6"
+                    className={`text-center mb-6 ${isDark ? "text-gray-300" : "text-gray-600"}`}
                   >
                     You'll be redirected to our secure payment page to complete your transaction.
                   </motion.p>
@@ -305,7 +336,7 @@ function CheckoutContent() {
                   >
                     <Button
                       onClick={handleProceedToPaymentPage}
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 text-lg font-bold rounded-lg shadow-lg"
+                      className={`w-full bg-gradient-to-r ${accentGradient} ${accentHoverGradient} text-white py-6 text-lg font-bold rounded-lg shadow-lg`}
                     >
                       Click Here to Proceed
                     </Button>
@@ -313,7 +344,9 @@ function CheckoutContent() {
                     <Button
                       variant="outline"
                       onClick={() => setShowPaymentModal(false)}
-                      className="w-full border-gray-300 hover:bg-gray-50 rounded-lg"
+                      className={`w-full rounded-lg ${
+                        isDark ? "border-gray-600 hover:bg-gray-700" : "border-gray-300 hover:bg-gray-50"
+                      }`}
                     >
                       Cancel
                     </Button>
@@ -330,7 +363,9 @@ function CheckoutContent() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-3xl md:text-4xl font-extrabold text-center text-indigo-900 mb-8"
+          className={`text-3xl md:text-4xl font-extrabold text-center mb-8 ${
+            isDark ? "text-white" : "text-indigo-900"
+          }`}
         >
           Checkout
         </motion.h1>
@@ -341,11 +376,17 @@ function CheckoutContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-indigo-100 shadow-lg rounded-2xl">
-                <h2 className="text-xl font-semibold mb-4 text-indigo-800">Delivery Information</h2>
+              <Card className={`p-6 ${cardBg} backdrop-blur-sm border ${cardBorder} shadow-lg rounded-2xl`}>
+                <h2 className={`text-xl font-semibold mb-4 ${isDark ? "text-indigo-400" : "text-indigo-800"}`}>
+                  Delivery Information
+                </h2>
                 <div className="space-y-4">
                   {addresses.length === 0 ? (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gray-600 text-center">
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`text-center ${secondaryTextColor}`}
+                    >
                       No addresses found. Please add one.
                     </motion.p>
                   ) : (
@@ -357,28 +398,38 @@ function CheckoutContent() {
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.3, delay: index * 0.1 }}
-                          className="flex items-start space-x-3 hover:bg-indigo-50 p-2 rounded-lg transition-colors"
+                          className={`flex items-start space-x-3 p-2 rounded-lg transition-colors ${
+                            isDark ? "hover:bg-gray-700/50" : "hover:bg-indigo-50"
+                          }`}
                         >
                           <Checkbox
                             id={address.id}
                             checked={selectedAddress === address.id}
                             onCheckedChange={() => setSelectedAddress(address.id)}
-                            className="mt-1 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                            className={`mt-1 ${
+                              isDark
+                                ? "data-[state=checked]:bg-indigo-500 data-[state=checked]:border-indigo-500"
+                                : "data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                            }`}
                           />
                           <Label htmlFor={address.id} className="flex-grow">
                             <div className="flex items-center">
-                              <span className="font-medium text-gray-800">{address.name}</span>
+                              <span className={`font-medium ${textColor}`}>{address.name}</span>
                               {address.isDefault && (
-                                <span className="ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                                <span
+                                  className={`ml-2 text-sm px-2 py-1 rounded-full ${
+                                    isDark ? "text-green-400 bg-green-900/30" : "text-green-600 bg-green-100"
+                                  }`}
+                                >
                                   Default
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-gray-700">{address.address}</div>
-                            <div className="text-sm text-gray-600">
+                            <div className={`text-sm ${secondaryTextColor}`}>{address.address}</div>
+                            <div className={`text-sm ${secondaryTextColor}`}>
                               {address.city}, {address.country}, {address.postalCode}
                             </div>
-                            <div className="text-sm text-gray-600">{address.phone}</div>
+                            <div className={`text-sm ${secondaryTextColor}`}>{address.phone}</div>
                           </Label>
                         </motion.div>
                       ))}
@@ -387,7 +438,7 @@ function CheckoutContent() {
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button
                       onClick={() => router.push("/account")}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+                      className={`w-full bg-gradient-to-r ${primaryGradient} ${hoverGradient} text-white rounded-lg`}
                     >
                       Add a New Address
                     </Button>
@@ -401,17 +452,27 @@ function CheckoutContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-purple-100 shadow-lg rounded-2xl">
-                <h3 className="text-xl font-semibold mb-4 text-purple-800">Contact Information</h3>
+              <Card
+                className={`p-6 ${cardBg} backdrop-blur-sm border ${
+                  isDark ? "border-purple-900" : "border-purple-100"
+                } shadow-lg rounded-2xl`}
+              >
+                <h3 className={`text-xl font-semibold mb-4 ${isDark ? "text-purple-400" : "text-purple-800"}`}>
+                  Contact Information
+                </h3>
                 <div className="space-y-3">
                   <Input
                     type="email"
                     placeholder="Enter your email"
-                    className="w-full border-gray-300 focus:border-purple-500 focus:ring-purple-500 rounded-lg"
+                    className={`w-full rounded-lg ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600 focus:border-purple-500 focus:ring-purple-500 text-white"
+                        : "border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                    }`}
                     value={checkoutEmail}
                     onChange={(e) => setCheckoutEmail(e.target.value)}
                   />
-                  <p className="text-sm text-gray-600">We'll send your order confirmation to this email</p>
+                  <p className={`text-sm ${secondaryTextColor}`}>We'll send your order confirmation to this email</p>
                 </div>
               </Card>
             </motion.div>
@@ -423,11 +484,21 @@ function CheckoutContent() {
             transition={{ duration: 0.6, delay: 0.6 }}
             className="lg:col-span-1"
           >
-            <Card className="p-6 sticky top-6 bg-white/90 backdrop-blur-sm border border-pink-100 shadow-xl rounded-2xl">
-              <h2 className="text-xl font-semibold text-pink-800 mb-4">Order Summary</h2>
+            <Card
+              className={`p-6 sticky top-6 ${cardBg} backdrop-blur-sm border ${
+                isDark ? "border-pink-900" : "border-pink-100"
+              } shadow-xl rounded-2xl`}
+            >
+              <h2 className={`text-xl font-semibold mb-4 ${isDark ? "text-pink-400" : "text-pink-800"}`}>
+                Order Summary
+              </h2>
               <div className="space-y-4">
                 {cartItemsWithDetails.length === 0 ? (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gray-600 text-center">
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className={`text-center ${secondaryTextColor}`}
+                  >
                     Your cart is empty.
                   </motion.p>
                 ) : (
@@ -441,7 +512,11 @@ function CheckoutContent() {
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                         className="flex items-center space-x-4"
                       >
-                        <div className="relative h-16 w-16 rounded-md overflow-hidden border border-gray-200">
+                        <div
+                          className={`relative h-16 w-16 rounded-md overflow-hidden ${
+                            isDark ? "border-gray-700" : "border-gray-200"
+                          }`}
+                        >
                           {item.product?.images[0] ? (
                             <Image
                               src={item.product.images[0]}
@@ -451,76 +526,94 @@ function CheckoutContent() {
                               priority
                             />
                           ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-xs text-gray-500">No Image</span>
+                            <div
+                              className={`w-full h-full flex items-center justify-center ${
+                                isDark ? "bg-gray-700" : "bg-gray-200"
+                              }`}
+                            >
+                              <span className={`text-xs ${isDark ? "text-gray-400" : "text-gray-500"}`}>No Image</span>
                             </div>
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-medium text-gray-800">{item.product?.name}</h3>
-                          <p className="text-sm text-gray-600">
+                          <h3 className={`font-medium ${textColor}`}>{item.product?.name}</h3>
+                          <p className={`text-sm ${secondaryTextColor}`}>
                             {item.color} / {item.size}
                           </p>
-                          <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                          <p className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}>
+                            Qty: {item.quantity}
+                          </p>
                         </div>
-                        <p className="font-medium text-gray-900">
+                        <p className={`font-medium ${textColor}`}>
                           Kes {(item.product?.price * item.quantity).toFixed(2)}
                         </p>
                       </motion.div>
                     ))}
                   </AnimatePresence>
                 )}
-                <Separator className="bg-gray-200" />
+                <Separator className={isDark ? "bg-gray-700" : "bg-gray-200"} />
                 <div className="space-y-3">
                   <Input
                     placeholder="Enter a Discount code or Gift code"
                     onChange={(e) => setCouponCode(e.target.value)}
                     value={couponCode}
-                    className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg"
+                    className={`rounded-lg ${
+                      isDark
+                        ? "bg-gray-700 border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 text-white"
+                        : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                    }`}
                   />
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                     <Button
                       onClick={handleApplyCoupon}
-                      className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-lg"
+                      className={`w-full bg-gradient-to-r ${primaryGradient} ${hoverGradient} text-white rounded-lg`}
                     >
                       Apply Coupon
                     </Button>
                   </motion.div>
                   {couponAppliedError && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-red-600">
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`text-sm ${isDark ? "text-red-400" : "text-red-600"}`}
+                    >
                       {couponAppliedError}
                     </motion.p>
                   )}
                   {appliedCoupon && (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-green-600">
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`text-sm ${isDark ? "text-green-400" : "text-green-600"}`}
+                    >
                       Coupon Applied Successfully!
                     </motion.p>
                   )}
                 </div>
-                <Separator className="bg-gray-200" />
+                <Separator className={isDark ? "bg-gray-700" : "bg-gray-200"} />
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-700">Subtotal</span>
-                    <span className="text-gray-900">Kes {subTotal.toFixed(2)}</span>
+                    <span className={secondaryTextColor}>Subtotal</span>
+                    <span className={textColor}>Kes {subTotal.toFixed(2)}</span>
                   </div>
                   {appliedCoupon && (
-                    <div className="flex justify-between text-green-600">
+                    <div className={`flex justify-between ${isDark ? "text-green-400" : "text-green-600"}`}>
                       <span>Discount ({appliedCoupon.discountPercent}%)</span>
                       <span>-Kes {discountAmount.toFixed(2)}</span>
                     </div>
                   )}
                 </div>
-                <Separator className="bg-gray-200" />
+                <Separator className={isDark ? "bg-gray-700" : "bg-gray-200"} />
                 <div className="flex justify-between font-medium text-lg">
-                  <span className="text-gray-800">Total</span>
-                  <span className="text-indigo-700">Kes {total.toFixed(2)}</span>
+                  <span className={textColor}>Total</span>
+                  <span className={isDark ? "text-indigo-400" : "text-indigo-700"}>Kes {total.toFixed(2)}</span>
                 </div>
-                <Separator className="bg-gray-200" />
+                <Separator className={isDark ? "bg-gray-700" : "bg-gray-200"} />
                 {(cartItemsWithDetails.length === 0 || !selectedAddress || !checkoutEmail) && (
                   <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-red-500 text-sm text-center"
+                    className={`text-sm text-center ${isDark ? "text-red-400" : "text-red-500"}`}
                   >
                     Ensure you have items in your cart, a selected address, and a valid email
                   </motion.p>
@@ -539,7 +632,7 @@ function CheckoutContent() {
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button
                           disabled={cartItemsWithDetails.length === 0 || !selectedAddress || !checkoutEmail}
-                          className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-6 text-lg font-bold rounded-lg"
+                          className={`w-full bg-gradient-to-r ${accentGradient} ${accentHoverGradient} text-white py-6 text-lg font-bold rounded-lg`}
                           onClick={handleProceedToPayment}
                         >
                           Proceed to Payment
@@ -555,24 +648,30 @@ function CheckoutContent() {
                       transition={{ duration: 0.4 }}
                       className="space-y-4"
                     >
-                      <h3 className="font-semibold text-lg text-indigo-800">Select Payment Method</h3>
+                      <h3 className={`font-semibold text-lg ${isDark ? "text-indigo-400" : "text-indigo-800"}`}>
+                        Select Payment Method
+                      </h3>
 
                       {isCashOnDeliveryEnabled && (
                         <motion.div
                           whileHover={{ scale: 1.02 }}
-                          className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                          className={`p-4 rounded-lg cursor-pointer transition-colors ${
                             selectedPaymentMethod === "CASH_ON_DELIVERY"
-                              ? "border-indigo-500 bg-indigo-50"
-                              : "border-gray-200 hover:bg-indigo-50/50"
-                          }`}
+                              ? `${isDark ? "border-indigo-500 bg-indigo-900/30" : "border-indigo-500 bg-indigo-50"}`
+                              : `${
+                                  isDark
+                                    ? "border-gray-700 hover:bg-indigo-900/20"
+                                    : "border-gray-200 hover:bg-indigo-50/50"
+                                }`
+                          } border`}
                           onClick={() => setSelectedPaymentMethod("CASH_ON_DELIVERY")}
                         >
                           <div className="flex items-center space-x-3">
                             <div
                               className={`w-5 h-5 rounded-full border flex items-center justify-center ${
                                 selectedPaymentMethod === "CASH_ON_DELIVERY"
-                                  ? "border-indigo-500 bg-indigo-500"
-                                  : "border-gray-300"
+                                  ? `${isDark ? "border-indigo-500 bg-indigo-500" : "border-indigo-500 bg-indigo-500"}`
+                                  : `${isDark ? "border-gray-500" : "border-gray-300"}`
                               }`}
                             >
                               {selectedPaymentMethod === "CASH_ON_DELIVERY" && (
@@ -580,8 +679,8 @@ function CheckoutContent() {
                               )}
                             </div>
                             <div>
-                              <h4 className="font-medium text-gray-800">Cash on Delivery</h4>
-                              <p className="text-sm text-gray-600">Pay when you receive your order</p>
+                              <h4 className={`font-medium ${textColor}`}>Cash on Delivery</h4>
+                              <p className={`text-sm ${secondaryTextColor}`}>Pay when you receive your order</p>
                             </div>
                           </div>
                         </motion.div>
@@ -589,22 +688,25 @@ function CheckoutContent() {
 
                       <motion.div
                         whileHover={{ scale: 1.02 }}
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                        className={`p-4 rounded-lg cursor-pointer transition-colors ${
                           selectedPaymentMethod === "PAY_NOW"
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-gray-200 hover:bg-indigo-50/50"
-                        }`}
+                            ? `${isDark ? "border-indigo-500 bg-indigo-900/30" : "border-indigo-500 bg-indigo-50"}`
+                            : `${
+                                isDark
+                                  ? "border-gray-700 hover:bg-indigo-900/20"
+                                  : "border-gray-200 hover:bg-indigo-50/50"
+                              }`
+                        } border`}
                         onClick={() => {
                           setSelectedPaymentMethod("PAY_NOW");
-                          // setShowPaymentModal(true);
                         }}
                       >
                         <div className="flex items-center space-x-3">
                           <div
                             className={`w-5 h-5 rounded-full border flex items-center justify-center ${
                               selectedPaymentMethod === "PAY_NOW"
-                                ? "border-indigo-500 bg-indigo-500"
-                                : "border-gray-300"
+                                ? `${isDark ? "border-indigo-500 bg-indigo-500" : "border-indigo-500 bg-indigo-500"}`
+                                : `${isDark ? "border-gray-500" : "border-gray-300"}`
                             }`}
                           >
                             {selectedPaymentMethod === "PAY_NOW" && (
@@ -612,15 +714,15 @@ function CheckoutContent() {
                             )}
                           </div>
                           <div>
-                            <h4 className="font-medium text-gray-800">Pay Now</h4>
-                            <p className="text-sm text-gray-600">Pay instantly via card or mobile money</p>
+                            <h4 className={`font-medium ${textColor}`}>Pay Now</h4>
+                            <p className={`text-sm ${secondaryTextColor}`}>Pay instantly via card or mobile money</p>
                           </div>
                         </div>
                       </motion.div>
 
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button
-                          className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-6 text-lg font-bold rounded-lg"
+                          className={`w-full bg-gradient-to-r ${accentGradient} ${accentHoverGradient} text-white py-6 text-lg font-bold rounded-lg`}
                           onClick={handlePlaceOrder}
                           disabled={!selectedPaymentMethod}
                         >
@@ -631,7 +733,9 @@ function CheckoutContent() {
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                         <Button
                           variant="outline"
-                          className="w-full mt-2 border-gray-300 hover:bg-gray-100 rounded-lg"
+                          className={`w-full mt-2 rounded-lg ${
+                            isDark ? "border-gray-600 hover:bg-gray-700" : "border-gray-300 hover:bg-gray-100"
+                          }`}
                           onClick={() => setShowPaymentOptions(false)}
                         >
                           Back to Order Summary

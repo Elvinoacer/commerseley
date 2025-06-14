@@ -20,6 +20,28 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+    },
+  },
+};
 
 function SuperAdminProductListingPage() {
   const {
@@ -117,48 +139,47 @@ function SuperAdminProductListingPage() {
   };
 
   return (
-    <div className="p-6 bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl shadow-lg p-6"
+          initial="hidden"
+          animate="visible"
+          variants={containerVariants}
+          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-gray-200/50 dark:border-gray-700/50"
         >
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-8">
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <motion.div variants={itemVariants}>
+                <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
                   Product Management
                 </h1>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                   {totalProducts} products found {searchQuery && `matching "${searchQuery}"`}
                 </p>
-              </div>
+              </motion.div>
               <div className="flex items-center gap-4">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="relative"
-                >
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <motion.div variants={itemVariants} className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
                   <Input
                     placeholder="Search products..."
                     value={searchQuery}
                     onChange={handleSearch}
-                    className="w-full sm:w-64 pl-9 pr-9"
+                    className="w-full sm:w-72 pl-10 pr-10 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   />
                   {searchQuery && (
                     <button
                       onClick={clearSearch}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   )}
                 </motion.div>
-                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                  <Button onClick={() => router.push("/super-admin/products/add")} className="whitespace-nowrap">
+                <motion.div variants={itemVariants}>
+                  <Button
+                    onClick={() => router.push("/super-admin/products/add")}
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white rounded-lg"
+                  >
                     Add New Product
                   </Button>
                 </motion.div>
@@ -166,21 +187,27 @@ function SuperAdminProductListingPage() {
             </header>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="rounded-lg border overflow-hidden"
+              variants={itemVariants}
+              className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
               <div className="overflow-x-auto">
                 <Table>
-                  <TableHeader className="bg-gray-50">
+                  <TableHeader className="bg-gray-50 dark:bg-gray-700/50">
                     <TableRow>
-                      <TableHead className="min-w-[250px]">Product</TableHead>
-                      <TableHead className="text-center">Price & Stock</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>Attributes</TableHead>
-                      <TableHead className="text-center">Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableHead className="min-w-[250px] text-gray-700 dark:text-gray-200 font-semibold">
+                        Product
+                      </TableHead>
+                      <TableHead className="text-center text-gray-700 dark:text-gray-200 font-semibold">
+                        Price & Stock
+                      </TableHead>
+                      <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">Category</TableHead>
+                      <TableHead className="text-gray-700 dark:text-gray-200 font-semibold">Attributes</TableHead>
+                      <TableHead className="text-center text-gray-700 dark:text-gray-200 font-semibold">
+                        Status
+                      </TableHead>
+                      <TableHead className="text-right text-gray-700 dark:text-gray-200 font-semibold">
+                        Actions
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -211,12 +238,16 @@ function SuperAdminProductListingPage() {
                           >
                             <TableCell colSpan={6} className="text-center py-12">
                               <div className="flex flex-col items-center justify-center gap-2">
-                                <Search className="h-8 w-8 text-muted-foreground" />
-                                <p className="text-muted-foreground">
+                                <Search className="h-8 w-8 text-gray-500 dark:text-gray-400" />
+                                <p className="text-gray-500 dark:text-gray-400">
                                   {searchQuery ? "No products match your search" : "No products found"}
                                 </p>
                                 {searchQuery && (
-                                  <Button variant="ghost" onClick={clearSearch} className="mt-2">
+                                  <Button
+                                    variant="ghost"
+                                    onClick={clearSearch}
+                                    className="mt-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+                                  >
                                     Clear search
                                   </Button>
                                 )}
@@ -238,11 +269,11 @@ function SuperAdminProductListingPage() {
                                 exit={{ opacity: 0, y: -10 }}
                                 transition={{ duration: 0.2 }}
                                 layout
-                                className="hover:bg-gray-50"
+                                className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
                               >
                                 <TableCell>
                                   <div className="flex items-center gap-3">
-                                    <div className="relative w-16 h-16 rounded-md overflow-hidden border">
+                                    <div className="relative w-16 h-16 rounded-md overflow-hidden border border-gray-200 dark:border-gray-600">
                                       {product.images[0] ? (
                                         <Image
                                           src={product.images[0]}
@@ -251,14 +282,16 @@ function SuperAdminProductListingPage() {
                                           className="object-cover"
                                         />
                                       ) : (
-                                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                                          <ImageIcon className="h-5 w-5 text-gray-400" />
+                                        <div className="w-full h-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                          <ImageIcon className="h-5 w-5 text-gray-400 dark:text-gray-500" />
                                         </div>
                                       )}
                                     </div>
                                     <div>
-                                      <p className="font-medium line-clamp-1">{product.name}</p>
-                                      <p className="text-sm text-muted-foreground">{product.brand}</p>
+                                      <p className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
+                                        {product.name}
+                                      </p>
+                                      <p className="text-sm text-gray-500 dark:text-gray-400">{product.brand}</p>
                                     </div>
                                   </div>
                                 </TableCell>
@@ -266,19 +299,24 @@ function SuperAdminProductListingPage() {
                                   <div className="flex flex-col items-center">
                                     {isOnOffer ? (
                                       <>
-                                        <span className="font-bold text-red-600">
+                                        <span className="font-bold text-red-600 dark:text-red-400">
                                           Kes {product.offerPrice?.toFixed(2)}
                                         </span>
-                                        <span className="text-xs text-gray-500 line-through">
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 line-through">
                                           Kes {product.price.toFixed(2)}
                                         </span>
                                       </>
                                     ) : (
-                                      <span className="font-medium">Kes {product.price.toFixed(2)}</span>
+                                      // Corrected from Microphone
+                                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                                        Kes {product.price.toFixed(2)}
+                                      </span>
                                     )}
                                     <span
                                       className={`text-xs mt-1 ${
-                                        product.stock > 0 ? "text-green-600" : "text-red-600"
+                                        product.stock > 0
+                                          ? "text-green-600 dark:text-green-400"
+                                          : "text-red-600 dark:text-red-400"
                                       }`}
                                     >
                                       {product.stock} in stock
@@ -286,11 +324,17 @@ function SuperAdminProductListingPage() {
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge variant="outline" className="text-xs">
+                                  <Badge
+                                    variant="outline"
+                                    className="text-xs border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200"
+                                  >
                                     {product.category.name}
                                   </Badge>
                                   {product.gender && (
-                                    <Badge variant="secondary" className="text-xs ml-1">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs ml-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                                    >
                                       {product.gender}
                                     </Badge>
                                   )}
@@ -300,7 +344,7 @@ function SuperAdminProductListingPage() {
                                     {colors.slice(0, 3).map((color, i) => (
                                       <div
                                         key={i}
-                                        className="h-4 w-4 rounded-full border border-gray-200 shadow-xs"
+                                        className="h-4 w-4 rounded-full border border-gray-200 dark:border-gray-600 shadow-xs"
                                         style={{
                                           backgroundColor: color.hex.startsWith("#") ? color.hex : `#${color.hex}`,
                                         }}
@@ -308,10 +352,12 @@ function SuperAdminProductListingPage() {
                                       />
                                     ))}
                                     {colors.length > 3 && (
-                                      <span className="text-xs text-gray-500">+{colors.length - 3}</span>
+                                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        +{colors.length - 3}
+                                      </span>
                                     )}
                                     {product.sizes && product.sizes.length > 0 && (
-                                      <span className="text-xs text-gray-500 ml-1">
+                                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                                         {product.sizes.slice(0, 2).join(", ")}
                                         {product.sizes.length > 2 && "..."}
                                       </span>
@@ -320,13 +366,15 @@ function SuperAdminProductListingPage() {
                                   {skus.length > 0 && (
                                     <div className="mt-1">
                                       {skus.slice(0, 2).map((sku, i) => (
-                                        <span key={i} className="text-xs text-gray-500">
+                                        <span key={i} className="text-xs text-gray-500 dark:text-gray-400">
                                           {sku.key}: {sku.value}
                                           {i < skus.length - 1 && ", "}
                                         </span>
                                       ))}
                                       {skus.length > 2 && (
-                                        <span className="text-xs text-gray-500">, +{skus.length - 2}</span>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                          , +{skus.length - 2}
+                                        </span>
                                       )}
                                     </div>
                                   )}
@@ -334,12 +382,12 @@ function SuperAdminProductListingPage() {
                                 <TableCell className="text-center">
                                   <div className="flex flex-col items-center gap-1">
                                     {isFeatured && (
-                                      <Badge variant="default" className="text-xs flex items-center gap-1">
+                                      <Badge className="text-xs flex items-center gap-1 bg-indigo-600 dark:bg-indigo-500 text-white">
                                         <Star className="h-3 w-3" /> Featured
                                       </Badge>
                                     )}
                                     {isOnOffer && (
-                                      <Badge variant="secondary" className="text-xs flex items-center gap-1">
+                                      <Badge className="text-xs flex items-center gap-1 bg-purple-600 dark:bg-purple-500 text-white">
                                         <BadgePercent className="h-3 w-3" /> On Sale
                                       </Badge>
                                     )}
@@ -351,7 +399,7 @@ function SuperAdminProductListingPage() {
                                       onClick={() => router.push(`/super-admin/products/add?id=${product.id}`)}
                                       variant="outline"
                                       size="icon"
-                                      className="h-8 w-8"
+                                      className="h-8 w-8 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
                                     >
                                       <Pencil className="h-3.5 w-3.5" />
                                     </Button>
@@ -359,7 +407,7 @@ function SuperAdminProductListingPage() {
                                       onClick={() => handleDeleteProduct(product.id)}
                                       variant="outline"
                                       size="icon"
-                                      className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                      className="h-8 w-8 border-gray-200 dark:border-gray-600 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/50"
                                     >
                                       <Trash2 className="h-3.5 w-3.5" />
                                     </Button>
@@ -377,13 +425,8 @@ function SuperAdminProductListingPage() {
             </motion.div>
 
             {!isLoading && totalPages > 1 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex justify-between items-center"
-              >
-                <div className="text-sm text-muted-foreground">
+              <motion.div variants={itemVariants} className="flex justify-between items-center mt-4">
+                <div className="text-sm text-gray-600 dark:text-gray-300">
                   Page {currentPage} of {totalPages}
                 </div>
                 <Pagination>
@@ -391,7 +434,10 @@ function SuperAdminProductListingPage() {
                     <PaginationItem>
                       <PaginationPrevious
                         onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        className={cn(
+                          "text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900",
+                          currentPage === 1 && "pointer-events-none opacity-50"
+                        )}
                       />
                     </PaginationItem>
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -410,7 +456,11 @@ function SuperAdminProductListingPage() {
                           <PaginationLink
                             onClick={() => handlePageChange(pageNum)}
                             isActive={currentPage === pageNum}
-                            className="cursor-pointer"
+                            className={cn(
+                              "text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900",
+                              currentPage === pageNum &&
+                                "bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300"
+                            )}
                           >
                             {pageNum}
                           </PaginationLink>
@@ -420,7 +470,10 @@ function SuperAdminProductListingPage() {
                     <PaginationItem>
                       <PaginationNext
                         onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                        className={cn(
+                          "text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900",
+                          currentPage === totalPages && "pointer-events-none opacity-50"
+                        )}
                       />
                     </PaginationItem>
                   </PaginationContent>

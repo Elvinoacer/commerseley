@@ -1,19 +1,19 @@
 const SERVER_URLS = {
-  local: "http://localhost:3001/api",
+  local: "/api",
   ngrok: "https://45f9-102-210-56-246.ngrok-free.app/api",
   production: "https://commersely-starterup-server-1.onrender.com/api",
 };
 
-export const API_BASE_URL = SERVER_URLS.production;
+export const API_BASE_URL = SERVER_URLS.local;
 
 export const API_ROUTES = {
   AUTH: `${API_BASE_URL}/auth`,
   PRODUCTS: `${API_BASE_URL}/products`,
-  COUPON: `${API_BASE_URL}/coupon`,
+  COUPON: `${API_BASE_URL}/coupons`,
   SETTINGS: `${API_BASE_URL}/settings`,
   CART: `${API_BASE_URL}/cart`,
   ADDRESS: `${API_BASE_URL}/address`,
-  ORDER: `${API_BASE_URL}/order`,
+  ORDER: `${API_BASE_URL}/orders`,
   CUSTOMER: `${API_BASE_URL}/customers`,
   CATEGORIES: `${API_BASE_URL}/categories`,
   REVIEWS: `${API_BASE_URL}/reviews`,

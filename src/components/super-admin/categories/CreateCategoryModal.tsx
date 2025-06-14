@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { useCategoryStore } from "@/store/useCategories";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -24,6 +25,7 @@ interface CreateCategoryModalProps {
 }
 
 const CreateCategoryModal = ({ children }: CreateCategoryModalProps) => {
+  const { data } = useSession();
   const [open, setOpen] = useState(false);
   const { createCategory } = useCategoryStore();
 
@@ -37,7 +39,7 @@ const CreateCategoryModal = ({ children }: CreateCategoryModalProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const id = await createCategory(values.name, values.description);
+      const id = await await createCategory(values.name, values.description, data?.user?.role);
       if (id) {
         toast.success("Category created successfully");
         setOpen(false);

@@ -2,13 +2,12 @@
 
 import CustomerTable from "@/components/super-admin/CustomerTable";
 import SearchFilter from "@/components/super-admin/SearchFilter";
-import { useCustomersStore } from "@/store/useCustomerStore";
-import { UserWithOrders } from "@/types";
-import { motion } from "framer-motion";
-import { useEffect, useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCustomersStore } from "@/store/useCustomerStore";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function CustomersPage() {
   const {
@@ -97,8 +96,13 @@ export default function CustomersPage() {
           key={i}
           variant={pagination.currentPage === i ? "default" : "outline"}
           size="sm"
-          className="w-10 h-10 p-0"
+          className={`w-10 h-10 p-0 ${
+            pagination.currentPage === i
+              ? "bg-indigo-600 dark:bg-indigo-500 text-white"
+              : "text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+          }`}
           onClick={() => handlePageChange(i)}
+          aria-label={`Page ${i}`}
         >
           {i}
         </Button>
@@ -114,92 +118,110 @@ export default function CustomersPage() {
   if (isInitialLoad || isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+      <div className="p-4 bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-400 text-red-700 dark:text-red-200 rounded-lg">
         <p>Error: {error}</p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
-          className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="mt-2 px-4 py-2 bg-red-500 dark:bg-red-400 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-500"
+          aria-label="Retry loading customers"
         >
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800">Customers</h1>
-        <p className="text-gray-600 mt-2">Manage your e-commerce customers</p>
-      </div>
-
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <SearchFilter onSearch={handleSearch} />
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Items per page</span>
-            <Select
-              value={pagination.itemsPerPage.toString()}
-              onValueChange={(value) => handleItemsPerPageChange(Number(value))}
-            >
-              <SelectTrigger className="h-8 w-[80px]">
-                <SelectValue placeholder={pagination.itemsPerPage} />
-              </SelectTrigger>
-              <SelectContent>
-                {[5, 10, 20, 50].map((size) => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-6"
+    >
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6">
+          <div className="mb-8">
+            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
+              Customers
+            </h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">Manage your e-commerce customers</p>
           </div>
-        </div>
 
-        <div className="overflow-x-auto">
-          <CustomerTable customers={filteredCustomers} />
-        </div>
-
-        {/* Pagination Controls */}
-        {pagination.totalItems > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-            <div className="text-sm text-muted-foreground">
-              Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
-              {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
-              {pagination.totalItems} customers
-            </div>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <SearchFilter onSearch={handleSearch} />
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(pagination.currentPage - 1)}
-                disabled={pagination.currentPage === 1}
+              <span className="text-sm text-gray-600 dark:text-gray-300">Items per page</span>
+              <Select
+                value={pagination.itemsPerPage.toString()}
+                onValueChange={(value) => handleItemsPerPageChange(Number(value))}
               >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="sr-only">Previous</span>
-              </Button>
-
-              {renderPaginationButtons()}
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(pagination.currentPage + 1)}
-                disabled={pagination.currentPage === pagination.totalPages}
-              >
-                <ChevronRight className="h-4 w-4" />
-                <span className="sr-only">Next</span>
-              </Button>
+                <SelectTrigger className="h-8 w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+                  <SelectValue placeholder={pagination.itemsPerPage} />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                  {[5, 10, 20, 50].map((size) => (
+                    <SelectItem
+                      key={size}
+                      value={size.toString()}
+                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                    >
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        )}
+
+          <div className="overflow-x-auto">
+            <CustomerTable customers={filteredCustomers} />
+          </div>
+
+          {/* Pagination Controls */}
+          {pagination.totalItems > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+              <div className="text-sm text-gray-600 dark:text-gray-300">
+                Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
+                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
+                {pagination.totalItems} customers
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  aria-label="Previous page"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Previous</span>
+                </Button>
+
+                {renderPaginationButtons()}
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  aria-label="Next page"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  <span className="sr-only">Next</span>
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );

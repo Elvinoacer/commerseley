@@ -19,7 +19,10 @@ interface AddressStore {
   error: string | null;
   fetchAddresses: () => Promise<void>;
   createAddress: (address: Omit<Address, "id">) => Promise<Address | null>;
-  updateAddress: (id: string, address: Partial<Address>) => Promise<Address | null>;
+  updateAddress: (
+    id: string,
+    address: Partial<Address>
+  ) => Promise<Address | null>;
   deleteAddress: (id: string) => Promise<boolean>;
 }
 
@@ -30,7 +33,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
   fetchAddresses: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.ADDRESS}/get-address`, {
+      const response = await axios.get(`${API_ROUTES.ADDRESS}`, {
         withCredentials: true,
       });
 
@@ -42,7 +45,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
   createAddress: async (address) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_ROUTES.ADDRESS}/add-address`, address, {
+      const response = await axios.post(`${API_ROUTES.ADDRESS}`, address, {
         withCredentials: true,
       });
 
@@ -55,20 +58,25 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
       return newAddress;
     } catch (e) {
-      set({ isLoading: false, error: "Failed to create address" });
+      set({
+        isLoading: false,
+        error: e?.message || "Failed to create address",
+      });
     }
   },
   updateAddress: async (id, address) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.put(`${API_ROUTES.ADDRESS}/update-address/${id}`, address, {
+      const response = await axios.put(`${API_ROUTES.ADDRESS}/${id}`, address, {
         withCredentials: true,
       });
 
       const updatedAddress = response.data.address;
 
       set((state) => ({
-        addresses: state.addresses.map((item) => (item.id === id ? updatedAddress : item)),
+        addresses: state.addresses.map((item) =>
+          item.id === id ? updatedAddress : item
+        ),
         isLoading: false,
       }));
 
@@ -80,7 +88,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
   deleteAddress: async (id) => {
     set({ isLoading: true, error: null });
     try {
-      await axios.delete(`${API_ROUTES.ADDRESS}/delete-address/${id}`, {
+      await axios.delete(`${API_ROUTES.ADDRESS}/${id}`, {
         withCredentials: true,
       });
 

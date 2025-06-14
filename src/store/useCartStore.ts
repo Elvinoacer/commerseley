@@ -49,7 +49,7 @@ export const useCartStore = create<CartStore>((set, get) => {
     fetchCart: async () => {
       set({ isLoading: true, error: null });
       try {
-        const response = await axios.get(`${API_ROUTES.CART}/fetch-cart`, {
+        const response = await axios.get(`${API_ROUTES.CART}`, {
           withCredentials: true,
         });
 
@@ -61,13 +61,9 @@ export const useCartStore = create<CartStore>((set, get) => {
     addToCart: async (item) => {
       set({ isLoading: true, error: null });
       try {
-        const response = await axios.post(
-          `${API_ROUTES.CART}/add-to-cart`,
-          item,
-          {
-            withCredentials: true,
-          }
-        );
+        const response = await axios.post(`${API_ROUTES.CART}/add`, item, {
+          withCredentials: true,
+        });
 
         set((state) => ({
           items: [...state.items, response.data.data],
@@ -105,7 +101,7 @@ export const useCartStore = create<CartStore>((set, get) => {
       set({ isLoading: true, error: null });
       try {
         await axios.post(
-          `${API_ROUTES.CART}/clear-cart`,
+          `${API_ROUTES.CART}/clear`,
           {},
           {
             withCredentials: true,

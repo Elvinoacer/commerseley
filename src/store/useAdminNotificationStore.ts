@@ -6,7 +6,12 @@ import { API_ROUTES } from "@/utils/api";
 interface AdminNotification {
   id: string;
   adminId: string;
-  type: "NEW_ORDER_PLACED" | "CART_ITEM_ADDED" | "CART_ITEM_REMOVED" | "WISHLIST_ITEM_ADDED" | "NEW_USER_REGISTERED";
+  type:
+    | "NEW_ORDER_PLACED"
+    | "CART_ITEM_ADDED"
+    | "CART_ITEM_REMOVED"
+    | "WISHLIST_ITEM_ADDED"
+    | "NEW_USER_REGISTERED";
   details: {
     [key: string]: any;
   };
@@ -32,7 +37,11 @@ interface AdminNotificationState {
   error: string | null;
   pagination: Pagination;
   searchTerm: string;
-  fetchNotifications: (page?: number, limit?: number, search?: string) => Promise<void>;
+  fetchNotifications: (
+    page?: number,
+    limit?: number,
+    search?: string
+  ) => Promise<void>;
   markNotificationAsRead: (notificationId: string) => Promise<boolean>;
   markAllNotificationsAsRead: () => Promise<boolean>;
   deleteNotification: (notificationId: string) => Promise<boolean>;
@@ -58,10 +67,13 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
       fetchNotifications: async (page = 1, limit = 10, search = "") => {
         set({ isLoading: true, error: null });
         try {
-          const response = await axios.get(`${API_ROUTES.ADMIN}/notifications`, {
-            params: { page, limit, search },
-            withCredentials: true,
-          });
+          const response = await axios.get(
+            `${API_ROUTES.ADMIN}/notifications`,
+            {
+              params: { page, limit, search },
+              withCredentials: true,
+            }
+          );
           set({
             notifications: response.data.data,
             pagination: response.data.pagination || {
@@ -73,7 +85,8 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
             isLoading: false,
           });
         } catch (e: any) {
-          const errorMessage = e.response?.data?.message || "Failed to fetch notifications";
+          const errorMessage =
+            e.response?.data?.message || "Failed to fetch notifications";
           set({
             error: errorMessage,
             isLoading: false,
@@ -91,13 +104,16 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
           );
           set((state) => ({
             notifications: state.notifications.map((notification) =>
-              notification.id === notificationId ? { ...notification, isRead: true } : notification
+              notification.id === notificationId
+                ? { ...notification, isRead: true }
+                : notification
             ),
             isLoading: false,
           }));
           return response.data.success;
         } catch (e: any) {
-          const errorMessage = e.response?.data?.message || "Failed to mark notification as read";
+          const errorMessage =
+            e.response?.data?.message || "Failed to mark notification as read";
           set({
             error: errorMessage,
             isLoading: false,
@@ -109,7 +125,11 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
       markAllNotificationsAsRead: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await axios.put(`${API_ROUTES.ADMIN}/notifications/read-all`, {}, { withCredentials: true });
+          const response = await axios.put(
+            `${API_ROUTES.ADMIN}/notifications/read-all`,
+            {},
+            { withCredentials: true }
+          );
           set((state) => ({
             notifications: state.notifications.map((notification) => ({
               ...notification,
@@ -119,7 +139,9 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
           }));
           return response.data.success;
         } catch (e: any) {
-          const errorMessage = e.response?.data?.message || "Failed to mark all notifications as read";
+          const errorMessage =
+            e.response?.data?.message ||
+            "Failed to mark all notifications as read";
           set({
             error: errorMessage,
             isLoading: false,
@@ -131,16 +153,22 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
       deleteNotification: async (notificationId: string) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await axios.delete(`${API_ROUTES.ADMIN}/notifications/${notificationId}`, {
-            withCredentials: true,
-          });
+          const response = await axios.delete(
+            `${API_ROUTES.ADMIN}/notifications/${notificationId}/read`,
+            {
+              withCredentials: true,
+            }
+          );
           set((state) => ({
-            notifications: state.notifications.filter((notification) => notification.id !== notificationId),
+            notifications: state.notifications.filter(
+              (notification) => notification.id !== notificationId
+            ),
             isLoading: false,
           }));
           return response.data.success;
         } catch (e: any) {
-          const errorMessage = e.response?.data?.message || "Failed to delete notification";
+          const errorMessage =
+            e.response?.data?.message || "Failed to delete notification";
           set({
             error: errorMessage,
             isLoading: false,
@@ -152,14 +180,18 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
       clearAllNotifications: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await axios.delete(`${API_ROUTES.ADMIN}/clear-notifications`, { withCredentials: true });
+          const response = await axios.delete(
+            `${API_ROUTES.ADMIN}/clear-notifications`,
+            { withCredentials: true }
+          );
           set({
             notifications: [],
             isLoading: false,
           });
           return response.data.success;
         } catch (e: any) {
-          const errorMessage = e.response?.data?.message || "Failed to clear all notifications";
+          const errorMessage =
+            e.response?.data?.message || "Failed to clear all notifications";
           set({
             error: errorMessage,
             isLoading: false,
@@ -175,7 +207,10 @@ export const useAdminNotificationStore = create<AdminNotificationState>()(
       },
 
       setSearchTerm: (term) => {
-        set({ searchTerm: term, pagination: { ...get().pagination, currentPage: 1 } });
+        set({
+          searchTerm: term,
+          pagination: { ...get().pagination, currentPage: 1 },
+        });
       },
     }),
     {

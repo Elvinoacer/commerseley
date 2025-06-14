@@ -1,77 +1,119 @@
 "use client";
 
-import { ArrowLeft, Menu, ShoppingBag, ShoppingCart, User, Info, Mail, FileText, Shield, Heart } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import commerselylogo from "@/assets/images/commersely-logo-freebg.png";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { useAuthStore } from "@/store/useAuthStore";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
+import { ArrowLeft, Menu, ShoppingBag, ShoppingCart, Sun, Moon, User } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-
-const navItems = [
-  {
-    title: "HOME",
-    to: "/",
-  },
-  {
-    title: "PRODUCTS",
-    to: "/listing",
-  },
-  {
-    title: "ABOUT",
-    to: "/about",
-    icon: <Info className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "CONTACT",
-    to: "/contact",
-    icon: <Mail className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "WISHLIST",
-    to: "/wishlist",
-    icon: <Heart />,
-  },
-];
-
-const legalItems = [
-  {
-    title: "TERMS",
-    to: "/terms",
-    icon: <FileText className="h-4 w-4 mr-2" />,
-  },
-  {
-    title: "PRIVACY",
-    to: "/privacy",
-    icon: <Shield className="h-4 w-4 mr-2" />,
-  },
-];
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "../ui/sheet";
+import { legalItems, navItems } from "./navItems";
+import { useTheme } from "next-themes";
 
 function Header() {
-  const { logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
+  const { data: session } = useSession();
   const [mobileView, setMobileView] = useState<"menu" | "account">("menu");
   const [showSheetDialog, setShowSheetDialog] = useState(false);
   const { fetchCart, items } = useCartStore();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
 
   async function handleLogout() {
-    await logout();
-    router.push("/auth/login");
+    try {
+      const result = await signOut({
+        redirect: false,
+        callbackUrl: "/auth/login",
+      });
+      toast.success("You have been logged out successfully");
+      router.push(result.url);
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout. Please try again.");
+    }
   }
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
+
+  const isActive = (href: string) => {
+    return pathname === href;
+  };
+
+  const renderUserDisplay = () => {
+    if (!session?.user) {
+      return (
+        <Button
+          variant="ghost"
+          className="text-sm cursor-pointer font-semibold hover:bg-gray-100 dark:hover:bg-gray-800/50"
+          onClick={() => router.push("/auth/login")}
+        >
+          Login
+        </Button>
+      );
+    }
+
+    const userInitial = session.user.name?.charAt(0).toUpperCase() || "U";
+    const userImage = session.user.image;
+
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="relative h-10 w-10 rounded-full overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-800/50"
+          >
+            {userImage ? (
+              <Image src={userImage} alt="User profile" fill className="object-cover" />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold">
+                {userInitial}
+              </div>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="min-w-[180px] bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-200 dark:border-gray-700"
+        >
+          <DropdownMenuItem
+            onClick={() => router.push("/account")}
+            className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <User className="mr-2 h-4 w-4" />
+            Your Account
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   const renderMobileMenuItems = () => {
     switch (mobileView) {
       case "account":
         return (
-          <div className="space-y-2">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-2"
+          >
             <div className="flex items-center">
               <Button onClick={() => setMobileView("menu")} variant="ghost" size="icon">
                 <ArrowLeft />
@@ -83,7 +125,9 @@ function Header() {
                   setShowSheetDialog(false);
                   router.push("/account");
                 }}
-                className="block cursor-pointer w-full p-2"
+                className={`block cursor-pointer w-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded ${
+                  isActive("/account") ? "bg-blue-100 dark:bg-blue-900/50" : ""
+                }`}
               >
                 Your Account
               </p>
@@ -93,48 +137,65 @@ function Header() {
                   setMobileView("menu");
                   handleLogout();
                 }}
+                className="w-full"
               >
                 Logout
               </Button>
             </nav>
-          </div>
+          </motion.div>
         );
 
       default:
         return (
-          <div className="space-y-6 py-6">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-6 py-6"
+          >
             <div className="space-y-3">
               {navItems.map((navItem) => (
-                <p
-                  className="block w-full font-semibold p-2 cursor-pointer hover:bg-gray-50 rounded flex items-center"
+                <motion.p
+                  key={navItem.title}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`block w-full font-semibold p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded flex items-center ${
+                    isActive(navItem.to) ? "bg-blue-100 dark:bg-blue-900/50" : ""
+                  }`}
                   onClick={() => {
                     setShowSheetDialog(false);
                     router.push(navItem.to);
                   }}
-                  key={navItem.title}
                 >
                   {navItem.icon || null}
                   {navItem.title}
-                </p>
+                </motion.p>
               ))}
             </div>
             <div className="space-y-3">
               {legalItems.map((item) => (
-                <p
-                  className="block w-full p-2 cursor-pointer hover:bg-gray-50 rounded flex items-center text-sm"
+                <motion.p
+                  key={item.title}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`block w-full p-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded flex items-center text-sm ${
+                    isActive(item.to) ? "bg-blue-100 dark:bg-blue-900/50" : ""
+                  }`}
                   onClick={() => {
                     setShowSheetDialog(false);
                     router.push(item.to);
                   }}
-                  key={item.title}
                 >
                   {item.icon}
                   {item.title}
-                </p>
+                </motion.p>
               ))}
             </div>
-            <div className="space-y-4 pt-4 border-t">
-              <Button onClick={() => setMobileView("account")} className="w-full justify-start">
+            <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+              <Button
+                onClick={() => setMobileView("account")}
+                className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              >
                 <User className="mr-1 h-4 w-4" />
                 Account
               </Button>
@@ -143,81 +204,164 @@ function Header() {
                   setShowSheetDialog(false);
                   router.push("/cart");
                 }}
-                className="w-full justify-start"
+                className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50 ${
+                  isActive("/cart") ? "bg-blue-100 dark:bg-blue-900/50" : ""
+                }`}
               >
                 <ShoppingBag className="mr-1 h-4 w-4" />
                 Cart ({items?.length || 0})
               </Button>
+              <Button
+                onClick={toggleTheme}
+                className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              >
+                {theme === "dark" ? <Sun className="mr-1 h-4 w-4" /> : <Moon className="mr-1 h-4 w-4" />}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+              </Button>
             </div>
-          </div>
+          </motion.div>
         );
     }
   };
 
   return (
-    <header
-      className="sticky top-0 z-50 shadow-sm"
+    <motion.header
+      className="sticky overflow-hidden top-0 z-50 shadow-sm"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 120, damping: 20 }}
       style={{
-        background: "radial-gradient(circle at 50% 0%, rgba(255,255,255,0.9) 0%, rgba(236,238,240,0.9) 100%)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
+        background:
+          theme === "dark"
+            ? "radial-gradient(ellipse at top, rgba(9, 9, 44, 0.9) 0%, rgba(4, 2, 19, 0.95) 100%)"
+            : "radial-gradient(ellipse at top, rgba(255, 255, 255, 0.96) 0%, rgba(236, 243, 255, 0.9) 100%)",
       }}
     >
-      <div className="container mx-auto px-4">
+      {/* Galaxy effect elements - only in dark mode */}
+      {theme === "dark" && (
+        <>
+          {/* Twinkling stars */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(50)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute rounded-full bg-white"
+                style={{
+                  width: `${Math.random() * 2}px`,
+                  height: `${Math.random() * 2}px`,
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  opacity: Math.random(),
+                  animation: `twinkle ${3 + Math.random() * 7}s infinite alternate`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Galactic core glow */}
+          <div
+            className="absolute top-1/4 -left-1/4 w-64 h-64 rounded-full filter blur-[80px] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%)",
+            }}
+          />
+
+          {/* Nebula effect */}
+          <div
+            className="absolute -bottom-1/4 -right-1/4 w-96 h-96 rounded-full filter blur-[100px] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)",
+              mixBlendMode: "screen",
+            }}
+          />
+        </>
+      )}
+
+      <div className="container mx-auto px-4 relative z-10">
         <div className="flex items-center justify-between h-20">
-          <Link className="text-2xl text-blue-950 font-bold" href="/">
-            <Image src={commerselylogo} alt="Commersely logo" width={120} height={40} />
+          <Link className="text-2xl text-blue-950 dark:text-white font-bold" href="/">
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Image
+                src={commerselylogo}
+                alt="Commersely logo"
+                width={120}
+                height={40}
+                className="filter dark:invert"
+              />
+            </motion.div>
           </Link>
           <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center">
             <nav className="flex items-center space-x-8">
               {navItems.map((item, index) => (
-                <Link
-                  href={item.to}
-                  key={index}
-                  className="text-sm font-semibold hover:text-gray-700 transition-colors"
-                >
-                  {item.title}
-                </Link>
+                <motion.div key={index} whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <Link
+                    href={item.to}
+                    className={`text-sm font-semibold transition-colors ${
+                      isActive(item.to)
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                    }`}
+                  >
+                    {item.title}
+                  </Link>
+                </motion.div>
               ))}
             </nav>
           </div>
           <div className="hidden lg:flex items-center space-x-6">
             <div className="flex items-center space-x-6">
               {legalItems.map((item, index) => (
-                <Link
-                  href={item.to}
-                  key={index}
-                  className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-                >
-                  {item.title}
-                </Link>
+                <motion.div key={index} whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <Link
+                    href={item.to}
+                    className={`text-xs transition-colors ${
+                      isActive(item.to)
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+                    }`}
+                  >
+                    {item.title}
+                  </Link>
+                </motion.div>
               ))}
             </div>
-            <div className="relative cursor-pointer" onClick={() => router.push("/cart")}>
-              <ShoppingCart className="h-5 w-5" />
-              {items?.length > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-black text-white text-xs rounded-full flex items-center justify-center">
-                  {items?.length}
-                </span>
-              )}
-            </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant={"ghost"} className="hover:bg-gray-100">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-[180px]">
-                <DropdownMenuItem onClick={() => router.push("/account")} className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
-                  Your Account
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <motion.div
+              className="relative cursor-pointer"
+              onClick={() => router.push("/cart")}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ShoppingCart className="h-5 w-5 text-gray-700 dark:text-gray-300" />
+              <AnimatePresence>
+                {items?.length > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1 h-4 w-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center"
+                  >
+                    {items?.length}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              >
+                <motion.div animate={{ rotate: theme === "dark" ? 360 : 0 }} transition={{ duration: 0.5 }}>
+                  {theme === "dark" ? (
+                    <Sun className="h-5 w-5 text-yellow-400" />
+                  ) : (
+                    <Moon className="h-5 w-5 text-gray-700" />
+                  )}
+                </motion.div>
+              </Button>
+            </motion.div>
+            {renderUserDisplay()}
           </div>
           <div className="lg:hidden">
             <Sheet
@@ -231,13 +375,22 @@ function Header() {
                 onClick={() => setShowSheetDialog(!showSheetDialog)}
                 size="icon"
                 variant="ghost"
-                className="hover:bg-gray-100"
+                className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
               >
-                <Menu className="h-6 w-6" />
+                <motion.div whileHover={{ rotate: 90 }} transition={{ type: "spring", stiffness: 300 }}>
+                  <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+                </motion.div>
               </Button>
-              <SheetContent side="left" className="w-80">
+              <SheetContent
+                side="left"
+                className="w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-r border-gray-200 dark:border-gray-800"
+              >
                 <SheetHeader>
-                  <SheetTitle className="text-left">COMMERSELY</SheetTitle>
+                  <SheetTitle className="text-left text-gray-900 dark:text-white">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                      COMMERSELY
+                    </motion.div>
+                  </SheetTitle>
                 </SheetHeader>
                 {renderMobileMenuItems()}
               </SheetContent>
@@ -245,7 +398,22 @@ function Header() {
           </div>
         </div>
       </div>
-    </header>
+
+      {/* Animated border gradient */}
+      <motion.div
+        className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+        animate={{ x: ["-100%", "100%"] }}
+        transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
+      />
+
+      {/* Twinkle animation definition */}
+      <style jsx global>{`
+        @keyframes twinkle {
+        0% { opacity: 0.2; transform: translate(0, 0); }
+  50% { opacity: 1; transform: translate(2px, -3px); }
+  100% { opacity: 0.3; transform: translate(-1px, 1px); }
+      `}</style>
+    </motion.header>
   );
 }
 

@@ -78,11 +78,13 @@ interface OrderStore {
   pagination: Pagination;
   fetchCashOnDeliverySetting: () => Promise<boolean>;
   updateCashOnDeliverySetting: (enabled: boolean) => Promise<boolean>;
-  createPayPalOrder: (items: any[], total: number) => Promise<string | null>;
-  capturePayPalOrder: (orderId: string) => Promise<any | null>;
+
   createFinalOrder: (orderData: CreateOrderData) => Promise<Order | null>;
   getOrder: (orderId: string) => Promise<Order | null>;
-  updateOrderStatus: (orderId: string, status: Order["status"]) => Promise<boolean>;
+  updateOrderStatus: (
+    orderId: string,
+    status: Order["status"]
+  ) => Promise<boolean>;
   getAllOrders: (page?: number, limit?: number) => Promise<AdminOrder[] | null>;
   getOrdersByUserId: () => Promise<Order[] | null>;
   setCurrentOrder: (order: Order | null) => void;
@@ -120,10 +122,16 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   fetchCashOnDeliverySetting: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.ADMIN_SETTINGS}/cash-on-delivery`, {
-        withCredentials: true,
+      const response = await axios.get(
+        `${API_ROUTES.ADMIN_SETTINGS}/cash-on-delivery`,
+        {
+          withCredentials: true,
+        }
+      );
+      set({
+        isLoading: false,
+        isCashOnDeliveryEnabled: response.data.data.isCashOnDelivery,
       });
-      set({ isLoading: false, isCashOnDeliveryEnabled: response.data.data.isCashOnDelivery });
       return response.data.data.isCashOnDelivery;
     } catch (error) {
       set({ error: "Failed to fetch COD setting", isLoading: false });
@@ -139,53 +147,28 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
         { isCashOnDelivery: enabled },
         { withCredentials: true }
       );
-      set({ isLoading: false, isCashOnDeliveryEnabled: response.data.data.isCashOnDelivery });
+      set({
+        isLoading: false,
+        isCashOnDeliveryEnabled: response.data.data.isCashOnDelivery,
+      });
       return response.data.success;
     } catch (error: any) {
-      set({ error: error.response?.data?.message || "Failed to update COD setting", isLoading: false });
+      set({
+        error: error.response?.data?.message || "Failed to update COD setting",
+        isLoading: false,
+      });
       return false;
     }
   },
 
-  createPayPalOrder: async (items, total) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await axios.post(
-        `${API_ROUTES.ORDER}/create-paypal-order`,
-        { items, total },
-        { withCredentials: true }
-      );
-      set({ isLoading: false });
-      return response.data.id;
-    } catch (error) {
-      set({ error: "Failed to create PayPal order", isLoading: false });
-      return null;
-    }
-  },
-
-  capturePayPalOrder: async (orderId) => {
-    set({ isLoading: true, error: null, isPaymentProcessing: true });
-    try {
-      const response = await axios.post(
-        `${API_ROUTES.ORDER}/capture-paypal-order`,
-        { orderId },
-        { withCredentials: true }
-      );
-      set({ isLoading: false, isPaymentProcessing: false });
-      return response.data;
-    } catch (error) {
-      set({
-        error: "Failed to capture PayPal order",
-        isLoading: false,
-        isPaymentProcessing: false,
-      });
-      return null;
-    }
-  },
   initiatePayment: async (paymentData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(`${API_ROUTES.ORDER}/initiate-payment`, paymentData, { withCredentials: true });
+      const response = await axios.post(
+        `${API_ROUTES.ORDER}/initiate-payment`,
+        paymentData,
+        { withCredentials: true }
+      );
       set({ isLoading: false });
       return response.data.paymentUrl;
     } catch (error) {
@@ -201,7 +184,10 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
         `${API_ROUTES.ORDER}/create-final-order`,
         {
           ...orderData,
-          paymentStatus: orderData.paymentMethod === "CASH_ON_DELIVERY" ? "PENDING" : "COMPLETED",
+          paymentStatus:
+            orderData.paymentMethod === "CASH_ON_DELIVERY"
+              ? "PENDING"
+              : "COMPLETED",
         },
         { withCredentials: true }
       );
@@ -225,14 +211,20 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     const { pagination } = get();
     set({ isLoading: true, error: null });
     try {
-      await axios.put(`${API_ROUTES.ORDER}/${orderId}/status`, { status }, { withCredentials: true });
+      await axios.put(
+        `${API_ROUTES.ORDER}/${orderId}/status`,
+        { status },
+        { withCredentials: true }
+      );
       set((state) => ({
         currentOrder:
           state.currentOrder && state.currentOrder.id === orderId
             ? { ...state.currentOrder, status }
             : state.currentOrder,
         isLoading: false,
-        adminOrders: state.adminOrders.map((item) => (item.id === orderId ? { ...item, status } : item)),
+        adminOrders: state.adminOrders.map((item) =>
+          item.id === orderId ? { ...item, status } : item
+        ),
       }));
       // Refresh current page after update
       await get().getAllOrders(pagination.currentPage, pagination.itemsPerPage);
@@ -246,9 +238,12 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getAllOrders: async (page = 1, limit = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.ORDER}/get-all-orders-for-admin?page=${page}&limit=${limit}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${API_ROUTES.ORDER}/get-all-orders-for-admin?page=${page}&limit=${limit}`,
+        {
+          withCredentials: true,
+        }
+      );
       set({
         isLoading: false,
         adminOrders: response.data.data,
@@ -269,7 +264,10 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getOrdersByUserId: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.ORDER}/get-order-by-user-id`, { withCredentials: true });
+      const response = await axios.get(
+        `${API_ROUTES.ORDER}/get-order-by-user-id`,
+        { withCredentials: true }
+      );
       set({ isLoading: false, userOrders: response.data });
       return response.data;
     } catch (error) {
@@ -283,7 +281,10 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getOrder: async (orderId) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(`${API_ROUTES.ORDER}/get-single-order/${orderId}`, { withCredentials: true });
+      const response = await axios.get(
+        `${API_ROUTES.ORDER}/get-single-order/${orderId}`,
+        { withCredentials: true }
+      );
       set({ isLoading: false, currentOrder: response.data });
       return response.data;
     } catch (error) {

@@ -215,7 +215,7 @@ export interface Product {
   category: { id: string; name: string };
   gender: string;
   sizes: string[];
-  colors: string[];
+  colors: string;
   price: number;
   stock: number;
   soldCount: number;
@@ -223,6 +223,8 @@ export interface Product {
   images: string[];
   createdAt: string;
   updatedAt: string;
+  isOnOffer?: boolean;
+  offerPrice?: number;
   isFeatured: boolean;
   reviews?: Review[];
 }
@@ -301,4 +303,57 @@ export enum NotificationAction {
   UPDATED_CATEGORY = "UPDATED_CATEGORY",
   OUT_OF_STOCK = "OUT_OF_STOCK",
   ADDED_COLLECTION = "ADDED_COLLECTION", // Fixed this line
+}
+
+export interface AnalyticsResponse {
+  users: {
+    total: number;
+    newUsers: number;
+    byRole: { role: string; count: number }[];
+  };
+  // @ts-ignore
+  orders: {
+    total: number;
+    revenue: number;
+    averageOrderValue: number;
+    byStatus: { status: string; count: number }[];
+    byPaymentMethod: { method: string; count: number }[];
+  };
+  products: {
+    total: number;
+    lowStock: number;
+    topSelling: { id: string; name: string; soldCount: number }[];
+  };
+  categories: {
+    total: number;
+    byCategory: { id: string; name: string; productCount: number }[];
+  };
+  reviews: {
+    averageRating: number;
+    totalReviews: number;
+  };
+}
+
+export interface Wishlist {
+  id: string;
+  userId: string;
+  product: Product[];
+}
+
+export interface SingleWishlistResponse {
+  wishlist: Wishlist;
+  message?: string;
+  success?: boolean;
+}
+
+export type WishlistResponseCheck = Wishlist | SingleWishlistResponse;
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
+export interface Color {
+  name: string;
+  hex: string;
 }
