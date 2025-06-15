@@ -123,8 +123,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      clientId: "Ov23ligmu1YjykejcLW9", // process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: "55c88c382a3b2c8bf41bb78a6a77974f9114f243", //, process.env.GITHUB_CLIENT_SECRET as string,
       authorization: {
         params: {
           scope: "read:user user:email",
