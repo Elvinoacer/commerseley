@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import GithubProvider from "next-auth/providers/github";
 import { notifyAdminsAboutNewUser } from "./utils";
 
 declare module "next-auth" {
@@ -16,7 +17,7 @@ declare module "next-auth" {
     user: {
       id: string;
       name?: string;
-      email?: string;
+      email?: string | null; // Allow null for GitHub users without email
       image?: string;
       role: "USER" | "SUPER_ADMIN";
     };
@@ -27,6 +28,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: "USER" | "SUPER_ADMIN";
+    email?: string | null; // Allow null for GitHub users
   }
 }
 
@@ -43,7 +45,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
-        name: { label: "Name", type: "text", required: false }, // For registration
+        name: { label: "Name", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -53,23 +55,15 @@ export const authOptions: NextAuthOptions = {
               name: credentials.name,
               email: credentials.email,
               password: credentials.password,
-              confirmPassword: credentials.password, // Using same password for confirmation
-              acceptTerms: true, // Assuming accepted if using this flow
+              confirmPassword: credentials.password,
+              acceptTerms: true,
             });
 
             const existingUser = await prisma.user.findUnique({
               where: { email },
             });
-            if (!existingUser) {
+            if (existingUser) {
               throw new Error("User already exists");
-            }
-
-            if (!existingUser?.password) {
-              throw new Error("No password set for this account. Please use social login.");
-            }
-            const isValid = await bcrypt.compare(password, existingUser?.password);
-            if (!isValid) {
-              throw new Error("Invalid password");
             }
 
             const hashedPassword = await bcrypt.hash(password, 12);
@@ -82,7 +76,7 @@ export const authOptions: NextAuthOptions = {
               },
             });
 
-            // await notifyAdminsAboutNewUser(user.id);
+            await notifyAdminsAboutNewUser(user.id);
 
             return {
               id: user.id,
@@ -99,10 +93,14 @@ export const authOptions: NextAuthOptions = {
             where: { email },
           });
 
-          if (!user || !user.password) return null;
+          if (!user || !user.password) {
+            throw new Error("No account found or password not set. Please use social login or register.");
+          }
 
           const isValid = await bcrypt.compare(password, user.password);
-          if (!isValid) return null;
+          if (!isValid) {
+            throw new Error("Invalid password");
+          }
 
           return {
             id: user.id,
@@ -114,7 +112,7 @@ export const authOptions: NextAuthOptions = {
         } catch (error) {
           console.error("Authentication error:", error);
           if (error instanceof Error) {
-            throw error; // Pass through the specific error
+            throw error;
           }
           throw new Error("Authentication failed");
         }
@@ -124,14 +122,71 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
+    GithubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID as string,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          scope: "read:user user:email",
+        },
+      },
+    }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
       if (account?.provider === "credentials") return true;
-      if (!profile?.email) return false;
+
+      // For GitHub, email might be null; use a fallback identifier if needed
+      const email =
+        profile?.email || (account?.provider === "github" && profile?.login ? `${profile.login}@github.local` : null);
+      if (!email && account?.provider === "github") {
+        // Allow GitHub login without email, using providerAccountId as a fallback
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            accounts: {
+              some: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              },
+            },
+          },
+        });
+
+        if (existingUser) {
+          return true; // Existing user found, allow sign-in
+        }
+
+        const newUser = await prisma.user.create({
+          data: {
+            email: null, // Allow null email for GitHub users
+            name: profile?.name || profile?.login || `GitHub User ${account.providerAccountId}`,
+            image: profile?.avatar_url || profile?.picture,
+            role: "USER",
+            accounts: {
+              create: {
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state,
+              },
+            },
+          },
+        });
+
+        await notifyAdminsAboutNewUser(newUser.id);
+        return true;
+      }
+
+      // For Google or other providers requiring email
+      if (!email) return false;
 
       const existingUser = await prisma.user.findUnique({
-        where: { email: profile.email },
+        where: { email },
       });
 
       if (!existingUser) {
@@ -139,10 +194,9 @@ export const authOptions: NextAuthOptions = {
 
         const newUser = await prisma.user.create({
           data: {
-            email: profile.email,
-            name: profile.name || profile.email.split("@")[0],
-            // @ts-ignore
-            image: profile.image || profile?.picture,
+            email,
+            name: profile?.name || profile?.email?.split("@")[0],
+            image: profile?.avatar_url || profile?.picture,
             role: "USER",
             accounts: {
               create: {
@@ -238,7 +292,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/login",
     error: "/auth/login",
-    newUser: "/auth/signup", // Optional: Add a signup page
+    newUser: "/auth/signup",
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
