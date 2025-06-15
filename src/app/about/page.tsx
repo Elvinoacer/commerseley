@@ -301,7 +301,7 @@ export default function AboutPage() {
                           Phone
                         </h3>
                         <p className={`text-base sm:text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
-                          +254 700 123456
+                          +254 792 156094
                         </p>
                       </div>
                     </div>

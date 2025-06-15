@@ -1,5 +1,6 @@
 import { product } from "@/generated/prisma";
 import { baseUrl } from "../lib/custom-ntf";
+
 export interface ProductEmailTemplate {
   products: product[];
   socialLinks?: {
@@ -13,7 +14,53 @@ export interface ProductEmailTemplate {
     allProducts: string;
   };
 }
+
 export function productTemplate(productWithContents: ProductEmailTemplate) {
+  // Helper function to generate a single product card
+  const generateProductCard = (prod: product, index: number) => {
+    const productId = prod.id || `product-${index}`;
+    const productName = prod.name || "Unnamed Product";
+    const productImage = prod.images?.[0] || "https://via.placeholder.com/150";
+    const offerPrice = prod.offerPrice != null ? prod.offerPrice.toFixed(2) : "N/A";
+    const originalPrice = prod.price != null ? prod.price.toFixed(2) : "N/A";
+    const description = prod.description || "No description available.";
+
+    return `
+      <a href="${baseUrl}/${productId}" class="product-card">
+        <img
+          src="${productImage}"
+          alt="${productName}"
+          class="product-image"
+        />
+        <div class="product-details">
+          <h3 class="product-name">${productName}</h3>
+          <div class="product-price">
+            Kes ${offerPrice}
+            <span class="original-price">Kes ${originalPrice}</span>
+          </div>
+          <p class="product-description">${description}</p>
+        </div>
+      </a>
+    `;
+  };
+
+  // Generate product grid dynamically
+  const productGrid = (productWithContents.products || [])
+    .map((prod, index) => generateProductCard(prod, index))
+    .join("");
+
+  // Fallback links
+  const socialLinks = {
+    facebook: productWithContents.socialLinks?.facebook || "#",
+    instagram: productWithContents.socialLinks?.instagram || "#",
+    twitter: productWithContents.socialLinks?.twitter || "#",
+  };
+  const pageLinks = {
+    allProducts: productWithContents.pageLinks?.allProducts || `${baseUrl}/products`,
+    unsubsribe: productWithContents.pageLinks?.unsubsribe || "#",
+    privacy: productWithContents.pageLinks?.privacy || "#",
+  };
+
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -187,193 +234,30 @@ export function productTemplate(productWithContents: ProductEmailTemplate) {
     <div class="email-container">
       <div class="header">
         <h1>Special Offers Just For You!</h1>
-        <p>
-          Discover our curated collection of premium products at unbeatable
-          prices
-        </p>
+        <p>Discover our curated collection of premium products at unbeatable prices</p>
       </div>
 
       <div class="content">
         <h2 style="text-align: center; color: #444">Featured Products</h2>
-
         <div class="product-grid">
-          <a href="${baseUrl + "/" + productWithContents.products?.[0]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[0].images?.[0]}"
-              alt="${productWithContents.products[0]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[0]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[0]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[0]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[0]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[1]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[1]?.images[0]}"
-              alt="${productWithContents.products[1]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[1]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[1]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[1]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[1]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[2]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[2]?.images[0]}"
-              alt="${productWithContents.products[2]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[2]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[2]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[2]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[2]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[3]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[3]?.images[0]}"
-              alt="${productWithContents.products[3]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[3]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[3]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[3]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[3]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[4]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[4]?.images[0]}"
-              alt="${productWithContents.products[4]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[4]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[4]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[4]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[4]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[5]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[5]?.images[0]}"
-              alt="${productWithContents.products[5]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[5]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[5]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[5]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[5]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[6]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[6]?.images[0]}"
-              alt="${productWithContents.products[6]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[6]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[6]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[6]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[6]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[7]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[7]?.images[0]}"
-              alt="${productWithContents.products[7]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[7]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[7]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[7]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[7]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[8]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[8]?.images[0]}"
-              alt="${productWithContents.products[8]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[8]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[8]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[8]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[8]?.description}</p>
-            </div>
-          </a>
-
-          <a href="${baseUrl + "/" + productWithContents.products[9]?.id}" class="product-card">
-            <img
-              src="${productWithContents.products[9]?.images[0]}"
-              alt="${productWithContents.products[9]?.name}"
-              class="product-image"
-            />
-            <div class="product-details">
-              <h3 class="product-name">${productWithContents.products[9]?.name}</h3>
-              <div class="product-price">
-                Kes ${productWithContents.products[9]?.offerPrice}
-                <span class="original-price">Kes ${productWithContents.products[9]?.price}</span>
-              </div>
-              <p class="product-description">${productWithContents.products[9]?.description}</p>
-            </div>
-          </a>
+          ${productGrid || "<p>No products available at this time.</p>"}
         </div>
 
         <div class="cta">
-          <a href="${productWithContents.pageLinks?.allProducts}" class="cta-button"
-            >Shop All Products</a
-          >
+          <a href="${pageLinks.allProducts}" class="cta-button">Shop All Products</a>
         </div>
       </div>
 
       <div class="footer">
         <div class="social-icons">
-          <a href="">Facebook</a> • <a href="#">Instagram</a> •
-          <a href="#">Twitter</a>
+          <a href="${socialLinks.facebook}">Facebook</a> • 
+          <a href="${socialLinks.instagram}">Instagram</a> •
+          <a href="${socialLinks.twitter}">Twitter</a>
         </div>
-        <p>© 2023 Your Company Name. All rights reserved.</p>
+        <p>© ${new Date().getFullYear()} Your Company Name. All rights reserved.</p>
         <p>
-          <a href="#" style="color: #777">Unsubscribe</a> |
-          <a href="#" style="color: #777">Privacy Policy</a>
+          <a href="${pageLinks.unsubsribe}" style="color: #777">Unsubscribe</a> |
+          <a href="${pageLinks.privacy}" style="color: #777">Privacy Policy</a>
         </p>
         <p>123 Business Street, City, State 12345</p>
       </div>

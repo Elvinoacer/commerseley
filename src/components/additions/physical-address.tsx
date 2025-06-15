@@ -256,7 +256,7 @@ const StoreLocation = () => {
                       Contact
                     </h4>
                     <p className={`text-xs sm:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                      Phone: +254 700 123456
+                      Phone: +254 792 156094
                       <br />
                       Email: hello@store.com
                     </p>

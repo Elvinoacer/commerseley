@@ -31,7 +31,6 @@ export async function autoReply({
 }) {
   try {
     if (!senderName || !email || !subject || !replyTimeframe || !emergencyContact || !companyName || !additionalInfo) {
-      console.log("missing some fields");
       throw new Error("Missing some fields");
     }
 

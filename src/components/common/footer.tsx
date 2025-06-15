@@ -178,7 +178,7 @@ export default function Footer() {
               {[
                 { icon: MapPin, text: "123 Commerce Street, Tech City, Nairobi, Kenya" },
                 { icon: Mail, text: "smiley@store.com" },
-                { icon: Phone, text: "+254 700 123456" },
+                { icon: Phone, text: "+254 792 156094" },
                 { icon: Clock, text: "Mon-Fri: 9AM-5PM" },
               ].map((item, index) => (
                 <motion.li

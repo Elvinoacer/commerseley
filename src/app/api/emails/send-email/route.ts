@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
     await Promise.all([
       transporter.sendMail(mailOptions),
-      autoReply({ ...defaultAutoReplyParam, email, senderName: name }),
+      autoReply({ ...defaultAutoReplyParam, email, senderName: name, subject: title }),
     ]);
 
     return NextResponse.json({ success: true, message: "Email sent successfully" }, { status: 200 });
