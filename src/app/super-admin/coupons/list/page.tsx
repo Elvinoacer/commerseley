@@ -44,7 +44,7 @@ function SuperAdminCouponsListingPage() {
   const handleItemsPerPageChange = (newLimit: number) => {
     setPagination({
       itemsPerPage: newLimit,
-      currentPage: 1, // Reset to first page when changing items per page
+      currentPage: 1,
     });
   };
 
@@ -78,7 +78,16 @@ function SuperAdminCouponsListingPage() {
           key={i}
           variant={pagination.currentPage === i ? "default" : "outline"}
           size="sm"
-          className="w-10 h-10 p-0 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800"
+          className={`
+            w-8 h-8 sm:w-10 sm:h-10 p-0 text-xs sm:text-sm
+            ${
+              pagination.currentPage === i
+                ? "text-white dark:text-gray-900 bg-blue-600 dark:bg-blue-300" // Example: Strong contrast for active button
+                : "text-gray-800 dark:text-gray-100" // Enhanced contrast for outline variant
+            }
+            border-gray-200 dark:border-gray-600
+            hover:bg-indigo-100 dark:hover:bg-indigo-800
+          `}
           onClick={() => handlePageChange(i)}
           aria-label={`Go to page ${i}`}
         >
@@ -92,25 +101,25 @@ function SuperAdminCouponsListingPage() {
 
   if (isLoading && couponList.length === 0) {
     return (
-      <div className="p-6 flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-600 dark:border-indigo-400" />
+      <div className="p-4 sm:p-6 flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
+        <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-t-2 border-b-2 border-indigo-600 dark:border-indigo-400" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
-      <div className="flex flex-col gap-6 max-w-7xl mx-auto">
-        <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100">All Coupons</h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Items per page</span>
+    <div className="p-2 sm:p-4 md:p-6 space-y-4 sm:space-y-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
+      <div className="flex flex-col gap-4 sm:gap-6 max-w-7xl mx-auto">
+        <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-gray-100">All Coupons</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+            <div className="flex justify-end items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">Items per page</span>
               <Select
                 value={pagination.itemsPerPage.toString()}
                 onValueChange={(value) => handleItemsPerPageChange(Number(value))}
               >
-                <SelectTrigger className="h-8 w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400">
+                <SelectTrigger className="h-8 w-[70px] sm:w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-xs sm:text-sm">
                   <SelectValue placeholder={pagination.itemsPerPage} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
@@ -118,7 +127,7 @@ function SuperAdminCouponsListingPage() {
                     <SelectItem
                       key={size}
                       value={size.toString()}
-                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:bg-indigo-100 dark:focus:bg-indigo-800"
+                      className="text-xs sm:text-sm text-gray-900 dark:text-gray-100 hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:bg-indigo-100 dark:focus:bg-indigo-800"
                     >
                       {size}
                     </SelectItem>
@@ -128,7 +137,7 @@ function SuperAdminCouponsListingPage() {
             </div>
             <Button
               onClick={() => router.push("/super-admin/coupons/add")}
-              className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 text-white"
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 text-white text-xs sm:text-sm py-1.5 sm:py-2"
               aria-label="Add new coupon"
             >
               Add New Coupon
@@ -136,64 +145,78 @@ function SuperAdminCouponsListingPage() {
           </div>
         </header>
 
-        <div className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white/90 dark:bg-gray-800/90 shadow-md backdrop-blur-sm">
-          <Table>
+        <div className="rounded-lg sm:rounded-xl border border-gray-200 dark:border-gray-600 bg-white/90 dark:bg-gray-800/90 shadow-sm sm:shadow-md backdrop-blur-sm overflow-x-auto">
+          <Table className="min-w-full">
             <TableHeader>
               <TableRow className="bg-gray-50 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Code</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Discount</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Usage</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Start Date</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">End Date</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Status</TableHead>
-                <TableHead className="text-gray-600 dark:text-gray-300 font-semibold">Actions</TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Code
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Discount
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Usage
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Start Date
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  End Date
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Status
+                </TableHead>
+                <TableHead className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 font-semibold px-3 sm:px-4 py-2 sm:py-3">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {couponList.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center h-[300px] text-gray-600 dark:text-gray-300">
+                  <TableCell
+                    colSpan={7}
+                    className="text-center h-[200px] sm:h-[300px] text-xs sm:text-sm text-gray-600 dark:text-gray-300"
+                  >
                     No coupons found
                   </TableCell>
                 </TableRow>
               ) : (
                 couponList.map((coupon) => (
                   <TableRow key={coupon.id} className="hover:bg-indigo-100 dark:hover:bg-indigo-800 transition-colors">
-                    <TableCell className="font-semibold text-gray-900 dark:text-gray-100">{coupon.code}</TableCell>
-                    <TableCell className="text-gray-600 dark:text-gray-300">{coupon.discountPercent}%</TableCell>
-                    <TableCell className="text-gray-600 dark:text-gray-300">
+                    <TableCell className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-gray-100 px-3 sm:px-4 py-2 sm:py-3">
+                      {coupon.code}
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 px-3 sm:px-4 py-2 sm:py-3">
+                      {coupon.discountPercent}%
+                    </TableCell>
+                    <TableCell className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 px-3 sm:px-4 py-2 sm:py-3">
                       {coupon.usageCount}/{coupon.usageLimit}
                     </TableCell>
-                    <TableCell className="text-gray-600 dark:text-gray-300">
+                    <TableCell className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 px-3 sm:px-4 py-2 sm:py-3">
                       {format(new Date(coupon.startDate), "dd MMM yyyy")}
                     </TableCell>
-                    <TableCell className="text-gray-600 dark:text-gray-300">
+                    <TableCell className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 px-3 sm:px-4 py-2 sm:py-3">
                       {format(new Date(coupon.endDate), "dd MMM yyyy")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-3 sm:px-4 py-2 sm:py-3">
                       <Badge
-                        // This conditional styling was incorrect.
-                        // It tried to put a ternary operator inside a template literal for the className.
-                        // The `variant` prop of the Badge component is a better place for conditional styling based on status.
                         variant={new Date() < new Date(coupon.endDate) ? "default" : "destructive"}
-                        className={
-                          new Date() < new Date(coupon.endDate) // Check if the coupon is active
-                            ? "bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200"
-                            : "bg-red-100 dark:bg-red-400 text-red-800 dark:text-red-200"
-                        }
+                        className="text-xs sm:text-sm"
                       >
                         {new Date() < new Date(coupon.endDate) ? "Active" : "Expired"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="px-3 sm:px-4 py-2 sm:py-3">
                       <Button
                         onClick={() => handleDeleteCoupon(coupon.id)}
                         variant="ghost"
                         size="sm"
-                        className="text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-transparent"
+                        className="text-gray-600 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-transparent h-6 w-6 sm:h-8 sm:w-8 p-0"
                         aria-label={`Delete coupon ${coupon.code}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -205,22 +228,25 @@ function SuperAdminCouponsListingPage() {
 
         {/* Pagination Controls */}
         {pagination.totalItems > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+            <div className="text-sm sm:text-base text-gray-800 dark:text-gray-100">
+              {" "}
+              {/* Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100 */}
               Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
               {pagination.totalItems} coupons
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={pagination.currentPage === 1}
-                className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                // Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100
+                className="text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 aria-label="Previous page"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="sr-only">Previous</span>
               </Button>
               {renderPaginationButtons()}
@@ -229,10 +255,11 @@ function SuperAdminCouponsListingPage() {
                 size="sm"
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                // Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100
+                className="text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 aria-label="Next page"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="sr-only">Next</span>
               </Button>
             </div>

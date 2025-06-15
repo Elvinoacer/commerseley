@@ -46,7 +46,7 @@ export default function CategoriesPage() {
 
   const renderPaginationButtons = () => {
     const buttons = [];
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 3; // Reduced for mobile
     let startPage = 1;
     let endPage = pagination.totalPages;
 
@@ -62,14 +62,13 @@ export default function CategoriesPage() {
       }
     }
 
-    // Button styling classes
-    const baseButtonClass = "w-10 h-10 p-0";
+    const baseButtonClass = "w-8 h-8 md:w-10 md:h-10 p-0";
     const activeButtonClass = "bg-primary text-primary-foreground hover:bg-primary/90";
     const inactiveButtonClass = cn(
       "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
-      "text-foreground" // Using semantic foreground color
+      "text-foreground"
     );
-    const ellipsisClass = "flex items-center px-2 text-muted-foreground";
+    const ellipsisClass = "flex items-center px-1 md:px-2 text-muted-foreground text-xs md:text-sm";
 
     if (startPage > 1) {
       buttons.push(
@@ -133,35 +132,37 @@ export default function CategoriesPage() {
 
     return buttons;
   };
+
   return (
-    <div className="p-6 space-y-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         className="max-w-7xl mx-auto"
       >
-        <div className="flex flex-col gap-6">
-          <header className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 md:gap-6">
+          <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
+              <h1 className="text-xl md:text-2xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
                 Categories
               </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Manage your product categories</p>
+              <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 mt-1">Manage your product categories</p>
             </div>
             <CreateCategoryModal>
               <Button
-                className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 text-white"
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 text-white w-full sm:w-auto mt-2 sm:mt-0"
                 aria-label="Add new category"
+                size="sm"
               >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Category
+                <Plus className="mr-1 md:mr-2 h-3 w-3 md:h-4 md:w-4" />
+                <span className="text-xs md:text-sm">Add Category</span>
               </Button>
             </CreateCategoryModal>
           </header>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="w-full sm:w-[300px]">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4">
+            <div className="w-full sm:w-[250px] md:w-[300px]">
               <SearchFilter
                 onSearch={handleSearch}
                 placeholder="Search categories..."
@@ -169,22 +170,24 @@ export default function CategoriesPage() {
                 isLoading={isLoading}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Items per page</span>
+            <div className="flex justify-end items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs md:text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                Items per page
+              </span>
               <Select
                 value={pagination.itemsPerPage.toString()}
                 onValueChange={(value) => handleItemsPerPageChange(Number(value))}
                 disabled={isLoading}
               >
-                <SelectTrigger className="h-8 w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400">
+                <SelectTrigger className="h-8 w-[70px] md:w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-xs md:text-sm">
                   <SelectValue placeholder={pagination.itemsPerPage} />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 text-xs md:text-sm">
                   {[5, 10, 20, 50].map((size) => (
                     <SelectItem
                       key={size}
                       value={size.toString()}
-                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:bg-indigo-100 dark:focus:bg-indigo-800"
+                      className="hover:bg-indigo-100 dark:hover:bg-indigo-800 focus:bg-indigo-100 dark:focus:bg-indigo-800"
                     >
                       {size}
                     </SelectItem>
@@ -201,11 +204,11 @@ export default function CategoriesPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="space-y-4"
+                className="space-y-3 md:space-y-4"
               >
-                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-8 md:h-10 w-full rounded-lg" />
                 {[...Array(5)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full rounded-lg" />
+                  <Skeleton key={i} className="h-10 md:h-12 w-full rounded-lg" />
                 ))}
               </motion.div>
             ) : (
@@ -214,7 +217,7 @@ export default function CategoriesPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="rounded-xl border border-gray-200 dark:border-gray-600 bg-white/90 dark:bg-gray-800/90 shadow-md backdrop-blur-sm overflow-hidden"
+                className="rounded-lg md:rounded-xl border border-gray-200 dark:border-gray-600 bg-white/90 dark:bg-gray-800/90 shadow-sm md:shadow-md backdrop-blur-sm overflow-x-auto"
               >
                 <CategoriesTable
                   categories={categories}
@@ -226,23 +229,22 @@ export default function CategoriesPage() {
           </AnimatePresence>
 
           {pagination.totalItems > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 md:gap-4">
+              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
                 Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
                 {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
                 {pagination.totalItems} categories
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1 || isLoading}
-                  className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                  className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 p-0"
                   aria-label="Previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  <span className="sr-only">Previous</span>
                 </Button>
                 {renderPaginationButtons()}
                 <Button
@@ -250,11 +252,10 @@ export default function CategoriesPage() {
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages || isLoading}
-                  className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800"
+                  className="text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 p-0"
                   aria-label="Next page"
                 >
                   <ChevronRight className="h-4 w-4" />
-                  <span className="sr-only">Next</span>
                 </Button>
               </div>
             </div>

@@ -81,22 +81,22 @@ export default function ContactPage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className={`min-h-screen pt-20 transition-colors duration-300 relative z-0 ${
+      className={`min-h-screen pt-16 transition-colors duration-300 relative z-0 ${
         theme === "dark" ? "bg-gray-900" : "bg-gradient-to-b from-gray-50 to-white"
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <motion.div variants={itemVariants} className="max-w-4xl mx-auto">
-          <div className="text-center mb-12 sm:mb-16">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <motion.div variants={itemVariants} className="max-w-3xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
             {isLoading ? (
-              <div className="animate-pulse space-y-4">
-                <div className="h-10 w-64 bg-gray-200 dark:bg-gray-700 rounded mx-auto"></div>
-                <div className="h-6 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mx-auto"></div>
+              <div className="animate-pulse space-y-3">
+                <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mx-auto"></div>
+                <div className="h-5 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mx-auto"></div>
               </div>
             ) : (
               <>
                 <h1
-                  className={`text-3xl sm:text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent ${
+                  className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 bg-clip-text text-transparent ${
                     theme === "dark"
                       ? "bg-gradient-to-r from-white to-gray-300"
                       : "bg-gradient-to-r from-indigo-600 to-purple-600"
@@ -105,7 +105,7 @@ export default function ContactPage() {
                   Get In Touch
                 </h1>
                 <p
-                  className={`text-base sm:text-lg md:text-xl ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                  className={`text-sm sm:text-base md:text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
                 >
                   Have questions? We're here to help!
                 </p>
@@ -113,11 +113,11 @@ export default function ContactPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-4 sm:gap-6">
             {/* Left column - contact info */}
-            <motion.div variants={itemVariants} className="space-y-6 sm:space-y-8">
+            <motion.div variants={itemVariants} className="space-y-4 sm:space-y-6">
               <motion.div
-                className={`p-6 sm:p-8 rounded-xl shadow-lg backdrop-blur-sm border ${
+                className={`p-4 sm:p-6 rounded-lg shadow-lg backdrop-blur-sm border ${
                   theme === "dark"
                     ? "bg-gray-800/50 border-gray-700/30 hover:shadow-white/10"
                     : "bg-white/80 border-gray-200/30 hover:shadow-gray-300/20"
@@ -125,14 +125,14 @@ export default function ContactPage() {
                 whileHover={{ y: -4 }}
               >
                 {isLoading ? (
-                  <div className="animate-pulse space-y-6">
-                    <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded"></div>
                     {[...Array(3)].map((_, i) => (
-                      <div key={i} className="flex items-start gap-4">
-                        <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded-full mt-1"></div>
+                      <div key={i} className="flex items-start gap-3">
+                        <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded-full mt-1"></div>
                         <div className="space-y-2">
-                          <div className="h-5 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                          <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                          <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                          <div className="h-3 w-36 bg-gray-200 dark:bg-gray-700 rounded"></div>
                         </div>
                       </div>
                     ))}
@@ -140,22 +140,22 @@ export default function ContactPage() {
                 ) : (
                   <>
                     <h2
-                      className={`text-xl sm:text-2xl font-bold mb-6 ${
+                      className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 ${
                         theme === "dark" ? "text-white" : "text-gray-900"
                       }`}
                     >
                       Contact Information
                     </h2>
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       <div className="flex items-start">
                         <Mail
-                          className={`w-6 h-6 mt-1 mr-4 flex-shrink-0 ${
+                          className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 ${
                             theme === "dark" ? "text-indigo-400" : "text-indigo-600"
                           }`}
                         />
                         <div>
                           <h3
-                            className={`font-semibold text-base sm:text-lg mb-1 ${
+                            className={`font-semibold text-sm sm:text-base mb-1 ${
                               theme === "dark" ? "text-white" : "text-gray-900"
                             }`}
                           >
@@ -163,7 +163,7 @@ export default function ContactPage() {
                           </h3>
                           <a
                             href="mailto:support@commersely.com"
-                            className={`text-sm sm:text-base hover:underline ${
+                            className={`text-xs sm:text-sm hover:underline ${
                               theme === "dark" ? "text-gray-300" : "text-gray-700"
                             }`}
                           >
@@ -174,13 +174,13 @@ export default function ContactPage() {
 
                       <div className="flex items-start">
                         <Phone
-                          className={`w-6 h-6 mt-1 mr-4 flex-shrink-0 ${
+                          className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 ${
                             theme === "dark" ? "text-indigo-400" : "text-indigo-600"
                           }`}
                         />
                         <div>
                           <h3
-                            className={`font-semibold text-base sm:text-lg mb-1 ${
+                            className={`font-semibold text-sm sm:text-base mb-1 ${
                               theme === "dark" ? "text-white" : "text-gray-900"
                             }`}
                           >
@@ -188,7 +188,7 @@ export default function ContactPage() {
                           </h3>
                           <a
                             href="tel:+25792156094"
-                            className={`text-sm sm:text-base hover:underline ${
+                            className={`text-xs sm:text-sm hover:underline ${
                               theme === "dark" ? "text-gray-300" : "text-gray-700"
                             }`}
                           >
@@ -199,19 +199,19 @@ export default function ContactPage() {
 
                       <div className="flex items-start">
                         <MapPin
-                          className={`w-6 h-6 mt-1 mr-4 flex-shrink-0 ${
+                          className={`w-5 h-5 mt-1 mr-3 flex-shrink-0 ${
                             theme === "dark" ? "text-indigo-400" : "text-indigo-600"
                           }`}
                         />
                         <div>
                           <h3
-                            className={`font-semibold text-base sm:text-lg mb-1 ${
+                            className={`font-semibold text-sm sm:text-base mb-1 ${
                               theme === "dark" ? "text-white" : "text-gray-900"
                             }`}
                           >
                             Visit Us
                           </h3>
-                          <p className={`text-sm sm:text-base ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                          <p className={`text-xs sm:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
                             123 Commerce Street
                             <br />
                             Tech City, TC 10001
@@ -224,7 +224,7 @@ export default function ContactPage() {
               </motion.div>
 
               <motion.div
-                className={`p-6 sm:p-8 rounded-xl shadow-lg backdrop-blur-sm border ${
+                className={`p-4 sm:p-6 rounded-lg shadow-lg backdrop-blur-sm border ${
                   theme === "dark"
                     ? "bg-gray-800/50 border-gray-700/30 hover:shadow-white/10"
                     : "bg-white/80 border-gray-200/30 hover:shadow-gray-300/20"
@@ -232,19 +232,19 @@ export default function ContactPage() {
                 whileHover={{ y: -4 }}
               >
                 {isLoading ? (
-                  <div className="animate-pulse space-y-4">
-                    <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="animate-pulse space-y-3">
+                    <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded"></div>
                     {[...Array(3)].map((_, i) => (
                       <div key={i} className="flex justify-between">
-                        <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div className="h-3 w-28 bg-gray-200 dark:bg-gray-700 rounded"></div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <>
                     <h2
-                      className={`text-xl sm:text-2xl font-bold mb-6 ${
+                      className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 ${
                         theme === "dark" ? "text-white" : "text-gray-900"
                       }`}
                     >
@@ -252,7 +252,7 @@ export default function ContactPage() {
                     </h2>
                     <div className="space-y-2">
                       <p
-                        className={`flex justify-between text-sm sm:text-base ${
+                        className={`flex justify-between text-xs sm:text-sm ${
                           theme === "dark" ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
@@ -260,7 +260,7 @@ export default function ContactPage() {
                         <span className="font-medium">9:00 AM - 6:00 PM</span>
                       </p>
                       <p
-                        className={`flex justify-between text-sm sm:text-base ${
+                        className={`flex justify-between text-xs sm:text-sm ${
                           theme === "dark" ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
@@ -268,7 +268,7 @@ export default function ContactPage() {
                         <span className="font-medium">10:00 AM - 4:00 PM</span>
                       </p>
                       <p
-                        className={`flex justify-between text-sm sm:text-base ${
+                        className={`flex justify-between text-xs sm:text-sm ${
                           theme === "dark" ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
@@ -284,7 +284,7 @@ export default function ContactPage() {
             {/* Right column - contact form */}
             <motion.div
               variants={itemVariants}
-              className={`p-6 sm:p-8 rounded-xl shadow-lg backdrop-blur-sm border ${
+              className={`p-4 sm:p-6 rounded-lg shadow-lg backdrop-blur-sm border ${
                 theme === "dark"
                   ? "bg-gray-800/50 border-gray-700/30 hover:shadow-white/10"
                   : "bg-white/80 border-gray-200/30 hover:shadow-gray-300/20"
@@ -292,31 +292,31 @@ export default function ContactPage() {
               whileHover={{ y: -4 }}
             >
               {isLoading ? (
-                <div className="animate-pulse space-y-6">
-                  <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                <div className="animate-pulse space-y-4">
+                  <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
                   </div>
+                  <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  <div className="h-20 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
                   <div className="h-10 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div className="h-24 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
                 </div>
               ) : (
                 <>
                   <h2
-                    className={`text-xl sm:text-2xl font-bold mb-6 ${
+                    className={`text-lg sm:text-xl font-bold mb-4 sm:mb-6 ${
                       theme === "dark" ? "text-white" : "text-gray-900"
                     }`}
                   >
                     Send Us a Message
                   </h2>
-                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
                         <label
                           htmlFor="name"
-                          className={`block text-sm font-medium mb-1 ${
+                          className={`block text-xs sm:text-sm font-medium mb-1 ${
                             theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                         >
@@ -327,13 +327,15 @@ export default function ContactPage() {
                           name="name"
                           id="name"
                           placeholder="Your name"
-                          className={theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""}
+                          className={`text-xs sm:text-sm touch-manipulation ${
+                            theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""
+                          }`}
                         />
                       </div>
                       <div>
                         <label
                           htmlFor="email"
-                          className={`block text-sm font-medium mb-1 ${
+                          className={`block text-xs sm:text-sm font-medium mb-1 ${
                             theme === "dark" ? "text-gray-300" : "text-gray-700"
                           }`}
                         >
@@ -345,14 +347,16 @@ export default function ContactPage() {
                           name="email"
                           type="email"
                           placeholder="your@email.com"
-                          className={theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""}
+                          className={`text-xs sm:text-sm touch-manipulation ${
+                            theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""
+                          }`}
                         />
                       </div>
                     </div>
                     <div>
                       <label
                         htmlFor="subject"
-                        className={`block text-sm font-medium mb-1 ${
+                        className={`block text-xs sm:text-sm font-medium mb-1 ${
                           theme === "dark" ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
@@ -363,13 +367,15 @@ export default function ContactPage() {
                         name="subject"
                         id="subject"
                         placeholder="How can we help?"
-                        className={theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""}
+                        className={`text-xs sm:text-sm touch-manipulation ${
+                          theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""
+                        }`}
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="message"
-                        className={`block text-sm font-medium mb-1 ${
+                        className={`block text-xs sm:text-sm font-medium mb-1 ${
                           theme === "dark" ? "text-gray-300" : "text-gray-700"
                         }`}
                       >
@@ -379,14 +385,16 @@ export default function ContactPage() {
                         required
                         name="message"
                         id="message"
-                        rows={5}
+                        rows={4}
                         placeholder="Your message..."
-                        className={theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""}
+                        className={`text-xs sm:text-sm touch-manipulation ${
+                          theme === "dark" ? "bg-gray-700 text-gray-300 border-gray-600" : ""
+                        }`}
                       />
                     </div>
                     <Button
                       type="submit"
-                      className={`w-full ${
+                      className={`w-full text-sm sm:text-base py-3 touch-manipulation ${
                         theme === "dark"
                           ? "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
                           : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
@@ -417,44 +425,36 @@ export default function ContactPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 flex items-center justify-center p-4 sm:p-6"
+            className="fixed inset-0 z-40 flex items-center justify-center px-4"
           >
             {/* Backdrop */}
             <div
               className={`absolute inset-0 ${
                 theme === "dark"
-                  ? "bg-gradient-to-br from-gray-900/80 via-gray-800/80 to-gray-900/80"
-                  : "bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"
-              }`}
-            >
-              <div
-                className={`absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] ${
-                  theme === "dark"
-                    ? "from-gray-700/20 via-transparent to-gray-600/20"
-                    : "from-indigo-600/20 via-transparent to-purple-600/20"
-                }`}
-              ></div>
-            </div>
+                  ? "bg-gray-900/80"
+                  : "bg-gradient-to-br from-indigo-500/20 via-purple-500/20 to-pink-500/20"
+              } backdrop-blur-sm`}
+            ></div>
 
             {/* Modal content */}
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className={`relative rounded-2xl shadow-2xl max-w-md w-full p-6 sm:p-8 z-50 border ${
+              className={`relative rounded-xl shadow-2xl max-w-sm w-full p-4 sm:p-6 z-50 border ${
                 theme === "dark" ? "bg-gray-800/90 border-gray-700/30" : "bg-white/90 border-gray-100/30"
               }`}
             >
               <button
                 onClick={() => setShowSuccess(false)}
-                className={`absolute top-4 right-4 p-1 rounded-full transition-colors ${
+                className={`absolute top-3 right-3 p-1 rounded-full transition-colors touch-manipulation ${
                   theme === "dark"
                     ? "hover:bg-gray-700 text-gray-400 hover:text-gray-300"
                     : "hover:bg-gray-100 text-gray-500 hover:text-gray-600"
                 }`}
                 aria-label="Close"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
 
               <div className="text-center">
@@ -463,12 +463,12 @@ export default function ContactPage() {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                  className={`mx-auto flex items-center justify-center h-16 w-16 rounded-full mb-6 ${
+                  className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 sm:mb-6 ${
                     theme === "dark" ? "bg-green-900/50" : "bg-green-100"
                   }`}
                 >
                   <svg
-                    className={`h-10 w-10 ${theme === "dark" ? "text-green-400" : "text-green-600"}`}
+                    className={`h-6 w-6 ${theme === "dark" ? "text-green-400" : "text-green-600"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -486,17 +486,19 @@ export default function ContactPage() {
                 </motion.div>
 
                 <h3
-                  className={`text-xl sm:text-2xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                  className={`text-lg sm:text-xl font-bold mb-2 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
                 >
                   Message Sent!
                 </h3>
-                <p className={`text-sm sm:text-base mb-6 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                <p
+                  className={`text-xs sm:text-sm mb-4 sm:mb-6 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                >
                   Thank you for contacting us. We'll get back to you soon.
                 </p>
 
                 <Button
                   onClick={() => setShowSuccess(false)}
-                  className={`${
+                  className={`w-full text-sm sm:text-base py-3 touch-manipulation ${
                     theme === "dark"
                       ? "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
                       : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"

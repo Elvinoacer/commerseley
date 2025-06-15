@@ -148,11 +148,11 @@ function UserAccountPage() {
   return (
     <div
       className={cn(
-        "min-h-screen py-8",
+        "min-h-screen py-4 sm:py-8",
         isDark ? "bg-gradient-to-br from-gray-900 to-gray-800" : "bg-gradient-to-br from-gray-50 to-gray-100"
       )}
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Animated Background Elements */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
           {[...Array(10)].map((_, i) => (
@@ -187,9 +187,9 @@ function UserAccountPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className={cn("text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>MY ACCOUNT</h1>
+          <h1 className={cn("text-2xl sm:text-3xl font-bold", isDark ? "text-white" : "text-gray-900")}>MY ACCOUNT</h1>
         </motion.div>
 
         <Tabs defaultValue="orders" className="space-y-4">
@@ -202,21 +202,36 @@ function UserAccountPage() {
 
           <TabsContent value="orders">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <Card className={cn("border", isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200")}>
-                <CardContent className="p-6">
-                  <h2 className={cn("text-xl font-semibold mb-6", isDark ? "text-white" : "text-gray-900")}>
+              <Card
+                className={cn(
+                  "border rounded-lg shadow-sm",
+                  isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                )}
+              >
+                <CardContent className="p-4 sm:p-6">
+                  <h2
+                    className={cn(
+                      "text-lg sm:text-xl font-semibold mb-4 sm:mb-6",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
                     Order History
                   </h2>
 
                   {userOrders.length === 0 ? (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-                      <h3 className={cn("text-2xl font-bold mb-4", isDark ? "text-gray-300" : "text-gray-600")}>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-6 sm:py-8">
+                      <h3
+                        className={cn(
+                          "text-xl sm:text-2xl font-bold mb-3 sm:mb-4",
+                          isDark ? "text-gray-300" : "text-gray-600"
+                        )}
+                      >
                         You haven't placed any orders yet.
                       </h3>
                       <Button
                         className={cn(
                           "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700",
-                          "text-white"
+                          "text-white text-sm sm:text-base"
                         )}
                       >
                         Start Shopping
@@ -224,14 +239,49 @@ function UserAccountPage() {
                     </motion.div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <Table>
+                      <Table className="min-w-full">
                         <TableHeader className={isDark ? "bg-gray-700" : "bg-gray-100"}>
                           <TableRow>
-                            <TableHead className={isDark ? "text-gray-200" : "text-gray-800"}>Order #</TableHead>
-                            <TableHead className={isDark ? "text-gray-200" : "text-gray-800"}>Date</TableHead>
-                            <TableHead className={isDark ? "text-gray-200" : "text-gray-800"}>Items</TableHead>
-                            <TableHead className={isDark ? "text-gray-200" : "text-gray-800"}>Status</TableHead>
-                            <TableHead className={isDark ? "text-gray-200" : "text-gray-800"}>Total</TableHead>
+                            <TableHead
+                              className={cn(
+                                "px-3 py-3 text-left text-xs sm:text-sm font-medium",
+                                isDark ? "text-gray-200" : "text-gray-800"
+                              )}
+                            >
+                              Order #
+                            </TableHead>
+                            <TableHead
+                              className={cn(
+                                "px-3 py-3 text-left text-xs sm:text-sm font-medium",
+                                isDark ? "text-gray-200" : "text-gray-800"
+                              )}
+                            >
+                              Date
+                            </TableHead>
+                            <TableHead
+                              className={cn(
+                                "px-3 py-3 text-left text-xs sm:text-sm font-medium",
+                                isDark ? "text-gray-200" : "text-gray-800"
+                              )}
+                            >
+                              Items
+                            </TableHead>
+                            <TableHead
+                              className={cn(
+                                "px-3 py-3 text-left text-xs sm:text-sm font-medium",
+                                isDark ? "text-gray-200" : "text-gray-800"
+                              )}
+                            >
+                              Status
+                            </TableHead>
+                            <TableHead
+                              className={cn(
+                                "px-3 py-3 text-left text-xs sm:text-sm font-medium",
+                                isDark ? "text-gray-200" : "text-gray-800"
+                              )}
+                            >
+                              Total
+                            </TableHead>
                           </TableRow>
                         </TableHeader>
 
@@ -247,21 +297,41 @@ function UserAccountPage() {
                                 isDark ? "border-gray-700 hover:bg-gray-700/50" : "border-gray-200 hover:bg-gray-50"
                               )}
                             >
-                              <TableCell className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
+                              <TableCell
+                                className={cn(
+                                  "px-3 py-3 text-xs sm:text-sm font-medium",
+                                  isDark ? "text-white" : "text-gray-900"
+                                )}
+                              >
                                 #{order.id.slice(0, 8)}
                               </TableCell>
-                              <TableCell className={isDark ? "text-gray-300" : "text-gray-700"}>
+                              <TableCell
+                                className={cn(
+                                  "px-3 py-3 text-xs sm:text-sm",
+                                  isDark ? "text-gray-300" : "text-gray-700"
+                                )}
+                              >
                                 {new Date(order.createdAt).toLocaleDateString()}
                               </TableCell>
-                              <TableCell className={isDark ? "text-gray-300" : "text-gray-700"}>
+                              <TableCell
+                                className={cn(
+                                  "px-3 py-3 text-xs sm:text-sm",
+                                  isDark ? "text-gray-300" : "text-gray-700"
+                                )}
+                              >
                                 {order.items.reduce((sum, item) => sum + item.quantity, 0)} items
                               </TableCell>
-                              <TableCell>
-                                <Badge className={`${getStatusColor(order.status)} text-white`}>
+                              <TableCell className="px-3 py-3">
+                                <Badge className={`${getStatusColor(order.status)} text-white text-xs sm:text-sm`}>
                                   {order.status.charAt(0).toUpperCase() + order.status.slice(1).toLowerCase()}
                                 </Badge>
                               </TableCell>
-                              <TableCell className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
+                              <TableCell
+                                className={cn(
+                                  "px-3 py-3 text-xs sm:text-sm font-medium",
+                                  isDark ? "text-white" : "text-gray-900"
+                                )}
+                              >
                                 Kes {order.total.toFixed(2)}
                               </TableCell>
                             </motion.tr>
@@ -277,10 +347,17 @@ function UserAccountPage() {
 
           <TabsContent value="addresses">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <Card className={cn("border", isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200")}>
-                <CardContent className="p-6">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className={cn("text-xl font-semibold", isDark ? "text-white" : "text-gray-900")}>Addresses</h2>
+              <Card
+                className={cn(
+                  "border rounded-lg shadow-sm",
+                  isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+                )}
+              >
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
+                    <h2 className={cn("text-lg sm:text-xl font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                      Addresses
+                    </h2>
                     <Button
                       onClick={() => {
                         setEditingAddress(null);
@@ -289,7 +366,7 @@ function UserAccountPage() {
                       }}
                       className={cn(
                         "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700",
-                        "text-white"
+                        "text-white text-sm sm:text-base w-full sm:w-auto"
                       )}
                     >
                       Add New Address
@@ -297,10 +374,10 @@ function UserAccountPage() {
                   </div>
 
                   {addressesLoading ? (
-                    <div className="flex justify-center py-8">
+                    <div className="flex justify-center py-6 sm:py-8">
                       <div
                         className={cn(
-                          "animate-spin rounded-full h-10 w-10 border-t-2 border-b-2",
+                          "animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2",
                           isDark ? "border-indigo-500" : "border-indigo-600"
                         )}
                       />
@@ -308,36 +385,48 @@ function UserAccountPage() {
                   ) : showAddresses ? (
                     <motion.form
                       onSubmit={handleAddressSubmit}
-                      className="space-y-4"
+                      className="space-y-3 sm:space-y-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <div className="space-y-2">
-                        <Label className={isDark ? "text-gray-300" : "text-gray-700"}>Name</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                          Name
+                        </Label>
                         <Input
                           id="name"
                           value={formData.name}
                           required
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                           placeholder="Enter your name"
-                          className={cn(isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300")}
+                          className={cn(
+                            "text-xs sm:text-sm",
+                            isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
+                          )}
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className={isDark ? "text-gray-300" : "text-gray-700"}>Address</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                          Address
+                        </Label>
                         <Input
                           id="address"
                           value={formData.address}
                           required
                           onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                           placeholder="Enter your address"
-                          className={cn(isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300")}
+                          className={cn(
+                            "text-xs sm:text-sm",
+                            isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
+                          )}
                         />
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className={isDark ? "text-gray-300" : "text-gray-700"}>City</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1 sm:space-y-2">
+                          <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                            City
+                          </Label>
                           <Input
                             id="city"
                             value={formData.city}
@@ -345,12 +434,15 @@ function UserAccountPage() {
                             onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                             placeholder="Enter your city"
                             className={cn(
+                              "text-xs sm:text-sm",
                               isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
                             )}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className={isDark ? "text-gray-300" : "text-gray-700"}>Country</Label>
+                        <div className="space-y-1 sm:space-y-2">
+                          <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                            Country
+                          </Label>
                           <Input
                             id="country"
                             value={formData.country}
@@ -358,14 +450,17 @@ function UserAccountPage() {
                             onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                             placeholder="Enter your country"
                             className={cn(
+                              "text-xs sm:text-sm",
                               isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
                             )}
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className={isDark ? "text-gray-300" : "text-gray-700"}>Postal Code</Label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                        <div className="space-y-1 sm:space-y-2">
+                          <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                            Postal Code
+                          </Label>
                           <Input
                             id="postalCode"
                             value={formData.postalCode}
@@ -373,12 +468,15 @@ function UserAccountPage() {
                             onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                             placeholder="Enter your postal code"
                             className={cn(
+                              "text-xs sm:text-sm",
                               isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
                             )}
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className={isDark ? "text-gray-300" : "text-gray-700"}>Phone</Label>
+                        <div className="space-y-1 sm:space-y-2">
+                          <Label className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}>
+                            Phone
+                          </Label>
                           <Input
                             id="phone"
                             value={formData.phone}
@@ -386,32 +484,37 @@ function UserAccountPage() {
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                             placeholder="Enter your phone"
                             className={cn(
+                              "text-xs sm:text-sm",
                               isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"
                             )}
                           />
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 pt-2">
+                      <div className="flex items-center space-x-2 pt-1 sm:pt-2">
                         <Checkbox
                           id="default"
                           checked={formData.isDefault}
                           onCheckedChange={(checked) => setFormData({ ...formData, isDefault: checked as boolean })}
                           className={cn(
+                            "h-4 w-4",
                             isDark
                               ? "data-[state=checked]:bg-indigo-500 border-gray-600"
                               : "data-[state=checked]:bg-indigo-600 border-gray-300"
                           )}
                         />
-                        <Label htmlFor="default" className={isDark ? "text-gray-300" : "text-gray-700"}>
+                        <Label
+                          htmlFor="default"
+                          className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "text-gray-700")}
+                        >
                           Set as default address
                         </Label>
                       </div>
-                      <div className="flex space-x-2 pt-4">
+                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-3 sm:pt-4">
                         <Button
                           type="submit"
                           className={cn(
                             "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700",
-                            "text-white"
+                            "text-white text-sm sm:text-base"
                           )}
                         >
                           {editingAddress ? "Update" : "Add"} Address
@@ -424,6 +527,7 @@ function UserAccountPage() {
                             setEditingAddress(null);
                           }}
                           className={cn(
+                            "text-sm sm:text-base",
                             isDark ? "border-gray-600 hover:bg-gray-700" : "border-gray-300 hover:bg-gray-100"
                           )}
                         >
@@ -432,17 +536,26 @@ function UserAccountPage() {
                       </div>
                     </motion.form>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {addresses.length === 0 ? (
-                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
-                          <h3 className={cn("text-xl font-semibold mb-4", isDark ? "text-gray-300" : "text-gray-600")}>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="text-center py-6 sm:py-8"
+                        >
+                          <h3
+                            className={cn(
+                              "text-lg sm:text-xl font-semibold mb-3 sm:mb-4",
+                              isDark ? "text-gray-300" : "text-gray-600"
+                            )}
+                          >
                             No addresses saved yet
                           </h3>
                           <Button
                             onClick={() => setShowAddresses(true)}
                             className={cn(
                               "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700",
-                              "text-white"
+                              "text-white text-sm sm:text-base"
                             )}
                           >
                             Add Your First Address
@@ -460,39 +573,55 @@ function UserAccountPage() {
                             >
                               <Card
                                 className={cn(
-                                  "border",
+                                  "border rounded-lg",
                                   isDark ? "bg-gray-700 border-gray-600" : "bg-white border-gray-200",
-                                  "hover:shadow-md transition-shadow"
+                                  "hover:shadow-sm transition-shadow"
                                 )}
                               >
-                                <CardContent className="p-5">
-                                  <div className="flex flex-col mb-5">
-                                    <div className="flex justify-between items-start">
-                                      <p className={cn("font-medium", isDark ? "text-white" : "text-gray-900")}>
+                                <CardContent className="p-4 sm:p-5">
+                                  <div className="flex flex-col mb-4 sm:mb-5">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                      <p
+                                        className={cn(
+                                          "text-sm sm:text-base font-medium",
+                                          isDark ? "text-white" : "text-gray-900"
+                                        )}
+                                      >
                                         {address.name}
                                       </p>
                                       {address.isDefault && (
-                                        <Badge variant="secondary" className="mb-2">
+                                        <Badge variant="secondary" className="text-xs sm:text-sm">
                                           Default
                                         </Badge>
                                       )}
                                     </div>
-                                    <p className={cn("mb-2 font-semibold", isDark ? "text-gray-300" : "text-gray-700")}>
+                                    <p
+                                      className={cn(
+                                        "text-xs sm:text-sm mb-1 sm:mb-2 font-medium",
+                                        isDark ? "text-gray-300" : "text-gray-700"
+                                      )}
+                                    >
                                       {address.address}
                                     </p>
-                                    <p className={cn("mb-2", isDark ? "text-gray-400" : "text-gray-600")}>
+                                    <p
+                                      className={cn(
+                                        "text-xs sm:text-sm mb-1 sm:mb-2",
+                                        isDark ? "text-gray-400" : "text-gray-600"
+                                      )}
+                                    >
                                       {address.city}, {address.country}, {address.postalCode}
                                     </p>
-                                    <p className={cn(isDark ? "text-gray-400" : "text-gray-600")}>
+                                    <p className={cn("text-xs sm:text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                                       Phone: {address.phone}
                                     </p>
                                   </div>
-                                  <div className="flex space-x-2">
+                                  <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                                     <Button
                                       onClick={() => handleEditAddress(address)}
                                       variant={"outline"}
                                       size={"sm"}
                                       className={cn(
+                                        "text-xs sm:text-sm",
                                         isDark
                                           ? "border-gray-600 hover:bg-gray-600"
                                           : "border-gray-300 hover:bg-gray-100"
@@ -504,6 +633,7 @@ function UserAccountPage() {
                                       onClick={() => handleDeleteAddress(address.id)}
                                       variant={"destructive"}
                                       size={"sm"}
+                                      className="text-xs sm:text-sm"
                                     >
                                       Delete
                                     </Button>

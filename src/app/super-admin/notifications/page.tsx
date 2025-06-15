@@ -282,7 +282,7 @@ export default function NotificationsPage() {
           key={1}
           variant="outline"
           size="sm"
-          className="w-10 h-10 p-0 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+          className="w-8 h-8 p-0 text-xs sm:w-10 sm:h-10 sm:text-sm text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
           onClick={() => handlePageChange(1)}
           aria-label="Page 1"
         >
@@ -291,7 +291,10 @@ export default function NotificationsPage() {
       );
       if (startPage > 2) {
         buttons.push(
-          <span key="start-ellipsis" className="flex items-center px-2 text-gray-500 dark:text-gray-400">
+          <span
+            key="start-ellipsis"
+            className="flex items-center px-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm"
+          >
             ...
           </span>
         );
@@ -304,7 +307,7 @@ export default function NotificationsPage() {
           key={i}
           variant={pagination.currentPage === i ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
+          className={`w-8 h-8 p-0 text-xs sm:w-10 sm:h-10 sm:text-sm ${
             pagination.currentPage === i
               ? "bg-indigo-600 dark:bg-indigo-500 text-white"
               : "text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
@@ -320,7 +323,10 @@ export default function NotificationsPage() {
     if (endPage < pagination.totalPages) {
       if (endPage < pagination.totalPages - 1) {
         buttons.push(
-          <span key="end-ellipsis" className="flex items-center px-2 text-gray-500 dark:text-gray-400">
+          <span
+            key="end-ellipsis"
+            className="flex items-center px-1 text-gray-500 dark:text-gray-400 text-xs sm:text-sm"
+          >
             ...
           </span>
         );
@@ -330,7 +336,7 @@ export default function NotificationsPage() {
           key={pagination.totalPages}
           variant="outline"
           size="sm"
-          className="w-10 h-10 p-0 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+          className="w-8 h-8 p-0 text-xs sm:w-10 sm:h-10 sm:text-sm text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
           onClick={() => handlePageChange(pagination.totalPages)}
           aria-label={`Page ${pagination.totalPages}`}
         >
@@ -343,24 +349,24 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-2 sm:p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6"
+          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-xl sm:rounded-2xl shadow-lg sm:shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6"
         >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
-                <FiBell className="text-indigo-500 dark:text-indigo-400 text-xl" />
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+                <FiBell className="text-indigo-500 dark:text-indigo-400 text-lg sm:text-xl" />
               </div>
-              <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
                 Notifications
               </h1>
               {unreadCount > 0 && (
-                <span className="bg-red-500 dark:bg-red-400 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <span className="bg-red-500 dark:bg-red-400 text-white text-xs font-bold px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full">
                   {unreadCount}
                 </span>
               )}
@@ -370,7 +376,7 @@ export default function NotificationsPage() {
               <Button
                 onClick={handleMarkAllAsRead}
                 disabled={unreadCount === 0 || isMarkingAll}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                   unreadCount === 0 || isMarkingAll
                     ? "bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                     : "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-800"
@@ -381,14 +387,16 @@ export default function NotificationsPage() {
                   "Processing..."
                 ) : (
                   <>
-                    <FiCheckCircle /> Mark all as read
+                    <FiCheckCircle className="text-sm sm:text-base" />
+                    <span className="hidden sm:inline">Mark all as read</span>
+                    <span className="sm:hidden">Mark all</span>
                   </>
                 )}
               </Button>
               <Button
                 onClick={handleClearAllNotifications}
                 disabled={notifications.length === 0 || isClearingAll}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                   notifications.length === 0 || isClearingAll
                     ? "bg-gray-200 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed"
                     : "bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800"
@@ -399,19 +407,21 @@ export default function NotificationsPage() {
                   "Clearing..."
                 ) : (
                   <>
-                    <FiTrash2 /> Clear all
+                    <FiTrash2 className="text-sm sm:text-base" />
+                    <span className="hidden sm:inline">Clear all</span>
+                    <span className="sm:hidden">Clear</span>
                   </>
                 )}
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <Input
               placeholder="Search notifications..."
               defaultValue={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full sm:w-64 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full sm:w-64 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base h-9 sm:h-10"
               aria-label="Search notifications"
             />
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -421,7 +431,7 @@ export default function NotificationsPage() {
                 onValueChange={(value) => handleItemsPerPageChange(Number(value))}
                 disabled={isLoading}
               >
-                <SelectTrigger className="h-8 w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+                <SelectTrigger className="h-8 w-[70px] sm:w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-xs sm:text-sm">
                   <SelectValue placeholder={pagination.itemsPerPage} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600">
@@ -429,7 +439,7 @@ export default function NotificationsPage() {
                     <SelectItem
                       key={size}
                       value={size.toString()}
-                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-xs sm:text-sm"
                     >
                       {size}
                     </SelectItem>
@@ -439,22 +449,22 @@ export default function NotificationsPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden mb-6 border border-gray-200 dark:border-gray-600">
+          <div className="bg-white dark:bg-gray-700 rounded-lg sm:rounded-xl shadow-sm overflow-hidden mb-4 sm:mb-6 border border-gray-200 dark:border-gray-600">
             <div className="flex border-b border-gray-200 dark:border-gray-600">
               <button
                 onClick={() => setActiveTab("all")}
-                className={`flex-1 py-3 text-center font-medium transition-colors ${
+                className={`flex-1 py-2 sm:py-3 text-center font-medium transition-colors text-sm sm:text-base ${
                   activeTab === "all"
                     ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 dark:border-indigo-400"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                 }`}
                 aria-label="View all notifications"
               >
-                All Notifications
+                All
               </button>
               <button
                 onClick={() => setActiveTab("unread")}
-                className={`flex-1 py-3 text-center font-medium transition-colors relative ${
+                className={`flex-1 py-2 sm:py-3 text-center font-medium transition-colors relative text-sm sm:text-base ${
                   activeTab === "unread"
                     ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 dark:border-indigo-400"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
@@ -463,7 +473,7 @@ export default function NotificationsPage() {
               >
                 Unread
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-4 bg-red-500 dark:bg-red-400 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                  <span className="absolute top-1 right-2 sm:right-4 bg-red-500 dark:bg-red-400 text-white text-[10px] sm:text-xs font-bold px-1 sm:px-1.5 py-0.5 rounded-full">
                     {unreadCount}
                   </span>
                 )}
@@ -472,8 +482,8 @@ export default function NotificationsPage() {
           </div>
 
           {isLoading && filteredNotifications.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-8 sm:py-12">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-10 sm:w-10 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
             </motion.div>
           ) : (
             <>
@@ -481,19 +491,19 @@ export default function NotificationsPage() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 dark:border-red-400 text-red-700 dark:text-red-200 p-4 mb-6 rounded"
+                  className="bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 dark:border-red-400 text-red-700 dark:text-red-200 p-3 sm:p-4 mb-4 sm:mb-6 rounded text-sm sm:text-base"
                 >
                   <p>{error}</p>
                 </motion.div>
               )}
 
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <AnimatePresence>
                   {filteredNotifications.length === 0 && !isLoading && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-center py-12 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600"
+                      className="text-center py-8 sm:py-12 text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-600 text-sm sm:text-base"
                     >
                       No {activeTab === "unread" ? "unread" : ""} notifications found
                     </motion.div>
@@ -509,18 +519,18 @@ export default function NotificationsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, x: 20 }}
                         transition={{ duration: 0.2 }}
-                        className={`bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden border-l-4 ${
+                        className={`bg-white dark:bg-gray-700 rounded-lg sm:rounded-xl shadow-sm overflow-hidden border-l-4 ${
                           notification.isRead ? "border-transparent" : "border-indigo-500 dark:border-indigo-400"
                         } border border-gray-200 dark:border-gray-600`}
                       >
-                        <div className="p-4">
-                          <div className="flex items-start gap-4">
-                            <div className="p-2.5 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+                        <div className="p-3 sm:p-4">
+                          <div className="flex items-start gap-3 sm:gap-4">
+                            <div className="p-2 sm:p-2.5 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
                               {notificationIcons[notification.type]}
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                               <div
-                                className={`text-gray-900 dark:text-gray-100 ${
+                                className={`text-gray-900 dark:text-gray-100 text-sm sm:text-base ${
                                   notification.isRead ? "opacity-80" : "font-medium"
                                 }`}
                               >
@@ -532,24 +542,24 @@ export default function NotificationsPage() {
                                 })}
                               </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1 sm:gap-2">
                               {!notification.isRead && (
                                 <button
                                   onClick={() => markNotificationAsRead(notification.id)}
-                                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
+                                  className="p-1 sm:p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors"
                                   title="Mark as read"
                                   aria-label="Mark notification as read"
                                 >
-                                  <FiCheck className="text-sm" />
+                                  <FiCheck className="text-xs sm:text-sm" />
                                 </button>
                               )}
                               <button
                                 onClick={() => handleDeleteNotification(notification.id)}
-                                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+                                className="p-1 sm:p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
                                 title="Delete"
                                 aria-label="Delete notification"
                               >
-                                <FiTrash2 className="text-sm" />
+                                <FiTrash2 className="text-xs sm:text-sm" />
                               </button>
                             </div>
                           </div>
@@ -563,22 +573,22 @@ export default function NotificationsPage() {
           )}
 
           {pagination.totalItems > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-              <div className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
                 {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
                 {pagination.totalItems} notifications
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1 || isLoading}
-                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 h-8 w-8 p-0 sm:h-9 sm:w-9"
                   aria-label="Previous page"
                 >
-                  <FiChevronLeft className="h-4 w-4" />
+                  <FiChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="sr-only">Previous</span>
                 </Button>
 
@@ -589,10 +599,10 @@ export default function NotificationsPage() {
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages || isLoading}
-                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 h-8 w-8 p-0 sm:h-9 sm:w-9"
                   aria-label="Next page"
                 >
-                  <FiChevronRight className="h-4 w-4" />
+                  <FiChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
                   <span className="sr-only">Next</span>
                 </Button>
               </div>

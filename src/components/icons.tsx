@@ -1,4 +1,15 @@
-import { DollarSign, Home, Lock, ShoppingCart, Star, TrendingUp, Users, type LucideIcon } from "lucide-react";
+import {
+  DollarSign,
+  Eye,
+  EyeOff,
+  Home,
+  Lock,
+  ShoppingCart,
+  Star,
+  TrendingUp,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import {
   Github,
   Loader2,
@@ -49,6 +60,8 @@ export const Icons = {
   file: FileText,
   help: HelpCircle,
   image: Image,
+  eyeOff: EyeOff,
+  eye: Eye,
   laptop: Laptop,
   moon: Moon,
   more: MoreVertical,

@@ -141,16 +141,16 @@ export default function AdminActivityFeed() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-4">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6"
+          className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <motion.h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+            <motion.h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
               Recent Activities
             </motion.h1>
 
@@ -159,14 +159,14 @@ export default function AdminActivityFeed() {
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsNotifyModalOpen(true)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg shadow-md transition-all",
+                "flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2 rounded-lg shadow-md transition-all text-sm sm:text-base",
                 "bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white",
                 "hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600"
               )}
               aria-label="Notify customers"
             >
-              <FiBell className="text-lg" />
-              <span>Notify Customers</span>
+              <FiBell className="text-sm sm:text-base" />
+              <span>Notify</span>
             </motion.button>
           </div>
 
@@ -175,15 +175,15 @@ export default function AdminActivityFeed() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="mb-6 relative"
+            className="mb-4 relative"
           >
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <FiSearch className="text-gray-500 dark:text-gray-400" />
+              <FiSearch className="text-gray-500 dark:text-gray-400 text-sm" />
             </div>
             <input
               type="text"
               className={cn(
-                "block w-full pl-10 pr-3 py-2 rounded-lg shadow-sm focus:outline-none",
+                "block w-full pl-9 pr-3 py-2 rounded-lg shadow-sm focus:outline-none text-sm sm:text-base",
                 "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100",
                 "focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               )}
@@ -198,8 +198,8 @@ export default function AdminActivityFeed() {
           </motion.div>
 
           {isLoading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center py-6">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-indigo-600 dark:border-indigo-400"></div>
             </motion.div>
           )}
 
@@ -207,13 +207,13 @@ export default function AdminActivityFeed() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 dark:border-red-400 text-red-800 dark:text-red-200 p-4 mb-6 rounded"
+              className="bg-red-100 dark:bg-red-900/50 border-l-4 border-red-500 dark:border-red-400 text-red-800 dark:text-red-200 p-3 mb-4 rounded text-sm"
             >
               <p>{error}</p>
             </motion.div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             <AnimatePresence mode="popLayout">
               {activities.map((activity) => (
                 <motion.div
@@ -225,23 +225,23 @@ export default function AdminActivityFeed() {
                   exit="exit"
                   whileHover={{ y: -2 }}
                   className={cn(
-                    "bg-white dark:bg-gray-700 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-600",
+                    "bg-white dark:bg-gray-700 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-600",
                     "transition-all hover:shadow-md"
                   )}
                 >
-                  <div className="p-5">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+                  <div className="p-3 sm:p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
                         {actionIcons[activity.action]}
                       </div>
-                      <div className="flex-1">
-                        <div className="text-gray-900 dark:text-gray-100">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm sm:text-base text-gray-900 dark:text-gray-100 break-words">
                           {actionMessages[activity.action](
                             user?.id === activity.admin.id ? "You" : activity.admin.name || "Admin",
                             activity.details
                           )}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
                         </div>
                       </div>
@@ -255,7 +255,7 @@ export default function AdminActivityFeed() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-center py-12 text-gray-500 dark:text-gray-400"
+                className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm sm:text-base"
               >
                 {searchQuery ? "No activities match your search" : "No recent activities found"}
               </motion.div>
@@ -267,20 +267,20 @@ export default function AdminActivityFeed() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex justify-center mt-8"
+                className="flex justify-center mt-6"
               >
-                <nav className="flex items-center gap-2">
+                <nav className="flex items-center gap-1 sm:gap-2">
                   <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
                     className={cn(
-                      "px-3 py-1 rounded-md border text-sm",
+                      "px-2 py-1 sm:px-3 sm:py-1 rounded-md border text-xs sm:text-sm",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
                       "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
                     )}
                     aria-label="Previous page"
                   >
-                    Previous
+                    Prev
                   </button>
 
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
@@ -288,7 +288,7 @@ export default function AdminActivityFeed() {
                       key={page}
                       onClick={() => handlePageChange(page)}
                       className={cn(
-                        "px-3 py-1 rounded-md text-sm min-w-[2.5rem]",
+                        "px-2 py-1 sm:px-3 sm:py-1 rounded-md text-xs sm:text-sm min-w-[1.75rem] sm:min-w-[2.5rem]",
                         currentPage === page
                           ? "bg-indigo-600 dark:bg-indigo-500 text-white"
                           : "border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
@@ -303,7 +303,7 @@ export default function AdminActivityFeed() {
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className={cn(
-                      "px-3 py-1 rounded-md border text-sm",
+                      "px-2 py-1 sm:px-3 sm:py-1 rounded-md border text-xs sm:text-sm",
                       "disabled:opacity-50 disabled:cursor-not-allowed",
                       "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-indigo-50 dark:hover:bg-indigo-900"
                     )}
@@ -324,7 +324,7 @@ export default function AdminActivityFeed() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
             >
               <motion.div
                 variants={modalVariants}
@@ -335,7 +335,7 @@ export default function AdminActivityFeed() {
               >
                 <div
                   className={cn(
-                    "relative rounded-2xl shadow-xl overflow-hidden",
+                    "relative rounded-xl sm:rounded-2xl shadow-xl overflow-hidden",
                     "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
                   )}
                 >
@@ -343,9 +343,11 @@ export default function AdminActivityFeed() {
                   <div className="absolute -top-32 -left-32 w-64 h-64 bg-indigo-200/20 dark:bg-indigo-900/20 rounded-full filter blur-3xl"></div>
                   <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-200/20 dark:bg-purple-900/20 rounded-full filter blur-3xl"></div>
 
-                  <div className="relative z-10 p-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Notify Customers</h2>
+                  <div className="relative z-10 p-4 sm:p-6">
+                    <div className="flex justify-between items-center mb-3 sm:mb-4">
+                      <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+                        Notify Customers
+                      </h2>
                       <button
                         onClick={() => {
                           setIsNotifyModalOpen(false);
@@ -355,21 +357,23 @@ export default function AdminActivityFeed() {
                         className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         aria-label="Close modal"
                       >
-                        <FiX className="text-gray-500 dark:text-gray-400 text-xl" />
+                        <FiX className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl" />
                       </button>
                     </div>
 
-                    <p className="text-gray-600 dark:text-gray-300 mb-6">
+                    <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm sm:text-base">
                       Select an activity to notify your subscribers about
                     </p>
 
-                    <div className="mb-6">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <div className="mb-4 sm:mb-6">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 sm:mb-2">
                         Recent Activities
                       </label>
-                      <div className="max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
+                      <div className="max-h-[50vh] overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700">
                         {activities.length === 0 ? (
-                          <div className="p-4 text-center text-gray-500 dark:text-gray-400">No activities found</div>
+                          <div className="p-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                            No activities found
+                          </div>
                         ) : (
                           activities.map((activity) => (
                             <motion.div
@@ -377,7 +381,7 @@ export default function AdminActivityFeed() {
                               layout
                               onClick={() => setSelectedActivity(activity.id)}
                               className={cn(
-                                "p-4 border-b border-gray-200 dark:border-gray-600 last:border-b-0 cursor-pointer transition-colors",
+                                "p-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0 cursor-pointer transition-colors",
                                 "hover:bg-indigo-50/50 dark:hover:bg-indigo-900/50",
                                 selectedActivity === activity.id
                                   ? "bg-indigo-100/50 dark:bg-indigo-900/50 border-l-4 border-l-indigo-500 dark:border-l-indigo-400"
@@ -385,18 +389,18 @@ export default function AdminActivityFeed() {
                               )}
                               whileHover={{ scale: 1.01 }}
                             >
-                              <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
+                              <div className="flex items-center gap-2 sm:gap-3">
+                                <div className="p-1 sm:p-2 rounded-lg bg-gradient-to-br from-indigo-100/50 to-purple-100/50 dark:from-indigo-900/50 dark:to-purple-900/50">
                                   {actionIcons[activity.action]}
                                 </div>
-                                <div>
-                                  <div className="text-gray-900 dark:text-gray-100 line-clamp-1">
+                                <div className="min-w-0">
+                                  <div className="text-xs sm:text-sm text-gray-900 dark:text-gray-100 line-clamp-2">
                                     {actionMessages[activity.action](
                                       user?.id === activity.admin.id ? "You" : activity.admin.name || "Admin",
                                       activity.details
                                     )}
                                   </div>
-                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                                     {formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true })}
                                   </div>
                                 </div>
@@ -412,7 +416,7 @@ export default function AdminActivityFeed() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={cn(
-                          "p-3 rounded-lg mb-4",
+                          "p-2 sm:p-3 rounded-lg mb-3 text-xs sm:text-sm",
                           sendStatus.success
                             ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200"
                             : "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200"
@@ -422,7 +426,7 @@ export default function AdminActivityFeed() {
                       </motion.div>
                     )}
 
-                    <div className="flex justify-end gap-3 pt-4">
+                    <div className="flex justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -431,7 +435,7 @@ export default function AdminActivityFeed() {
                           setSelectedActivity(null);
                           setSendStatus(null);
                         }}
-                        className="px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                        className="px-3 py-1 sm:px-4 sm:py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-xs sm:text-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                         aria-label="Cancel"
                       >
                         Cancel
@@ -442,7 +446,7 @@ export default function AdminActivityFeed() {
                         onClick={handleNotifyCustomers}
                         disabled={!selectedActivity || isLoading}
                         className={cn(
-                          "px-4 py-2 rounded-lg text-white transition-colors",
+                          "px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm text-white transition-colors",
                           !selectedActivity || isLoading
                             ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
                             : "bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 hover:from-indigo-700 hover:to-purple-700 dark:hover:from-indigo-600 dark:hover:to-purple-600"
@@ -450,9 +454,9 @@ export default function AdminActivityFeed() {
                         aria-label="Send notifications"
                       >
                         {isLoading ? (
-                          <span className="flex items-center gap-2">
+                          <span className="flex items-center gap-1 sm:gap-2">
                             <svg
-                              className="animate-spin h-4 w-4 text-white"
+                              className="animate-spin h-3 w-3 sm:h-4 sm:w-4 text-white"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"

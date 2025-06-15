@@ -16,24 +16,37 @@ export default function CustomerStats({ customer, orders, addresses }: CustomerS
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div className="bg-white/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Spent</h3>
-        <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(totalSpent)}</p>
+    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+      {/* Total Spent */}
+      <div className="bg-white/50 dark:bg-gray-700/50 p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Spent</h3>
+        <p className="mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100">
+          {formatCurrency(totalSpent)}
+        </p>
       </div>
-      <div className="bg-white/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Orders</h3>
-        <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">{orders.length}</p>
+
+      {/* Orders */}
+      <div className="bg-white/50 dark:bg-gray-700/50 p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Orders</h3>
+        <p className="mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100">
+          {orders.length}
+        </p>
       </div>
-      <div className="bg-white/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Avg. Order Value</h3>
-        <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+
+      {/* Avg. Order Value */}
+      <div className="bg-white/50 dark:bg-gray-700/50 p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Avg. Order</h3>
+        <p className="mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100">
           {formatCurrency(averageOrderValue)}
         </p>
       </div>
-      <div className="bg-white/50 dark:bg-gray-700/50 p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
-        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</h3>
-        <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-gray-100">{totalItems}</p>
+
+      {/* Total Items */}
+      <div className="bg-white/50 dark:bg-gray-700/50 p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border border-gray-200/50 dark:border-gray-600/50 backdrop-blur-sm transition-colors">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</h3>
+        <p className="mt-1 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-semibold text-gray-900 dark:text-gray-100">
+          {totalItems}
+        </p>
       </div>
     </div>
   );

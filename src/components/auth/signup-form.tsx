@@ -40,12 +40,38 @@ const itemVariants = {
   },
 };
 
+// Optimized particle configuration for mobile
+const getStableParticles = () => {
+  return Array.from({ length: 15 }, (_, i) => {
+    // Reduced number of particles
+    const seed = (i * 16807) % 2147483647;
+    const random = (max: number, min = 0) => min + (seed % (max - min + 1));
+
+    return {
+      id: i,
+      width: random(10, 3), // Smaller particles
+      height: random(10, 3),
+      left: random(100),
+      top: random(100),
+      xAmplitude: random(20, 5), // Reduced movement range
+      yAmplitude: random(20, 5),
+      duration: random(20, 5), // Faster animation
+      delay: random(3, 0),
+    };
+  });
+};
+
 export function SignupForm() {
+  const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [particles] = useState(getStableParticles());
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -75,15 +101,17 @@ export function SignupForm() {
     specialChar: /[^A-Za-z0-9]/.test(password || ""),
   };
 
-  // Update optimistic validity when checkbox changes
   const handleTermsChange = (checked: boolean) => {
     setValue("acceptTerms", checked);
     setOptimisticIsValid(checked);
     trigger("acceptTerms");
   };
 
-  // Combine actual validation with optimistic state
   const displayIsValid = optimisticIsValid || isValid;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (password || confirmPassword) {
@@ -173,83 +201,112 @@ export function SignupForm() {
     signIn(provider, { callbackUrl: "/home" });
   };
 
+  if (!mounted) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <Icons.spinner className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Animated Gradient Background */}
+      {/* Simplified Background for Mobile */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div
+        <motion.div
           className={cn(
-            "absolute -left-20 -top-20 h-96 w-96 rounded-full blur-3xl opacity-20 animate-float",
+            "absolute -left-10 -top-10 h-48 w-48 sm:h-64 sm:w-64 rounded-full blur-xl opacity-20",
             isDark ? "bg-indigo-900" : "bg-indigo-200"
           )}
-        ></div>
-        <div
+          animate={{
+            y: [0, -10, 0],
+            rotate: [0, 5, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
           className={cn(
-            "absolute -right-20 -bottom-20 h-96 w-96 rounded-full blur-3xl opacity-20 animate-float animation-delay-2000",
+            "absolute -right-10 -bottom-10 h-48 w-48 sm:h-64 sm:w-64 rounded-full blur-xl opacity-20",
             isDark ? "bg-purple-900" : "bg-purple-200"
           )}
-        ></div>
-        <div
-          className={cn(
-            "absolute left-1/2 top-1/4 h-64 w-64 rounded-full blur-3xl opacity-15 animate-float animation-delay-4000",
-            isDark ? "bg-pink-900" : "bg-pink-200"
-          )}
-        ></div>
+          animate={{
+            y: [0, -10, 0],
+            rotate: [0, 5, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        />
       </div>
 
-      {/* Floating Particles */}
+      {/* Optimized Particles for Mobile */}
       <div className="fixed inset-0 -z-10 pointer-events-none">
-        {[...Array(30)].map((_, i) => (
+        {particles.map((particle) => (
           <motion.div
-            key={i}
+            key={particle.id}
+            initial={{ opacity: 0 }}
             animate={{
-              x: [0, Math.random() * 100 - 50],
-              y: [0, Math.random() * 100 - 50],
+              x: [0, particle.xAmplitude, 0],
+              y: [0, particle.yAmplitude, 0],
               rotate: [0, 360],
+              opacity: [0, 0.8, 0],
             }}
             transition={{
-              duration: Math.random() * 20 + 10,
+              duration: particle.duration,
               repeat: Infinity,
               repeatType: "reverse",
               ease: "linear",
+              delay: particle.delay,
             }}
-            className={cn(
-              "absolute rounded-full",
-              isDark ? "bg-indigo-700/20 blur-[1px]" : "bg-indigo-400/30 blur-[1px]"
-            )}
+            className={cn("absolute rounded-full", isDark ? "bg-indigo-700/20" : "bg-indigo-400/30")}
             style={{
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              width: `${particle.width}px`,
+              height: `${particle.height}px`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
             }}
           />
         ))}
       </div>
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center p-4">
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-2 sm:p-4">
         <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
           className={cn(
-            "w-full max-w-md rounded-2xl p-8 shadow-xl backdrop-blur-lg",
+            "w-full max-w-sm sm:max-w-md rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg backdrop-blur-sm",
             isDark ? "bg-gray-950/90 border-gray-800" : "bg-white border-gray-200",
             "text-gray-900 dark:text-gray-50"
           )}
         >
           {/* Logo/Branding Area */}
-          <motion.div variants={itemVariants} className="mb-8 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-indigo-700 to-purple-700 p-2">
-              <Icons.logo className="h-10 w-10 text-white" />
+          <motion.div variants={itemVariants} className="mb-6 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-gradient-to-r from-indigo-700 to-purple-700 p-2">
+              <Icons.logo className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Create Your Account</h1>
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">Join us today and unlock amazing features</p>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+              Create Your Account
+            </h1>
+            <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+              Join us today and unlock amazing features
+            </p>
           </motion.div>
 
-          <motion.form variants={containerVariants} onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <motion.form
+            variants={containerVariants}
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-3 sm:space-y-4"
+          >
             <motion.div variants={itemVariants}>
-              <Label htmlFor="name" className="text-gray-800 dark:text-gray-200">
+              <Label htmlFor="name" className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">
                 Full name
               </Label>
               <Input
@@ -257,15 +314,17 @@ export function SignupForm() {
                 placeholder="John Doe"
                 {...register("name")}
                 className={cn(
-                  "mt-1 border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
+                  "mt-1 h-10 sm:h-11 text-sm border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
                   isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
                 )}
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>}
+              {errors.name && (
+                <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">{errors.name.message}</p>
+              )}
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Label htmlFor="email" className="text-gray-800 dark:text-gray-200">
+              <Label htmlFor="email" className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">
                 Email address
               </Label>
               <Input
@@ -274,29 +333,40 @@ export function SignupForm() {
                 placeholder="you@example.com"
                 {...register("email")}
                 className={cn(
-                  "mt-1 border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
+                  "mt-1 h-10 sm:h-11 text-sm border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
                   isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
                 )}
               />
-              {errors.email && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+              )}
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Label htmlFor="password" className="text-gray-800 dark:text-gray-200">
+              <Label htmlFor="password" className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">
                 Password
               </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                {...register("password")}
-                className={cn(
-                  "mt-1 border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
-                  isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
-                )}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  {...register("password")}
+                  className={cn(
+                    "mt-1 h-10 sm:h-11 text-sm border-gray-400 focus:border-indigo-600 focus:ring-indigo-600 pr-10",
+                    isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
+                  )}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <Icons.eyeOff className="h-4 w-4" /> : <Icons.eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+                <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
               )}
               {password && (
                 <div className="mt-2 space-y-1 text-xs">
@@ -306,7 +376,7 @@ export function SignupForm() {
                       <li key={key} className="flex items-center">
                         <span
                           className={cn(
-                            "mr-2 inline-block h-4 w-4 rounded-full",
+                            "mr-2 inline-block h-3 w-3 rounded-full",
                             isValid ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
                           )}
                         />
@@ -329,44 +399,55 @@ export function SignupForm() {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <Label htmlFor="confirmPassword" className="text-gray-800 dark:text-gray-200">
+              <Label htmlFor="confirmPassword" className="text-xs sm:text-sm text-gray-800 dark:text-gray-200">
                 Confirm password
               </Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                {...register("confirmPassword")}
-                className={cn(
-                  "mt-1 border-gray-400 focus:border-indigo-600 focus:ring-indigo-600",
-                  isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
-                )}
-              />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  {...register("confirmPassword")}
+                  className={cn(
+                    "mt-1 h-10 sm:h-11 text-sm border-gray-400 focus:border-indigo-600 focus:ring-indigo-600 pr-10",
+                    isDark && "bg-gray-900 border-gray-700 text-white placeholder-gray-400"
+                  )}
+                />
+                <button
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? <Icons.eyeOff className="h-4 w-4" /> : <Icons.eye className="h-4 w-4" />}
+                </button>
+              </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-xs sm:text-sm text-red-600 dark:text-red-400">
+                  {errors.confirmPassword.message}
+                </p>
               )}
               {confirmPassword && password === confirmPassword && !errors.confirmPassword && (
-                <p className="mt-1 text-sm text-green-600 dark:text-green-400">Passwords match</p>
+                <p className="mt-1 text-xs sm:text-sm text-green-600 dark:text-green-400">Passwords match</p>
               )}
             </motion.div>
 
-            <motion.div variants={itemVariants} className="pt-2">
+            <motion.div variants={itemVariants} className="pt-1 sm:pt-2">
               <div className="flex items-start space-x-2">
                 <Checkbox
                   id="terms"
                   checked={acceptTerms}
                   onCheckedChange={(checked) => handleTermsChange(checked === true)}
                   className={cn(
-                    "mt-0.5",
+                    "mt-0.5 h-4 w-4 sm:h-5 sm:w-5",
                     isDark
                       ? "data-[state=checked]:bg-indigo-500 data-[state=checked]:border-indigo-500"
                       : "data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
                   )}
                 />
-                <div className="grid gap-1.5 leading-none">
+                <div className="grid gap-1 leading-none">
                   <Label
                     htmlFor="terms"
-                    className={cn("text-sm font-normal leading-none", "text-gray-800 dark:text-gray-200")}
+                    className={cn("text-xs sm:text-sm font-normal leading-none", "text-gray-800 dark:text-gray-200")}
                   >
                     I agree to the{" "}
                     <Link
@@ -377,7 +458,7 @@ export function SignupForm() {
                       )}
                       target="_blank"
                     >
-                      Terms of Service
+                      Terms
                     </Link>{" "}
                     and{" "}
                     <Link
@@ -392,7 +473,7 @@ export function SignupForm() {
                     </Link>
                   </Label>
                   {errors.acceptTerms && (
-                    <p className="text-sm text-red-600 dark:text-red-400">{errors.acceptTerms.message}</p>
+                    <p className="text-xs sm:text-sm text-red-600 dark:text-red-400">{errors.acceptTerms.message}</p>
                   )}
                 </div>
               </div>
@@ -403,27 +484,29 @@ export function SignupForm() {
                 type="submit"
                 disabled={!displayIsValid || isLoading}
                 className={cn(
-                  "w-full bg-gradient-to-r from-indigo-700 to-purple-700 hover:from-indigo-800 hover:to-purple-800",
+                  "w-full h-10 sm:h-11 text-sm sm:text-base bg-gradient-to-r from-indigo-700 to-purple-700 hover:from-indigo-800 hover:to-purple-800",
                   "text-white shadow-lg transition-all duration-300 hover:shadow-indigo-500/20",
                   "focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-950"
                 )}
-                size="lg"
               >
-                {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                {isLoading && <Icons.spinner className="mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />}
                 Create account
               </Button>
             </motion.div>
           </motion.form>
 
-          {/* OAuth Section - Centered and Improved */}
-          <motion.div variants={itemVariants} className="relative my-6">
+          {/* OAuth Section */}
+          <motion.div variants={itemVariants} className="relative my-4 sm:my-6">
             <div className="relative flex items-center justify-center">
               <div className="absolute inset-0 flex items-center">
                 <div className={cn("w-full border-t", isDark ? "border-gray-800" : "border-gray-300")}></div>
               </div>
               <div className="relative px-2">
                 <span
-                  className={cn("text-sm px-2", isDark ? "text-gray-400 bg-gray-950/90" : "text-gray-600 bg-white")}
+                  className={cn(
+                    "text-xs sm:text-sm px-2",
+                    isDark ? "text-gray-400 bg-gray-950/90" : "text-gray-600 bg-white"
+                  )}
                 >
                   OR CONTINUE WITH
                 </span>
@@ -431,15 +514,15 @@ export function SignupForm() {
             </div>
           </motion.div>
 
-          {/* Centered OAuth Buttons */}
-          <motion.div variants={containerVariants} className="flex flex-col sm:flex-row gap-3 justify-center">
-            <motion.div variants={itemVariants} className="w-full sm:w-auto">
+          {/* Stacked OAuth Buttons on Mobile */}
+          <motion.div variants={containerVariants} className="flex flex-col gap-2 sm:gap-3">
+            <motion.div variants={itemVariants}>
               <Button
                 variant="outline"
                 type="button"
                 onClick={() => handleOAuth("google")}
                 className={cn(
-                  "w-full flex items-center justify-center gap-2",
+                  "w-full h-10 sm:h-11 flex items-center justify-center gap-2 text-xs sm:text-sm",
                   isDark
                     ? "border-gray-700 bg-gray-900 hover:bg-gray-800 text-gray-200"
                     : "border-gray-300 hover:bg-gray-50 text-gray-800",
@@ -447,17 +530,17 @@ export function SignupForm() {
                 )}
                 disabled={isLoading}
               >
-                <Icons.google className="h-5 w-5" />
+                <Icons.google className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>Google</span>
               </Button>
             </motion.div>
-            <motion.div variants={itemVariants} className="w-full sm:w-auto">
+            <motion.div variants={itemVariants}>
               <Button
                 variant="outline"
                 type="button"
                 onClick={() => handleOAuth("github")}
                 className={cn(
-                  "w-full flex items-center justify-center gap-2",
+                  "w-full h-10 sm:h-11 flex items-center justify-center gap-2 text-xs sm:text-sm",
                   isDark
                     ? "border-gray-700 bg-gray-900 hover:bg-gray-800 text-gray-200"
                     : "border-gray-300 hover:bg-gray-50 text-gray-800",
@@ -465,7 +548,7 @@ export function SignupForm() {
                 )}
                 disabled={isLoading}
               >
-                <Icons.github className="h-5 w-5" />
+                <Icons.github className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>GitHub</span>
               </Button>
             </motion.div>
@@ -473,7 +556,7 @@ export function SignupForm() {
 
           <motion.p
             variants={itemVariants}
-            className={cn("mt-8 text-center text-sm", "text-gray-700 dark:text-gray-300")}
+            className={cn("mt-6 text-center text-xs sm:text-sm", "text-gray-700 dark:text-gray-300")}
           >
             Already have an account?{" "}
             <Link
@@ -488,28 +571,6 @@ export function SignupForm() {
           </motion.p>
         </motion.div>
       </div>
-
-      {/* Add this to your global CSS */}
-      <style jsx global>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0) rotate(0deg);
-          }
-          50% {
-            transform: translateY(-20px) rotate(5deg);
-          }
-        }
-        .animate-float {
-          animation: float 12s ease-in-out infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 }

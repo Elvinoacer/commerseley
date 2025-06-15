@@ -22,7 +22,6 @@ export default function CustomersPage() {
   const [localError, setLocalError] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  // Fetch customers on mount and when pagination changes
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
@@ -38,7 +37,6 @@ export default function CustomersPage() {
     fetchCustomers();
   }, [getAllCustomers, pagination.currentPage, pagination.itemsPerPage]);
 
-  // Memoized filtered customers based on search term
   const filteredCustomers = useMemo(() => {
     if (!searchTerm.trim()) return storeCustomers;
 
@@ -62,13 +60,13 @@ export default function CustomersPage() {
   const handleItemsPerPageChange = (newLimit: number) => {
     setPagination({
       itemsPerPage: newLimit,
-      currentPage: 1, // Reset to first page when changing items per page
+      currentPage: 1,
     });
   };
 
   const renderPaginationButtons = () => {
     const buttons = [];
-    const maxVisiblePages = 5;
+    const maxVisiblePages = 3; // Reduced for mobile
     let startPage, endPage;
 
     if (pagination.totalPages <= maxVisiblePages) {
@@ -96,7 +94,7 @@ export default function CustomersPage() {
           key={i}
           variant={pagination.currentPage === i ? "default" : "outline"}
           size="sm"
-          className={`w-10 h-10 p-0 ${
+          className={`w-8 h-8 md:w-10 md:h-10 p-0 ${
             pagination.currentPage === i
               ? "bg-indigo-600 dark:bg-indigo-500 text-white"
               : "text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
@@ -112,24 +110,23 @@ export default function CustomersPage() {
     return buttons;
   };
 
-  // Combine store error and local error
   const error = storeError || localError;
 
   if (isInitialLoad || isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
+        <div className="animate-spin rounded-full h-8 w-8 md:h-12 md:w-12 border-t-2 border-b-2 border-indigo-500 dark:border-indigo-400"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-400 text-red-700 dark:text-red-200 rounded-lg">
-        <p>Error: {error}</p>
+      <div className="p-4 bg-red-100 dark:bg-red-900/50 border border-red-400 dark:border-red-400 text-red-700 dark:text-red-200 rounded-lg max-w-md mx-auto mt-8">
+        <p className="text-sm md:text-base">Error: {error}</p>
         <Button
           onClick={() => window.location.reload()}
-          className="mt-2 px-4 py-2 bg-red-500 dark:bg-red-400 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-500"
+          className="mt-2 px-3 py-1.5 md:px-4 md:py-2 bg-red-500 dark:bg-red-400 text-white rounded-lg hover:bg-red-600 dark:hover:bg-red-500 text-sm md:text-base"
           aria-label="Retry loading customers"
         >
           Retry
@@ -143,34 +140,40 @@ export default function CustomersPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-6"
+      className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-4 md:p-6"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6">
-          <div className="mb-8">
-            <h1 className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
+        <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-xl md:rounded-2xl shadow-lg md:shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-4 md:p-6">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent">
               Customers
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 mt-2">Manage your e-commerce customers</p>
+            <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mt-1 md:mt-2">
+              Manage your e-commerce customers
+            </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <SearchFilter onSearch={handleSearch} />
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 dark:text-gray-300">Items per page</span>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 md:gap-4 mb-4 md:mb-6">
+            <div className="w-full sm:w-auto">
+              <SearchFilter onSearch={handleSearch} />
+            </div>
+            <div className="flex justify-end items-center gap-2 w-full sm:w-auto">
+              <span className="text-xs md:text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                Items per page
+              </span>
               <Select
                 value={pagination.itemsPerPage.toString()}
                 onValueChange={(value) => handleItemsPerPageChange(Number(value))}
               >
-                <SelectTrigger className="h-8 w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100">
+                <SelectTrigger className="h-8 w-[70px] md:w-[80px] bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-xs md:text-sm">
                   <SelectValue placeholder={pagination.itemsPerPage} />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600">
+                <SelectContent className="bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-xs md:text-sm">
                   {[5, 10, 20, 50].map((size) => (
                     <SelectItem
                       key={size}
                       value={size.toString()}
-                      className="text-gray-900 dark:text-gray-100 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                      className="hover:bg-indigo-50 dark:hover:bg-indigo-900"
                     >
                       {size}
                     </SelectItem>
@@ -186,23 +189,22 @@ export default function CustomersPage() {
 
           {/* Pagination Controls */}
           {pagination.totalItems > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
-              <div className="text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 md:gap-4 mt-4 md:mt-6">
+              <div className="text-xs md:text-sm text-gray-600 dark:text-gray-300">
                 Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
                 {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
                 {pagination.totalItems} customers
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1}
-                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 h-8 w-8 p-0"
                   aria-label="Previous page"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  <span className="sr-only">Previous</span>
                 </Button>
 
                 {renderPaginationButtons()}
@@ -212,11 +214,10 @@ export default function CustomersPage() {
                   size="sm"
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages}
-                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                  className="text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 h-8 w-8 p-0"
                   aria-label="Next page"
                 >
                   <ChevronRight className="h-4 w-4" />
-                  <span className="sr-only">Next</span>
                 </Button>
               </div>
             </div>

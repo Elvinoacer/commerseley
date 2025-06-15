@@ -209,40 +209,42 @@ function SuperAdminManageProductPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
+    <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900">
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="max-w-7xl mx-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
+        className="max-w-7xl mx-auto bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-xl md:shadow-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50"
       >
         <motion.header
           variants={itemVariants}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 p-8 text-white"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-800 dark:to-purple-800 p-6 md:p-8 text-white"
         >
-          <h1 className="text-3xl font-extrabold tracking-tight">{isEditMode ? "Edit Product" : "Add New Product"}</h1>
-          <p className="mt-2 text-indigo-100 dark:text-indigo-200 text-sm">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
+            {isEditMode ? "Edit Product" : "Add New Product"}
+          </h1>
+          <p className="mt-1 md:mt-2 text-indigo-100 dark:text-indigo-200 text-sm">
             Fill out the details below to {isEditMode ? "update" : "create"} your product.
           </p>
         </motion.header>
 
-        <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-8">
+        <form onSubmit={handleFormSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 p-4 md:p-8">
           {/* Left Column - Images and Basic Info */}
-          <motion.div variants={itemVariants} className="space-y-8">
+          <motion.div variants={itemVariants} className="space-y-6 md:space-y-8">
             {isEditMode ? null : (
               <motion.div
                 variants={colorButtonVariants}
                 whileHover="hover"
                 whileTap="tap"
                 className={cn(
-                  "w-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-10",
+                  "w-full flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 md:p-10",
                   "border-indigo-200 bg-indigo-50/50 hover:bg-indigo-100/50 dark:border-indigo-700 dark:bg-indigo-900/50 dark:hover:bg-indigo-800/50",
                   "transition-all duration-300 shadow-sm"
                 )}
               >
                 <div className="text-center">
-                  <Upload className="mx-auto h-16 w-16 text-indigo-500 dark:text-indigo-400" />
-                  <div className="mt-4 flex text-sm leading-6 text-gray-600 dark:text-gray-300">
+                  <Upload className="mx-auto h-12 w-12 md:h-16 md:w-16 text-indigo-500 dark:text-indigo-400" />
+                  <div className="mt-3 md:mt-4 flex flex-col sm:flex-row text-sm leading-6 text-gray-600 dark:text-gray-300 justify-center items-center">
                     <Label className="cursor-pointer">
                       <span className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors">
                         Upload images
@@ -256,12 +258,16 @@ function SuperAdminManageProductPage() {
                         aria-label="Upload product images"
                       />
                     </Label>
-                    <p className="pl-1">or drag and drop</p>
+                    <p className="sm:pl-1 mt-1 sm:mt-0">or drag and drop</p>
                   </div>
                   <p className="text-xs leading-5 text-gray-500 dark:text-gray-400 mt-1">PNG, JPG, GIF up to 10MB</p>
                 </div>
                 {selectedfiles.length > 0 && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 grid grid-cols-3 gap-4">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 md:mt-6 grid grid-cols-3 gap-2 md:gap-4"
+                  >
                     {selectedfiles.map((file, index) => (
                       <motion.div
                         key={index}
@@ -274,7 +280,7 @@ function SuperAdminManageProductPage() {
                           alt={`Preview ${index + 1}`}
                           width={100}
                           height={100}
-                          className="h-24 w-24 object-cover rounded-lg"
+                          className="h-20 w-20 md:h-24 md:w-24 object-cover rounded-lg"
                         />
                       </motion.div>
                     ))}
@@ -283,7 +289,7 @@ function SuperAdminManageProductPage() {
               </motion.div>
             )}
 
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="space-y-4 md:space-y-6">
               <div>
                 <Label className="text-gray-700 dark:text-gray-200 font-medium">
                   Product Name<span className="text-red-500">*</span>
@@ -291,7 +297,7 @@ function SuperAdminManageProductPage() {
                 <Input
                   name="name"
                   placeholder="Enter product name"
-                  className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   onChange={handleInputChange}
                   value={formState.name}
                   required
@@ -306,7 +312,7 @@ function SuperAdminManageProductPage() {
                 <Input
                   name="brand"
                   placeholder="Enter brand name"
-                  className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   onChange={handleInputChange}
                   value={formState.brand}
                   required
@@ -315,7 +321,7 @@ function SuperAdminManageProductPage() {
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-2 md:mb-3">
                   <Label className="text-gray-700 dark:text-gray-200 font-medium">SKUs (Optional)</Label>
                   <Button
                     type="button"
@@ -334,17 +340,17 @@ function SuperAdminManageProductPage() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="flex gap-3 items-center mb-3"
+                    className="flex gap-2 md:gap-3 items-center mb-2 md:mb-3"
                   >
                     <Input
-                      placeholder="SKU Key (e.g., Size)"
+                      placeholder="SKU Key"
                       value={sku.key}
                       onChange={(e) => handleSkuChange(index, "key", e.target.value)}
                       className="rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                       aria-label={`SKU key ${index + 1}`}
                     />
                     <Input
-                      placeholder="SKU Value (e.g., M123)"
+                      placeholder="SKU Value"
                       value={sku.value}
                       onChange={(e) => handleSkuChange(index, "value", e.target.value)}
                       className="rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -370,7 +376,7 @@ function SuperAdminManageProductPage() {
                 </Label>
                 <Textarea
                   name="description"
-                  className="mt-2 min-h-[160px] rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="mt-1 md:mt-2 min-h-[120px] md:min-h-[160px] rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="Describe your product"
                   onChange={handleInputChange}
                   value={formState.description}
@@ -382,8 +388,8 @@ function SuperAdminManageProductPage() {
           </motion.div>
 
           {/* Right Column - Product Details */}
-          <motion.div variants={itemVariants} className="space-y-8">
-            <motion.div variants={itemVariants} className="space-y-6">
+          <motion.div variants={itemVariants} className="space-y-6 md:space-y-8">
+            <motion.div variants={itemVariants} className="space-y-4 md:space-y-6">
               <div>
                 <Label className="text-gray-700 dark:text-gray-200 font-medium">
                   Category<span className="text-red-500">*</span>
@@ -394,7 +400,7 @@ function SuperAdminManageProductPage() {
                   required
                   aria-required="true"
                 >
-                  <SelectTrigger className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  <SelectTrigger className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Select Category">
                       {categories.find((c) => c.id === formState.categoryId)?.name || "Select Category"}
                     </SelectValue>
@@ -427,7 +433,7 @@ function SuperAdminManageProductPage() {
                   onValueChange={(value) => handleSelectChange("gender", value)}
                   name="gender"
                 >
-                  <SelectTrigger className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                  <SelectTrigger className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Select Gender (Optional)" />
                   </SelectTrigger>
                   <SelectContent className="bg-white dark:bg-gray-700 rounded-lg shadow-lg">
@@ -451,7 +457,7 @@ function SuperAdminManageProductPage() {
                 <Label className="text-gray-700 dark:text-gray-200 font-medium">
                   Size<span className="text-red-500">*</span>
                 </Label>
-                <div className="mt-2 flex flex-wrap gap-3">
+                <div className="mt-1 md:mt-2 flex flex-wrap gap-2 md:gap-3">
                   {sizes.map((item) => (
                     <motion.button
                       key={item}
@@ -461,7 +467,7 @@ function SuperAdminManageProductPage() {
                       whileHover="hover"
                       whileTap="tap"
                       className={cn(
-                        "px-4 py-2 text-sm font-medium rounded-full border transition-all duration-200",
+                        "px-3 py-1.5 text-xs md:text-sm font-medium rounded-full border transition-all duration-200",
                         selectedSizes.includes(item)
                           ? "bg-indigo-600 text-white border-indigo-600 shadow-sm dark:bg-indigo-500 dark:border-indigo-500"
                           : "bg-white text-gray-700 border-gray-200 hover:bg-indigo-50 hover:border-indigo-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-indigo-900 dark:hover:border-indigo-700"
@@ -476,7 +482,7 @@ function SuperAdminManageProductPage() {
               </div>
 
               <div>
-                <div className="flex justify-between items-center mb-3">
+                <div className="flex justify-between items-center mb-2 md:mb-3">
                   <Label className="text-gray-700 dark:text-gray-200 font-medium">
                     Colors<span className="text-red-500">*</span>
                   </Label>
@@ -498,9 +504,9 @@ function SuperAdminManageProductPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="mt-3 p-5 bg-indigo-50/50 dark:bg-indigo-900/50 rounded-xl shadow-sm"
+                      className="mt-2 md:mt-3 p-4 md:p-5 bg-indigo-50/50 dark:bg-indigo-900/50 rounded-xl shadow-sm"
                     >
-                      <div className="mb-4">
+                      <div className="mb-3 md:mb-4">
                         <Label className="block mb-1 text-gray-700 dark:text-gray-200 font-medium">Color Name</Label>
                         <Input
                           value={customColorName}
@@ -511,22 +517,30 @@ function SuperAdminManageProductPage() {
                           aria-required="true"
                         />
                       </div>
-                      <HexColorPicker color={customColor} onChange={setCustomColor} />
-                      <div className="mt-4 flex justify-between items-center">
+                      <div className="flex justify-center">
+                        <HexColorPicker
+                          color={customColor}
+                          onChange={setCustomColor}
+                          style={{ width: "100%", maxWidth: "250px" }}
+                        />
+                      </div>
+                      <div className="mt-3 md:mt-4 flex flex-col sm:flex-row justify-between items-center gap-2">
                         <div className="flex items-center">
                           <div
-                            className="w-8 h-8 rounded-full mr-3 border border-gray-200 dark:border-gray-600 shadow-sm"
+                            className="w-6 h-6 md:w-8 md:h-8 rounded-full mr-2 md:mr-3 border border-gray-200 dark:border-gray-600 shadow-sm"
                             style={{ backgroundColor: customColor }}
                             aria-label="Selected color preview"
                           />
-                          <span className="text-gray-600 dark:text-gray-300 font-medium">{customColor}</span>
+                          <span className="text-sm md:text-base text-gray-600 dark:text-gray-300 font-medium">
+                            {customColor}
+                          </span>
                         </div>
                         <Button
                           type="button"
                           size="sm"
                           onClick={addCustomColor}
                           disabled={!customColorName}
-                          className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg"
+                          className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white rounded-lg w-full sm:w-auto"
                           aria-label="Add color"
                         >
                           Add Color
@@ -536,7 +550,7 @@ function SuperAdminManageProductPage() {
                   )}
                 </AnimatePresence>
 
-                <div className="mt-3 flex flex-wrap gap-4">
+                <div className="mt-2 md:mt-3 flex flex-wrap gap-3 md:gap-4">
                   {selectedColors.map((color) => (
                     <motion.div
                       key={color.name}
@@ -546,31 +560,31 @@ function SuperAdminManageProductPage() {
                     >
                       <button
                         type="button"
-                        className="h-10 w-10 rounded-full ring-2 ring-indigo-300 dark:ring-indigo-600 ring-offset-2 shadow-sm"
+                        className="h-8 w-8 md:h-10 md:w-10 rounded-full ring-2 ring-indigo-300 dark:ring-indigo-600 ring-offset-1 md:ring-offset-2 shadow-sm"
                         style={{ backgroundColor: color.hex.startsWith("#") ? color.hex : `#${color.hex}` }}
                         aria-label={`Color ${color.name}`}
                       />
-                      <span className="mt-2 text-sm text-gray-600 dark:text-gray-300 font-medium truncate max-w-[100px]">
+                      <span className="mt-1 md:mt-2 text-xs md:text-sm text-gray-600 dark:text-gray-300 font-medium truncate max-w-[80px] md:max-w-[100px]">
                         {color.name}
                       </span>
                       <button
                         type="button"
                         onClick={(e) => removeColor(color.name, e)}
                         className={cn(
-                          "absolute -top-2 -right-2 rounded-full p-1",
+                          "absolute -top-1 -right-1 md:-top-2 md:-right-2 rounded-full p-0.5 md:p-1",
                           "bg-red-500 text-white shadow-sm dark:bg-red-400 dark:text-gray-900",
                           "opacity-0 group-hover:opacity-100 transition-all duration-200"
                         )}
                         aria-label={`Remove color ${color.name}`}
                       >
-                        <X className="h-3 w-3" />
+                        <X className="h-2 w-2 md:h-3 md:w-3" />
                       </button>
                     </motion.div>
                   ))}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 <div>
                   <Label className="text-gray-700 dark:text-gray-200 font-medium">
                     Price<span className="text-red-500">*</span>
@@ -580,7 +594,7 @@ function SuperAdminManageProductPage() {
                     type="number"
                     min="0"
                     step="0.01"
-                    className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="Enter price"
                     value={formState.price}
                     onChange={handleInputChange}
@@ -597,7 +611,7 @@ function SuperAdminManageProductPage() {
                     name="stock"
                     type="number"
                     min="0"
-                    className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="Enter stock"
                     value={formState.stock}
                     onChange={handleInputChange}
@@ -607,8 +621,8 @@ function SuperAdminManageProductPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
+              <div className="space-y-2 md:space-y-3">
+                <div className="flex items-center space-x-2 md:space-x-3">
                   <Switch
                     id="offer-toggle"
                     checked={formState.isOnOffer}
@@ -635,7 +649,7 @@ function SuperAdminManageProductPage() {
                         type="number"
                         min="0"
                         step="0.01"
-                        className="mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="mt-1 md:mt-2 rounded-lg border-gray-200 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         placeholder="Enter offer price"
                         value={formState.offerPrice}
                         onChange={handleInputChange}
@@ -646,11 +660,11 @@ function SuperAdminManageProductPage() {
               </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="pt-6">
+            <motion.div variants={itemVariants} className="pt-4 md:pt-6">
               <Button
                 disabled={isLoading}
                 type="submit"
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white font-semibold rounded-lg py-6 shadow-lg transition-all duration-300"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white font-semibold rounded-lg py-4 md:py-6 shadow-lg transition-all duration-300"
                 aria-label={isEditMode ? "Update product" : "Create product"}
               >
                 {isEditMode

@@ -3,17 +3,17 @@ const { PrismaClient } = require("../src/generated/prisma");
 const bcrypt = require("bcryptjs");
 const prisma = new PrismaClient();
 async function main() {
-  const email = "admin@gmail.com";
-  const password = "123456";
-  const name = "Elvin";
+  const email = "omondielvin@gmail.com";
+  const password = "15032003@Elvino";
+  const name = "Elvinoacer";
 
-  const existingSuperAdmin = await prisma.user.findFirst({
-    where: { role: "SUPER_ADMIN" },
-  });
+  // const existingSuperAdmin = await prisma.user.findFirst({
+  //   where: { role: "SUPER_ADMIN" },
+  // });
 
-  if (existingSuperAdmin) {
-    return;
-  }
+  // if (existingSuperAdmin) {
+  //   return;
+  // }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const superAdminUser = await prisma.user.create({

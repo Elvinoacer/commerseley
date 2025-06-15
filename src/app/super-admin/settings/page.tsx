@@ -199,48 +199,51 @@ function SuperAdminCouponsPage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen p-4 sm:p-6 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900"
+      className="min-h-screen p-4 bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div
           variants={itemVariants}
-          className="flex flex-col gap-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 sm:p-8"
+          className="flex flex-col gap-6 bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-xl shadow-lg border border-gray-200/50 dark:border-gray-700/50 p-4 sm:p-6"
         >
-          <header className="flex items-center justify-between">
+          <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <motion.h1
               variants={itemVariants}
-              className="text-3xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent"
+              className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 bg-clip-text text-transparent"
             >
               Settings & Features
             </motion.h1>
           </header>
 
-          <div className="space-y-10">
+          <div className="space-y-8">
             {/* Banner Management Section */}
-            <motion.section variants={itemVariants} className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Banner Management</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+            <motion.section variants={itemVariants} className="space-y-4">
+              <div className="space-y-1">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">Banner Management</h2>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   Upload and manage homepage banners (recommended size: 1200x400px)
                 </p>
               </div>
 
               {/* Upload New Banners */}
-              <div className="space-y-4">
-                <Label htmlFor="image-upload" className="text-sm font-medium text-gray-700 dark:text-gray-200">
+              <div className="space-y-3">
+                <Label
+                  htmlFor="image-upload"
+                  className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200"
+                >
                   Upload New Banners
                 </Label>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center">
                   <Label
                     htmlFor="image-upload"
                     className={cn(
-                      "flex items-center justify-center w-full h-40 px-4 transition border-2 border-dashed rounded-xl cursor-pointer",
+                      "flex items-center justify-center w-full h-32 sm:h-40 px-4 transition border-2 border-dashed rounded-lg cursor-pointer",
                       "border-indigo-200 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-900/50 hover:bg-indigo-100/50 dark:hover:bg-indigo-800/50"
                     )}
                   >
-                    <div className="flex flex-col items-center space-y-2">
-                      <Upload className="h-8 w-8 text-indigo-500 dark:text-indigo-400" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <div className="flex flex-col items-center space-y-1 sm:space-y-2">
+                      <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-500 dark:text-indigo-400" />
+                      <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 text-center">
                         Drag & drop images or click to browse
                       </span>
                       <span className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG up to 5MB each</span>
@@ -262,31 +265,33 @@ function SuperAdminCouponsPage() {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
-                    className="mt-4"
+                    className="mt-3"
                   >
-                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">New Banners to Upload</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                      New Banners to Upload
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       {uploadedFiles.map((file, index) => (
                         <motion.div
                           key={index}
                           variants={cardHoverVariants}
-                          className="relative group rounded-lg overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
+                          className="relative group rounded-md overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
                           whileHover="hover"
                           whileTap="tap"
                         >
                           <img
                             src={URL.createObjectURL(file)}
                             alt={`Uploaded image ${index + 1}`}
-                            className="w-full h-40 object-cover"
+                            className="w-full h-28 sm:h-32 object-cover"
                           />
                           <Button
                             variant="destructive"
                             size="icon"
                             onClick={() => removeImage(index)}
-                            className="absolute top-2 right-2 bg-red-500 dark:bg-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-1 right-1 sm:top-2 sm:right-2 h-6 w-6 sm:h-8 sm:w-8 bg-red-500 dark:bg-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                             aria-label={`Remove banner ${index + 1}`}
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3 w-3 sm:h-4 sm:w-4" />
                           </Button>
                         </motion.div>
                       ))}
@@ -296,28 +301,34 @@ function SuperAdminCouponsPage() {
               </div>
 
               {/* Existing Banners */}
-              <div className="mt-6">
-                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Current Banners</h3>
+              <div className="mt-4">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  Current Banners
+                </h3>
                 {banners.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {banners.map((banner) => (
                       <motion.div
                         key={banner.id}
                         variants={cardHoverVariants}
-                        className="relative group rounded-lg overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
+                        className="relative group rounded-md overflow-hidden shadow-sm border border-gray-200 dark:border-gray-600"
                         whileHover="hover"
                         whileTap="tap"
                       >
-                        <img src={banner.imageUrl} alt={`Banner ${banner.id}`} className="w-full h-40 object-cover" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                          <Label htmlFor={`update-banner-${banner.id}`} className="cursor-pointer">
+                        <img
+                          src={banner.imageUrl}
+                          alt={`Banner ${banner.id}`}
+                          className="w-full h-28 sm:h-32 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 opacity-0 group-hover:opacity-100 p-1 sm:p-2">
+                          <Label htmlFor={`update-banner-${banner.id}`} className="cursor-pointer w-full sm:w-auto">
                             <Button
                               variant="secondary"
                               size="sm"
-                              className="backdrop-blur-sm bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100"
+                              className="w-full sm:w-auto text-xs sm:text-sm backdrop-blur-sm bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 py-1 h-auto"
                               aria-label={`Replace banner ${banner.id}`}
                             >
-                              <Upload className="h-4 w-4 mr-1" /> Replace
+                              <Upload className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Replace
                             </Button>
                           </Label>
                           <Input
@@ -331,35 +342,35 @@ function SuperAdminCouponsPage() {
                           <Button
                             variant="destructive"
                             size="sm"
-                            className="backdrop-blur-sm bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 text-red-600 dark:text-red-400"
+                            className="w-full sm:w-auto text-xs sm:text-sm backdrop-blur-sm bg-white/90 dark:bg-gray-700/90 hover:bg-white dark:hover:bg-gray-600 text-red-600 dark:text-red-400 py-1 h-auto"
                             onClick={() => handleBannerDelete(banner.id)}
                             aria-label={`Delete banner ${banner.id}`}
                           >
-                            <X className="h-4 w-4 mr-1" /> Remove
+                            <X className="h-3 w-3 sm:h-4 sm:w-4 mr-1" /> Remove
                           </Button>
                         </div>
                       </motion.div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
-                    <p className="text-gray-500 dark:text-gray-400">No banners currently uploaded</p>
+                  <div className="text-center py-6 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">No banners currently uploaded</p>
                   </div>
                 )}
               </div>
             </motion.section>
 
             {/* Featured Products Section */}
-            <motion.section variants={itemVariants} className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Featured Products</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
+            <motion.section variants={itemVariants} className="space-y-4">
+              <div className="space-y-1">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">Featured Products</h2>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   Select up to 8 products to feature on the homepage (currently selected: {selectedProducts.length}/8)
                 </p>
               </div>
 
               {products.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                   {sortedProducts.map((product) => {
                     const colors = parseColors(product.colors);
                     const isSelected = selectedProducts.includes(product.id);
@@ -369,7 +380,7 @@ function SuperAdminCouponsPage() {
                         key={product.id}
                         variants={cardHoverVariants}
                         className={cn(
-                          "relative p-4 border rounded-xl transition-all shadow-sm",
+                          "relative p-3 border rounded-lg transition-all shadow-sm",
                           isSelected
                             ? "border-indigo-500 dark:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/50 shadow-md"
                             : "border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-700"
@@ -377,12 +388,12 @@ function SuperAdminCouponsPage() {
                         whileHover="hover"
                         whileTap="tap"
                       >
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-2 right-2">
                           <Checkbox
                             checked={isSelected}
                             onCheckedChange={() => handleProductSelection(product.id)}
                             className={cn(
-                              "h-5 w-5 border-2",
+                              "h-4 w-4 sm:h-5 sm:w-5 border-2",
                               isSelected
                                 ? "border-indigo-500 dark:border-indigo-400 bg-indigo-500 dark:bg-indigo-400"
                                 : "border-gray-400 dark:border-gray-500"
@@ -391,33 +402,33 @@ function SuperAdminCouponsPage() {
                           />
                         </div>
 
-                        <div className="space-y-3">
+                        <div className="space-y-2">
                           {/* Product Image */}
-                          <div className="w-full h-40 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
+                          <div className="w-full h-28 sm:h-32 bg-gray-100 dark:bg-gray-700 rounded-md flex items-center justify-center overflow-hidden">
                             {product.images && product.images.length > 0 ? (
                               <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" />
                             ) : (
-                              <ImageIcon className="h-10 w-10 text-gray-400 dark:text-gray-500" />
+                              <ImageIcon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
                             )}
                           </div>
 
                           {/* Product Info */}
-                          <div>
-                            <h3 className="font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
+                          <div className="mt-1">
+                            <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 line-clamp-1">
                               {product.name}
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">{product.category.name}</p>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">{product.category.name}</p>
                           </div>
 
                           {/* Colors */}
                           {colors.length > 0 && (
-                            <div className="mt-2">
-                              <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">Available Colors:</p>
+                            <div className="mt-1">
+                              <p className="text-xs text-gray-600 dark:text-gray-300 mb-1">Colors:</p>
                               <div className="flex flex-wrap gap-1">
                                 {colors.slice(0, 4).map((color) => (
                                   <div
                                     key={color.name}
-                                    className="h-5 w-5 rounded-full border border-gray-200 dark:border-gray-600 shadow-xs"
+                                    className="h-4 w-4 rounded-full border border-gray-200 dark:border-gray-600 shadow-xs"
                                     style={{
                                       backgroundColor: color.hex.startsWith("#") ? color.hex : `#${color.hex}`,
                                     }}
@@ -425,7 +436,7 @@ function SuperAdminCouponsPage() {
                                   />
                                 ))}
                                 {colors.length > 4 && (
-                                  <div className="h-5 w-5 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-xs text-gray-600 dark:text-gray-300">
+                                  <div className="h-4 w-4 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-[10px] text-gray-600 dark:text-gray-300">
                                     +{colors.length - 4}
                                   </div>
                                 )}
@@ -434,21 +445,21 @@ function SuperAdminCouponsPage() {
                           )}
 
                           {/* Price */}
-                          <div className="mt-2">
+                          <div className="mt-1">
                             {product.isOnOffer && product.offerPrice !== undefined ? (
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-green-600 dark:text-green-400">
+                              <div className="flex flex-wrap items-center gap-1">
+                                <span className="text-sm sm:text-base font-bold text-green-600 dark:text-green-400">
                                   Kes {product.offerPrice.toFixed(2)}
                                 </span>
-                                <span className="text-sm text-red-400 dark:text-red-300 line-through">
+                                <span className="text-xs text-red-400 dark:text-red-300 line-through">
                                   Kes {product.price.toFixed(2)}
                                 </span>
-                                <span className="text-xs bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 px-1.5 py-0.5 rounded">
+                                <span className="text-[10px] bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 px-1 py-0.5 rounded">
                                   Sale
                                 </span>
                               </div>
                             ) : (
-                              <span className="font-bold text-gray-900 dark:text-gray-100">
+                              <span className="text-sm sm:text-base font-bold text-gray-900 dark:text-gray-100">
                                 Kes {product.price.toFixed(2)}
                               </span>
                             )}
@@ -459,25 +470,27 @@ function SuperAdminCouponsPage() {
                   })}
                 </div>
               ) : (
-                <div className="text-center py-12 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
-                  <p className="text-gray-500 dark:text-gray-400">No products available to feature</p>
+                <div className="text-center py-8 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+                  <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                    No products available to feature
+                  </p>
                 </div>
               )}
             </motion.section>
 
             {/* Save Button */}
-            <motion.div variants={itemVariants} className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <motion.div variants={itemVariants} className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button
                 disabled={isLoading}
                 onClick={handleSaveChanges}
                 size="lg"
-                className="w-full py-6 text-lg font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white rounded-lg shadow-lg"
+                className="w-full py-4 sm:py-5 text-sm sm:text-base font-medium bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 dark:from-indigo-500 dark:to-purple-500 dark:hover:from-indigo-600 dark:hover:to-purple-600 text-white rounded-lg shadow-md"
                 aria-label="Save all changes"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <svg
-                      className="animate-spin h-5 w-5 text-white"
+                      className="animate-spin h-4 w-4 sm:h-5 sm:w-5 text-white"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"

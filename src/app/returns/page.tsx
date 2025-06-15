@@ -3,34 +3,40 @@ import { RefreshCw, Check, X, Calendar, Package, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function ReturnsPage() {
   const { theme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const returnSteps = [
     {
       step: "1",
       title: "Initiate Return",
       description: "Contact us within 30 days of receiving your order to start the return process",
-      icon: <Mail className="w-5 h-5" />,
+      icon: <Mail className="w-4 h-4 sm:w-5 sm:h-5" />,
     },
     {
       step: "2",
       title: "Package Items",
       description: "Securely pack the items in their original packaging with all tags attached",
-      icon: <Package className="w-5 h-5" />,
+      icon: <Package className="w-4 h-4 sm:w-5 sm:h-5" />,
     },
     {
       step: "3",
       title: "Ship Back",
       description: "Send the package to our returns center using the provided shipping label",
-      icon: <RefreshCw className="w-5 h-5" />,
+      icon: <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5" />,
     },
     {
       step: "4",
       title: "Receive Refund",
       description: "Once received and inspected, we'll process your refund within 5 business days",
-      icon: <Check className="w-5 h-5" />,
+      icon: <Check className="w-4 h-4 sm:w-5 sm:h-5" />,
     },
   ];
 
@@ -40,6 +46,10 @@ export default function ReturnsPage() {
     "Products without original packaging",
     "Items marked as final sale",
   ];
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <div
@@ -56,46 +66,50 @@ export default function ReturnsPage() {
         }`}
       ></div>
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="max-w-4xl mx-auto text-center mb-16">
+      <div className="container mx-auto px-4 py-8 sm:py-12 relative z-10">
+        <div className="max-w-4xl mx-auto text-center mb-8 sm:mb-12">
           <div
-            className={`inline-flex items-center justify-center p-4 rounded-full mb-6 ${
+            className={`inline-flex items-center justify-center p-3 sm:p-4 rounded-full mb-4 sm:mb-6 ${
               theme === "dark" ? "bg-indigo-900/30" : "bg-indigo-100"
             }`}
           >
-            <RefreshCw className={`w-8 h-8 ${theme === "dark" ? "text-indigo-400" : "text-indigo-600"}`} />
+            <RefreshCw
+              className={`w-6 h-6 sm:w-8 sm:h-8 ${theme === "dark" ? "text-indigo-400" : "text-indigo-600"}`}
+            />
           </div>
           <h1
-            className={`text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r ${
+            className={`text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r ${
               theme === "dark" ? "from-indigo-400 to-purple-400" : "from-indigo-600 to-purple-600"
             } bg-clip-text text-transparent`}
           >
             Returns & Exchanges
           </h1>
-          <p className={`text-lg sm:text-xl ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+          <p className={`text-base sm:text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
             Our hassle-free return policy
           </p>
         </div>
 
         <div className="max-w-5xl mx-auto">
           <div
-            className={`p-6 sm:p-8 rounded-xl shadow-sm transition-all duration-300 ${
+            className={`p-4 sm:p-6 rounded-lg shadow-sm transition-all duration-300 ${
               theme === "dark" ? "bg-gray-800/50 border-gray-700" : "bg-white border-gray-200"
-            } border mb-12`}
+            } border mb-8 sm:mb-12`}
           >
-            <div className="flex items-start mb-6">
+            <div className="flex flex-col sm:flex-row items-start gap-4 mb-4 sm:mb-6">
               <Calendar
-                className={`w-6 h-6 mt-1 mr-4 flex-shrink-0 ${
+                className={`w-5 h-5 sm:w-6 sm:h-6 mt-0.5 sm:mt-1 flex-shrink-0 ${
                   theme === "dark" ? "text-indigo-400" : "text-indigo-600"
                 }`}
               />
               <div>
                 <h2
-                  className={`text-xl sm:text-2xl font-bold mb-4 ${theme === "dark" ? "text-white" : "text-gray-800"}`}
+                  className={`text-lg sm:text-xl md:text-2xl font-bold mb-2 sm:mb-4 ${
+                    theme === "dark" ? "text-white" : "text-gray-800"
+                  }`}
                 >
                   30-Day Return Policy
                 </h2>
-                <p className={theme === "dark" ? "text-gray-300" : "text-gray-700"}>
+                <p className={`text-sm sm:text-base ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
                   We want you to love what you've ordered. If you're not completely satisfied, you may return most items
                   within 30 days of delivery for a full refund or exchange. Some items may have different return
                   policies as noted on their product pages.
@@ -103,42 +117,54 @@ export default function ReturnsPage() {
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
               {returnSteps.map((step, index) => (
                 <div
                   key={index}
-                  className={`p-4 rounded-lg transition-all ${
+                  className={`p-3 sm:p-4 rounded-lg transition-all ${
                     theme === "dark" ? "bg-gray-700/30 hover:bg-gray-700/50" : "bg-gray-50 hover:bg-gray-100"
                   }`}
                 >
-                  <div className="flex items-center mb-3">
+                  <div className="flex items-center mb-2 sm:mb-3">
                     <span
-                      className={`flex items-center justify-center w-8 h-8 rounded-full mr-3 font-bold ${
+                      className={`flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full mr-2 sm:mr-3 font-bold ${
                         theme === "dark" ? "bg-indigo-500 text-white" : "bg-indigo-600 text-white"
-                      }`}
+                      } text-sm sm:text-base`}
                     >
                       {step.step}
                     </span>
-                    <h3 className={`font-semibold ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                    <h3
+                      className={`font-semibold text-sm sm:text-base ${
+                        theme === "dark" ? "text-white" : "text-gray-800"
+                      }`}
+                    >
                       {step.title}
                     </h3>
                   </div>
-                  <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                  <p className={`text-xs sm:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
                     {step.description}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
               <div className="flex-1">
-                <h3 className={`font-semibold text-lg mb-3 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                <h3
+                  className={`font-semibold text-base sm:text-lg mb-2 sm:mb-3 ${
+                    theme === "dark" ? "text-white" : "text-gray-800"
+                  }`}
+                >
                   Return Conditions
                 </h3>
-                <ul className={`space-y-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                <ul
+                  className={`space-y-1.5 sm:space-y-2 text-sm sm:text-base ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   <li className="flex items-start">
                     <Check
-                      className={`w-5 h-5 mr-2 mt-0.5 flex-shrink-0 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-0.5 flex-shrink-0 ${
                         theme === "dark" ? "text-green-400" : "text-green-500"
                       }`}
                     />
@@ -146,7 +172,7 @@ export default function ReturnsPage() {
                   </li>
                   <li className="flex items-start">
                     <Check
-                      className={`w-5 h-5 mr-2 mt-0.5 flex-shrink-0 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-0.5 flex-shrink-0 ${
                         theme === "dark" ? "text-green-400" : "text-green-500"
                       }`}
                     />
@@ -154,7 +180,7 @@ export default function ReturnsPage() {
                   </li>
                   <li className="flex items-start">
                     <Check
-                      className={`w-5 h-5 mr-2 mt-0.5 flex-shrink-0 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-0.5 flex-shrink-0 ${
                         theme === "dark" ? "text-green-400" : "text-green-500"
                       }`}
                     />
@@ -163,14 +189,22 @@ export default function ReturnsPage() {
                 </ul>
               </div>
               <div className="flex-1">
-                <h3 className={`font-semibold text-lg mb-3 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+                <h3
+                  className={`font-semibold text-base sm:text-lg mb-2 sm:mb-3 ${
+                    theme === "dark" ? "text-white" : "text-gray-800"
+                  }`}
+                >
                   Non-Returnable Items
                 </h3>
-                <ul className={`space-y-2 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                <ul
+                  className={`space-y-1.5 sm:space-y-2 text-sm sm:text-base ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
                   {nonReturnableItems.map((item, index) => (
                     <li key={index} className="flex items-start">
                       <X
-                        className={`w-5 h-5 mr-2 mt-0.5 flex-shrink-0 ${
+                        className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 mt-0.5 flex-shrink-0 ${
                           theme === "dark" ? "text-red-400" : "text-red-500"
                         }`}
                       />
@@ -183,16 +217,28 @@ export default function ReturnsPage() {
           </div>
 
           <div
-            className={`p-6 sm:p-8 rounded-xl shadow-sm transition-all duration-300 ${
+            className={`p-4 sm:p-6 rounded-lg shadow-sm transition-all duration-300 ${
               theme === "dark" ? "bg-gray-800/50 border-gray-700" : "bg-white border-gray-200"
             } border`}
           >
-            <h2 className={`text-xl sm:text-2xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-gray-800"}`}>
+            <h2
+              className={`text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 ${
+                theme === "dark" ? "text-white" : "text-gray-800"
+              }`}
+            >
               Frequently Asked Questions
             </h2>
-            <div className={`space-y-6 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+            <div
+              className={`space-y-4 sm:space-y-6 text-sm sm:text-base ${
+                theme === "dark" ? "text-gray-300" : "text-gray-700"
+              }`}
+            >
               <div>
-                <h3 className={`font-semibold text-lg mb-2 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
+                <h3
+                  className={`font-semibold text-base sm:text-lg mb-1 sm:mb-2 ${
+                    theme === "dark" ? "text-gray-100" : "text-gray-900"
+                  }`}
+                >
                   How long does it take to process my return?
                 </h3>
                 <p>
@@ -201,7 +247,11 @@ export default function ReturnsPage() {
                 </p>
               </div>
               <div>
-                <h3 className={`font-semibold text-lg mb-2 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
+                <h3
+                  className={`font-semibold text-base sm:text-lg mb-1 sm:mb-2 ${
+                    theme === "dark" ? "text-gray-100" : "text-gray-900"
+                  }`}
+                >
                   Will I be refunded the shipping cost?
                 </h3>
                 <p>
@@ -210,7 +260,11 @@ export default function ReturnsPage() {
                 </p>
               </div>
               <div>
-                <h3 className={`font-semibold text-lg mb-2 ${theme === "dark" ? "text-gray-100" : "text-gray-900"}`}>
+                <h3
+                  className={`font-semibold text-base sm:text-lg mb-1 sm:mb-2 ${
+                    theme === "dark" ? "text-gray-100" : "text-gray-900"
+                  }`}
+                >
                   Can I exchange an item instead of returning it?
                 </h3>
                 <p>
@@ -220,8 +274,8 @@ export default function ReturnsPage() {
               </div>
             </div>
 
-            <div className="mt-8">
-              <Button asChild>
+            <div className="mt-6 sm:mt-8">
+              <Button asChild className="w-full sm:w-auto">
                 <Link
                   href="/contact"
                   className={`${

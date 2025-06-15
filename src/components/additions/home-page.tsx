@@ -52,8 +52,8 @@ function HomePage() {
       {/* Hero Section */}
       <BannerCarousel gridItems={gridItems} setCurrentSlide={setCurrentSlide} currentSlide={currentSlide} />
 
-      {/* marquee */}
-      <div className="mt-10">
+      {/* Marquee */}
+      <div className="mt-4 sm:mt-6 md:mt-8 px-2 sm:px-0">
         <InfiniteMarquee />
       </div>
 
@@ -63,14 +63,14 @@ function HomePage() {
       {/* Categories */}
       <CategoriesGrid />
 
-      {/* Feature Products Section */}
+      {/* Featured Products Section */}
       <FeaturedProducts featuredProducts={featuredProducts} />
 
       <StoreLocation />
 
       {/* CTA Section */}
       <section
-        className={`py-24 transition-colors duration-300 ${
+        className={`py-8 sm:py-12 md:py-16 transition-colors duration-300 ${
           theme === "dark"
             ? "bg-gradient-to-r from-indigo-900/30 via-purple-900/30 to-pink-900/30"
             : "bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100"
@@ -81,25 +81,29 @@ function HomePage() {
           whileInView="show"
           viewport={{ once: true }}
           variants={staggerContainer(0.1, 0.1)}
-          className="container mx-auto px-4 text-center"
+          className="container mx-auto px-4 sm:px-6"
         >
           <motion.h2
             variants={fadeIn("up", "tween", 0.2, 1)}
-            className={`text-4xl font-bold mb-6 ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+            className={`text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-5 text-center ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            }`}
           >
             JOIN OUR NEWSLETTER
           </motion.h2>
           <motion.p
             variants={fadeIn("up", "tween", 0.4, 1)}
-            className={`max-w-2xl mx-auto mb-8 ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+            className={`max-w-md mx-auto mb-4 sm:mb-6 text-xs sm:text-sm md:text-base text-center ${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            }`}
           >
             Get 15% off your first order and be the first to know about new products and offers
           </motion.p>
           <motion.div
             variants={fadeIn("up", "tween", 0.6, 1)}
-            className="flex flex-col items-center w-full max-w-xl mx-auto"
+            className="flex flex-col items-center w-full max-w-md mx-auto"
           >
-            <div className="relative w-full flex flex-col sm:flex-row gap-4 items-center">
+            <div className="relative w-full flex flex-col sm:flex-row gap-2 sm:gap-3 items-center">
               {/* Email Input */}
               <motion.div
                 className="relative w-full"
@@ -111,7 +115,7 @@ function HomePage() {
                   value={subscriptionEmail}
                   onChange={(e) => setSubscriptionEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className={`w-full px-6 py-4 rounded-full border-2 transition-all duration-300 focus:outline-none focus:shadow-lg ${
+                  className={`w-full px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm rounded-full border-2 transition-all duration-300 focus:outline-none focus:shadow-lg touch-manipulation ${
                     theme === "dark"
                       ? "bg-gray-800/70 border-gray-600 text-white placeholder-gray-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30"
                       : "bg-white border-gray-200 text-gray-800 placeholder-gray-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
@@ -121,11 +125,11 @@ function HomePage() {
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className={`absolute right-4 top-1/2 -translate-y-1/2 ${
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 ${
                       theme === "dark" ? "text-gray-500" : "text-gray-400"
                     }`}
                   >
-                    <Mail className="h-5 w-5" />
+                    <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
                   </motion.div>
                 )}
               </motion.div>
@@ -133,12 +137,12 @@ function HomePage() {
               {/* Subscribe Button */}
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
                 <Button
-                  size="lg"
-                  className={`rounded-full font-semibold transition-all duration-300 shadow-lg ${
+                  size="sm"
+                  className={`w-full sm:w-auto rounded-full font-medium text-xs sm:text-sm px-4 py-2 sm:py-3 transition-all duration-300 shadow-md touch-manipulation ${
                     theme === "dark"
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
                       : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
-                  } ${!subscriptionEmail ? "opacity-70 cursor-not-allowed" : "hover:shadow-xl"}`}
+                  } ${!subscriptionEmail ? "opacity-70 cursor-not-allowed" : "hover:shadow-lg"}`}
                   disabled={!subscriptionEmail}
                   onClick={async () => {
                     try {
@@ -161,13 +165,13 @@ function HomePage() {
                     }
                   }}
                 >
-                  <span className="px-6">Subscribe</span>
+                  <span className="px-2 sm:px-4">Subscribe</span>
                   <motion.span
                     animate={subscriptionEmail ? { x: [0, 2, 0] } : {}}
                     transition={{ repeat: Infinity, duration: 2 }}
                     className="ml-1"
                   >
-                    <ArrowRight className="h-5 w-5" />
+                    <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
                   </motion.span>
                 </Button>
               </motion.div>
@@ -175,7 +179,9 @@ function HomePage() {
 
             {/* Help text */}
             <motion.p
-              className={`mt-3 text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}
+              className={`mt-2 text-[10px] sm:text-xs text-center ${
+                theme === "dark" ? "text-gray-400" : "text-gray-500"
+              }`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}

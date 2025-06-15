@@ -70,15 +70,23 @@ const ReviewForm = ({ productId, existingReview, onCancel, onSubmit }: ReviewFor
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="bg-white p-6 rounded-xl shadow-md overflow-hidden"
+      className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700"
     >
-      <h3 className="text-lg font-semibold mb-4">{existingReview ? "Edit Your Review" : "Write a Review"}</h3>
+      <h3 className="text-base sm:text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+        {existingReview ? "Edit Your Review" : "Write a Review"}
+      </h3>
 
-      {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
+      {error && (
+        <div className="mb-3 p-2 sm:p-3 text-xs sm:text-sm bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md">
+          {error}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Your Rating</label>
+        <div className="mb-3 sm:mb-4">
+          <label className="block text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+            Your Rating
+          </label>
           <div className="flex">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -88,42 +96,49 @@ const ReviewForm = ({ productId, existingReview, onCancel, onSubmit }: ReviewFor
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
                 className="focus:outline-none"
+                aria-label={`Rate ${star} star${star !== 1 ? "s" : ""}`}
               >
                 <StarIcon
-                  className={`h-8 w-8 ${(hoverRating || rating) >= star ? "text-yellow-400" : "text-gray-300"}`}
+                  className={`h-6 w-6 sm:h-7 sm:w-7 ${
+                    (hoverRating || rating) >= star ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"
+                  }`}
                 />
               </button>
             ))}
           </div>
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="comment" className="block text-gray-700 mb-2">
+        <div className="mb-3 sm:mb-4">
+          <label htmlFor="comment" className="block text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
             Your Review
           </label>
           <textarea
             id="comment"
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-            rows={4}
+            className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            rows={3}
             placeholder="Share your thoughts about this product..."
+            style={{
+              minHeight: "100px",
+              resize: "vertical",
+            }}
           />
         </div>
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-end gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-purple-600 dark:bg-purple-700 text-white rounded-md hover:bg-purple-700 dark:hover:bg-purple-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Submitting..." : "Submit Review"}
           </button>

@@ -108,28 +108,28 @@ function SuperAdminManageCouponsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900 p-4 md:p-6">
       <motion.div initial="hidden" animate="visible" variants={containerVariants} className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
           variants={itemVariants}
-          className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 rounded-xl p-6 mb-8 shadow-2xl border border-gray-200/50 dark:border-gray-700/50"
+          className="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 rounded-lg md:rounded-xl p-4 md:p-6 mb-6 md:mb-8 shadow-lg md:shadow-2xl border border-gray-200/50 dark:border-gray-700/50"
         >
           <div className="flex items-center justify-between">
             <motion.h1
-              className="text-2xl font-extrabold text-white flex items-center gap-2"
+              className="text-xl md:text-2xl font-extrabold text-white flex items-center gap-2"
               initial={{ x: -20 }}
               animate={{ x: 0 }}
             >
-              <Ticket className="h-6 w-6" />
+              <Ticket className="h-5 w-5 md:h-6 md:w-6" />
               Create New Coupon
             </motion.h1>
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }}>
-              <Sparkles className="h-6 w-6 text-yellow-300 dark:text-yellow-200" />
+              <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-yellow-300 dark:text-yellow-200" />
             </motion.div>
           </div>
           <motion.p
-            className="text-purple-100 dark:text-purple-200 mt-2"
+            className="text-purple-100 dark:text-purple-200 mt-1 md:mt-2 text-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -141,12 +141,12 @@ function SuperAdminManageCouponsPage() {
         <motion.form
           onSubmit={handleCouponSubmit}
           variants={containerVariants}
-          className="bg-white/90 dark:bg-gray-800/90 rounded-xl shadow-md overflow-hidden p-6 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm"
+          className="bg-white/90 dark:bg-gray-800/90 rounded-lg md:rounded-xl shadow-sm md:shadow-md overflow-hidden p-4 md:p-6 border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm"
         >
           {/* Date Range */}
-          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
             <div className="relative">
-              <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+              <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm md:text-base">
                 <CalendarDays className="h-4 w-4" />
                 Start Date
               </Label>
@@ -155,15 +155,15 @@ function SuperAdminManageCouponsPage() {
                 onChange={handleInputChange}
                 name="startDate"
                 type="date"
-                className="mt-2 pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+                className="mt-1 md:mt-2 pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm md:text-base"
                 required
                 aria-label="Coupon start date"
               />
-              <CalendarDays className="absolute left-3 top-9 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CalendarDays className="absolute left-3 top-8 md:top-9 h-4 w-4 text-gray-400 dark:text-gray-500" />
             </div>
 
             <div className="relative">
-              <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+              <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm md:text-base">
                 <CalendarDays className="h-4 w-4" />
                 End Date
               </Label>
@@ -172,26 +172,26 @@ function SuperAdminManageCouponsPage() {
                 onChange={handleInputChange}
                 name="endDate"
                 type="date"
-                className="mt-2 pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+                className="mt-1 md:mt-2 pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm md:text-base"
                 required
                 aria-label="Coupon end date"
               />
-              <CalendarDays className="absolute left-3 top-9 h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <CalendarDays className="absolute left-3 top-8 md:top-9 h-4 w-4 text-gray-400 dark:text-gray-500" />
             </div>
           </motion.div>
 
           {/* Coupon Code */}
-          <motion.div variants={itemVariants} className="mb-6">
-            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+          <motion.div variants={itemVariants} className="mb-4 md:mb-6">
+            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm md:text-base">
               <Ticket className="h-4 w-4" />
               Coupon Code
             </Label>
-            <div className="flex gap-2 mt-2">
+            <div className="flex flex-col sm:flex-row gap-2 mt-1 md:mt-2">
               <Input
                 type="text"
                 name="code"
                 placeholder="e.g. SUMMER20"
-                className="flex-1 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+                className="flex-1 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm md:text-base"
                 required
                 value={formData.code}
                 onChange={handleInputChange}
@@ -201,7 +201,7 @@ function SuperAdminManageCouponsPage() {
                 type="button"
                 onClick={handleCreateUniqueCoupon}
                 variant="outline"
-                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900"
+                className="flex items-center gap-2 text-gray-700 dark:text-gray-200 border-gray-200 dark:border-gray-600 hover:bg-indigo-50 dark:hover:bg-indigo-900 text-sm md:text-base"
                 disabled={isGeneratingCode}
                 aria-label="Generate unique coupon code"
               >
@@ -212,7 +212,7 @@ function SuperAdminManageCouponsPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-xs md:text-sm"
                     >
                       <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
                         <Wand2 className="h-4 w-4" />
@@ -225,7 +225,7 @@ function SuperAdminManageCouponsPage() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 text-xs md:text-sm"
                     >
                       <Wand2 className="h-4 w-4" />
                       Generate
@@ -237,17 +237,17 @@ function SuperAdminManageCouponsPage() {
           </motion.div>
 
           {/* Discount Percentage */}
-          <motion.div variants={itemVariants} className="mb-6">
-            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+          <motion.div variants={itemVariants} className="mb-4 md:mb-6">
+            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm md:text-base">
               <Percent className="h-4 w-4" />
               Discount Percentage
             </Label>
-            <div className="relative mt-2">
+            <div className="relative mt-1 md:mt-2">
               <Input
                 type="number"
                 name="discountPercent"
                 placeholder="e.g. 20 for 20% off"
-                className="pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+                className="pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm md:text-base"
                 min="1"
                 max="100"
                 required
@@ -260,17 +260,17 @@ function SuperAdminManageCouponsPage() {
           </motion.div>
 
           {/* Usage Limits */}
-          <motion.div variants={itemVariants} className="mb-8">
-            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
+          <motion.div variants={itemVariants} className="mb-6 md:mb-8">
+            <Label className="flex items-center gap-2 text-gray-700 dark:text-gray-200 text-sm md:text-base">
               <Users className="h-4 w-4" />
               Usage Limit
             </Label>
-            <div className="relative mt-2">
+            <div className="relative mt-1 md:mt-2">
               <Input
                 type="number"
                 name="usageLimit"
                 placeholder="Number of times coupon can be used"
-                className="pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400"
+                className="pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-indigo-500 dark:focus:border-indigo-400 text-sm md:text-base"
                 min="1"
                 required
                 value={formData.usageLimit}
@@ -286,7 +286,7 @@ function SuperAdminManageCouponsPage() {
             <Button
               disabled={isLoading}
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 py-6 text-lg font-bold shadow-lg text-white"
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-500 dark:to-indigo-500 hover:from-purple-700 dark:hover:from-purple-600 hover:to-indigo-700 dark:hover:to-indigo-600 py-4 md:py-6 text-base md:text-lg font-bold shadow-md md:shadow-lg text-white"
               aria-label="Create coupon"
             >
               <AnimatePresence mode="wait">
@@ -296,10 +296,10 @@ function SuperAdminManageCouponsPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 text-sm md:text-base"
                   >
                     <motion.span animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1 }}>
-                      <Sparkles className="h-5 w-5" />
+                      <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
                     </motion.span>
                     Creating Coupon...
                   </motion.span>
@@ -309,9 +309,9 @@ function SuperAdminManageCouponsPage() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 text-sm md:text-base"
                   >
-                    <Sparkles className="h-5 w-5" />
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
                     Create Coupon
                   </motion.span>
                 )}
@@ -320,32 +320,33 @@ function SuperAdminManageCouponsPage() {
           </motion.div>
         </motion.form>
 
-        {/* Floating decorative elements */}
+        {/* Floating decorative elements - removed on mobile for performance */}
         <AnimatePresence>
-          {[1, 2, 3].map((i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: -20, x: Math.random() * 100 - 50 }}
-              animate={{
-                opacity: [0, 0.2, 0],
-                y: [-20, Math.random() * 100 + 50],
-                x: Math.random() * 100 - 50,
-                rotate: Math.random() * 360,
-              }}
-              transition={{
-                duration: 10,
-                delay: i * 2,
-                repeat: Infinity,
-              }}
-              className="absolute text-purple-300 dark:text-purple-400 text-2xl pointer-events-none"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: "10%",
-              }}
-            >
-              {["🎟️", "✨", "🎉"][i % 3]}
-            </motion.div>
-          ))}
+          {window.innerWidth > 768 &&
+            [1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: -20, x: Math.random() * 100 - 50 }}
+                animate={{
+                  opacity: [0, 0.2, 0],
+                  y: [-20, Math.random() * 100 + 50],
+                  x: Math.random() * 100 - 50,
+                  rotate: Math.random() * 360,
+                }}
+                transition={{
+                  duration: 10,
+                  delay: i * 2,
+                  repeat: Infinity,
+                }}
+                className="absolute text-purple-300 dark:text-purple-400 text-2xl pointer-events-none"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: "10%",
+                }}
+              >
+                {["🎟️", "✨", "🎉"][i % 3]}
+              </motion.div>
+            ))}
         </AnimatePresence>
       </motion.div>
     </div>

@@ -28,7 +28,7 @@ interface Product {
   category: { id: string; name: string };
   gender: string;
   sizes: string[];
-  colors: { hex: string; name: string }[];
+  colors: string | { hex: string; name: string }[]; // Allow colors to be a string or array
   price: number;
   stock: number;
   soldCount: number;
@@ -107,7 +107,6 @@ function ProductListingPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [togglingWishlist, setTogglingWishlist] = useState<{
@@ -156,7 +155,6 @@ function ProductListingPage() {
           categories: selectedCategories,
           sizes: selectedSizes,
           colors: selectedColors,
-          brands: selectedBrands,
           minPrice: priceRange[0],
           maxPrice: priceRange[1],
           sortBy,
@@ -179,7 +177,6 @@ function ProductListingPage() {
       selectedCategories,
       selectedSizes,
       selectedColors,
-      selectedBrands,
       priceRange,
       sortBy,
       sortOrder,
@@ -233,16 +230,7 @@ function ProductListingPage() {
 
   useEffect(() => {
     fetchProductsCallback(false);
-  }, [
-    selectedCategories,
-    selectedSizes,
-    selectedColors,
-    selectedBrands,
-    priceRange,
-    sortBy,
-    sortOrder,
-    fetchProductsCallback,
-  ]);
+  }, [selectedCategories, selectedSizes, selectedColors, priceRange, sortBy, sortOrder, fetchProductsCallback]);
 
   const handleSortChange = (value: string) => {
     const [newSortBy, newSortOrder] = value.split("-");
@@ -250,12 +238,11 @@ function ProductListingPage() {
     setSortOrder(newSortOrder as "asc" | "desc");
   };
 
-  const handleToggleFilter = (filterType: "categories" | "sizes" | "brands" | "colors", value: string) => {
+  const handleToggleFilter = (filterType: "categories" | "sizes" | "colors", value: string) => {
     const setterMap = {
       categories: setSelectedCategories,
       sizes: setSelectedSizes,
       colors: setSelectedColors,
-      brands: setSelectedBrands,
     };
 
     setterMap[filterType]((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
@@ -276,7 +263,7 @@ function ProductListingPage() {
         name: product.name || "Unknown Product",
         price: product.isOnOffer && product.offerPrice ? product.offerPrice : product.price || 0,
         image: product.images?.[0] || "/placeholder.jpg",
-        color: product.colors?.[0]?.name || "Default",
+        color: Array.isArray(product.colors) ? product.colors[0]?.name || "Default" : "Default",
         size: product.sizes?.[0] || "Default",
         quantity: 1,
       });
@@ -321,11 +308,28 @@ function ProductListingPage() {
     }
   };
 
+  const parseColors = (colors: Product["colors"]): { hex: string; name: string }[] => {
+    if (Array.isArray(colors)) {
+      return colors.filter((color) => color && typeof color === "object" && "hex" in color && "name" in color);
+    }
+    if (typeof colors === "string") {
+      try {
+        const parsed = JSON.parse(colors);
+        return Array.isArray(parsed)
+          ? parsed.filter((color) => color && typeof color === "object" && "hex" in color && "name" in color)
+          : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
   const FilterSection = () => {
     return (
       <motion.div
         ref={filterSectionRef}
-        className="space-y-6"
+        className="space-y-4 p-2 sm:p-4"
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
@@ -354,8 +358,12 @@ function ProductListingPage() {
           </div>
         ) : (
           <>
-            <div className={`p-4 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
-              <h3 className={`mb-3 font-semibold ${theme === "dark" ? "text-white" : "text-indigo-700"}`}>
+            <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
+              <h3
+                className={`mb-2 font-semibold text-sm sm:text-base ${
+                  theme === "dark" ? "text-white" : "text-indigo-700"
+                }`}
+              >
                 Categories
               </h3>
               <div className="space-y-2">
@@ -369,7 +377,7 @@ function ProductListingPage() {
                     />
                     <Label
                       htmlFor={`cat-${category.id}`}
-                      className={`ml-2 text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                      className={`ml-2 text-xs sm:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
                     >
                       {category.name}
                     </Label>
@@ -378,15 +386,21 @@ function ProductListingPage() {
               </div>
             </div>
 
-            <div className={`p-4 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
-              <h3 className={`mb-3 font-semibold ${theme === "dark" ? "text-white" : "text-indigo-700"}`}>Size</h3>
+            <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
+              <h3
+                className={`mb-2 font-semibold text-sm sm:text-base ${
+                  theme === "dark" ? "text-white" : "text-indigo-700"
+                }`}
+              >
+                Size
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {predefinedSizes.map((sizeItem) => (
                   <motion.button
                     key={sizeItem}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleToggleFilter("sizes", sizeItem)}
-                    className={`h-8 w-8 rounded-md text-sm font-medium transition-all ${
+                    className={`h-8 w-8 rounded-md text-xs sm:text-sm font-medium transition-all ${
                       selectedSizes.includes(sizeItem)
                         ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md"
                         : theme === "dark"
@@ -400,12 +414,20 @@ function ProductListingPage() {
               </div>
             </div>
 
-            <div className={`p-4 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
-              <h3 className={`mb-3 font-semibold ${theme === "dark" ? "text-white" : "text-indigo-700"}`}>Colors</h3>
+            <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
+              <h3
+                className={`mb-2 font-semibold text-sm sm:text-base ${
+                  theme === "dark" ? "text-white" : "text-indigo-700"
+                }`}
+              >
+                Colors
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {products
+                  .filter((product): product is Product => !!product)
                   .reduce((acc: string[], product) => {
-                    (JSON.parse(product.colors) || []).forEach((color) => {
+                    const colors = parseColors(product.colors);
+                    colors.forEach((color) => {
                       if (!acc.includes(color.hex)) acc.push(color.hex);
                     });
                     return acc;
@@ -426,8 +448,12 @@ function ProductListingPage() {
               </div>
             </div>
 
-            <div className={`p-4 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
-              <h3 className={`mb-3 font-semibold ${theme === "dark" ? "text-white" : "text-indigo-700"}`}>
+            <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
+              <h3
+                className={`mb-2 font-semibold text-sm sm:text-base ${
+                  theme === "dark" ? "text-white" : "text-indigo-700"
+                }`}
+              >
                 Price Range
               </h3>
               <Slider
@@ -439,7 +465,9 @@ function ProductListingPage() {
                 onValueChange={(value) => setPriceRange(value)}
               />
               <div
-                className={`flex justify-between mt-2 text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}
+                className={`flex justify-between mt-2 text-xs sm:text-sm ${
+                  theme === "dark" ? "text-gray-300" : "text-gray-700"
+                }`}
               >
                 <span>KES {priceRange[0].toLocaleString()}</span>
                 <span>KES {priceRange[1].toLocaleString()}</span>
@@ -456,11 +484,11 @@ function ProductListingPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`min-h-screen  ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}
+      className={`min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}
     >
       {/* Hero Banner */}
       <motion.div
-        className="relative h-64 sm:h-80 md:h-96 overflow-hidden"
+        className="relative h-48 xs:h-56 sm:h-64 md:h-80 lg:h-96 overflow-hidden"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -484,8 +512,8 @@ function ProductListingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">Hot Collection</h1>
-            <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+            <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">Hot Collection</h1>
+            <p className="text-xs xs:text-sm sm:text-base md:text-lg lg:text-xl max-w-2xl mx-auto">
               Discover our latest curated collection of premium products.
             </p>
           </motion.div>
@@ -493,16 +521,16 @@ function ProductListingPage() {
       </motion.div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="container mx-auto px-3 xs:px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <motion.div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-4"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
           <motion.h2
             variants={itemVariants}
-            className={`text-xl sm:text-2xl md:text-3xl font-semibold bg-clip-text text-transparent ${
+            className={`text-lg xs:text-xl sm:text-2xl md:text-3xl font-semibold bg-clip-text text-transparent ${
               theme === "dark"
                 ? "bg-gradient-to-r from-white to-gray-300"
                 : "bg-gradient-to-r from-indigo-600 to-purple-600"
@@ -511,24 +539,30 @@ function ProductListingPage() {
             All Products ({totalProducts > 0 ? totalProducts.toLocaleString() : "Loading..."})
           </motion.h2>
 
-          <motion.div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto" variants={itemVariants}>
+          <motion.div className="flex items-center gap-2 xs:gap-3 sm:gap-4 w-full sm:w-auto" variants={itemVariants}>
             <Dialog>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className={`lg:hidden ${theme === "dark" ? "border-gray-600 text-gray-300 hover:bg-gray-700" : ""}`}
+                  className={`lg:hidden text-xs xs:text-sm sm:text-base ${
+                    theme === "dark" ? "border-gray-600 text-gray-300 hover:bg-gray-700" : ""
+                  }`}
                 >
-                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  <SlidersHorizontal className="h-4 w-4 mr-1 xs:mr-2" />
                   Filters
                 </Button>
               </DialogTrigger>
               <DialogContent
-                className={`w-[90vw] max-h-[80vh] overflow-y-auto max-w-md rounded-xl ${
+                className={`w-[95vw] xs:w-[90vw] max-h-[80vh] overflow-y-auto max-w-md rounded-xl ${
                   theme === "dark" ? "bg-gray-800" : "bg-white"
                 }`}
               >
                 <DialogHeader>
-                  <DialogTitle className={theme === "dark" ? "text-white" : "text-gray-900"}>Filters</DialogTitle>
+                  <DialogTitle
+                    className={`text-sm xs:text-base sm:text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}
+                  >
+                    Filters
+                  </DialogTitle>
                 </DialogHeader>
                 <FilterSection />
               </DialogContent>
@@ -536,7 +570,9 @@ function ProductListingPage() {
 
             <Select value={`${sortBy}-${sortOrder}`} onValueChange={handleSortChange} name="sort">
               <SelectTrigger
-                className={`w-full sm:w-48 ${theme === "dark" ? "bg-gray-700 border-gray-600 text-gray-300" : ""}`}
+                className={`w-full xs:w-40 sm:w-48 text-xs xs:text-sm sm:text-base ${
+                  theme === "dark" ? "bg-gray-700 border-gray-600 text-gray-300" : ""
+                }`}
               >
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -551,8 +587,7 @@ function ProductListingPage() {
           </motion.div>
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Filters - Desktop */}
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
           <motion.div
             className="hidden lg:block w-full lg:w-64 flex-shrink-0"
             initial={{ opacity: 0, x: -20 }}
@@ -562,32 +597,33 @@ function ProductListingPage() {
             <FilterSection />
           </motion.div>
 
-          {/* Products Grid */}
           <motion.div
             ref={productGridRef}
-            className="flex-1 min-h-[500px]"
+            className="flex-1 min-h-[400px] xs:min-h-[500px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="p-2 sm:p-4">
+            <div className="p-2 xs:p-3 sm:p-4">
               {isLoading && products.length === 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4 sm:gap-5">
                   {[...Array(8)].map((_, i) => (
                     <div
                       key={i}
-                      className={`rounded-xl p-4 animate-pulse ${theme === "dark" ? "bg-gray-800/50" : "bg-white/80"}`}
+                      className={`rounded-xl p-3 xs:p-4 animate-pulse ${
+                        theme === "dark" ? "bg-gray-800/50" : "bg-white/80"
+                      }`}
                     >
-                      <div className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded-lg mb-4"></div>
+                      <div className="aspect-[3/4] bg-gray-200 dark:bg-gray-700 rounded-lg mb-3 xs:mb-4"></div>
                       <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
                       <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                     </div>
                   ))}
                 </div>
               ) : error || wishlistError ? (
-                <motion.div className="text-center py-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <motion.div className="text-center py-8 xs:py-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div
-                    className={`p-4 rounded-lg inline-block ${
+                    className={`p-3 xs:p-4 rounded-lg inline-block ${
                       theme === "dark" ? "bg-red-900/50 text-red-300" : "bg-red-50 text-red-600"
                     }`}
                   >
@@ -595,14 +631,20 @@ function ProductListingPage() {
                   </div>
                 </motion.div>
               ) : products.length === 0 ? (
-                <motion.div className="text-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <motion.div className="text-center py-10 xs:py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                   <div
-                    className={`p-6 rounded-xl inline-block ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}
+                    className={`p-4 xs:p-6 rounded-xl inline-block ${
+                      theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"
+                    }`}
                   >
-                    <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                    <p
+                      className={`text-sm xs:text-base sm:text-lg ${
+                        theme === "dark" ? "text-gray-300" : "text-gray-700"
+                      }`}
+                    >
                       No products found matching your filters.
                     </p>
-                    <p className={`text-sm mt-2 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                    <p className={`text-xs xs:text-sm mt-2 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
                       Try adjusting your filter criteria.
                     </p>
                   </div>
@@ -610,266 +652,267 @@ function ProductListingPage() {
               ) : (
                 <>
                   <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"
+                    className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4 sm:gap-5"
                     layout
                   >
                     <AnimatePresence>
-                      {products.map((productItem) => {
-                        const isWishlisted = isProductInWishlist(wishlist, productItem.id);
-                        return (
-                          <motion.div
-                            key={productItem.id}
-                            layout
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                            transition={{ duration: 0.3 }}
-                            className={`group relative rounded-xl overflow-hidden shadow-md transition-all duration-300 flex flex-col ${
-                              theme === "dark"
-                                ? "bg-gray-800 border-gray-700 hover:shadow-white/10"
-                                : "bg-white border-gray-100 hover:shadow-gray-300/30"
-                            }`}
-                            whileHover={{ y: -4 }}
-                          >
-                            {/* Product Image */}
+                      {products
+                        .filter((product): product is Product => !!product)
+                        .map((productItem) => {
+                          const isWishlisted = isProductInWishlist(wishlist, productItem.id);
+                          return (
                             <motion.div
-                              onClick={() => router.push(`/listing/${productItem.id}`)}
-                              className="relative aspect-[3/4] overflow-hidden cursor-pointer"
-                              whileHover={{ scale: 1.02 }}
+                              key={productItem.id}
+                              layout
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
+                              transition={{ duration: 0.3 }}
+                              className={`group relative rounded-xl overflow-hidden shadow-md transition-all duration-300 flex flex-col ${
+                                theme === "dark"
+                                  ? "bg-gray-800 border-gray-700 hover:shadow-white/10"
+                                  : "bg-white border-gray-100 hover:shadow-gray-300/30"
+                              }`}
+                              whileHover={{ y: -4 }}
                             >
-                              <img
-                                src={productItem.images?.[0] || "/placeholder.jpg"}
-                                alt={productItem.name}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                              />
-                              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                <Button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    router.push(`/listing/${productItem.id}`);
-                                  }}
-                                  className={`flex items-center gap-1 shadow-lg ${
-                                    theme === "dark"
-                                      ? "bg-gray-800 text-white hover:bg-gray-700"
-                                      : "bg-white text-black hover:bg-gray-100"
+                              <motion.div
+                                onClick={() => router.push(`/listing/${productItem.id}`)}
+                                className="relative aspect-[3/4] overflow-hidden cursor-pointer"
+                                whileHover={{ scale: 1.02 }}
+                              >
+                                <img
+                                  src={productItem.images?.[0] || "/placeholder.jpg"}
+                                  alt={productItem.name}
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                  <Button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      router.push(`/listing/${productItem.id}`);
+                                    }}
+                                    className={`flex items-center gap-1 shadow-lg text-xs xs:text-sm ${
+                                      theme === "dark"
+                                        ? "bg-gray-800 text-white hover:bg-gray-700"
+                                        : "bg-white text-black hover:bg-gray-100"
+                                    }`}
+                                    size="sm"
+                                  >
+                                    <Eye className="w-3 xs:w-4 h-3 xs:h-4" /> Quick View
+                                  </Button>
+                                </div>
+                                <div className="absolute top-2 xs:top-3 left-2 xs:left-3 flex flex-col gap-1">
+                                  {productItem.isFeatured && (
+                                    <motion.span
+                                      className={`text-xs px-1.5 xs:px-2 py-0.5 xs:py-1 rounded-full flex items-center shadow-md ${
+                                        theme === "dark"
+                                          ? "bg-gradient-to-r from-purple-700 to-pink-600 text-white"
+                                          : "bg-gradient-to-r from-pink-600 to-pink-500 text-white"
+                                      }`}
+                                      initial={{ x: -10, opacity: 0 }}
+                                      animate={{ x: 0, opacity: 1 }}
+                                      transition={{ delay: 0.2 }}
+                                      whileHover={{ scale: 1.05 }}
+                                    >
+                                      <Zap className="w-3 h-3 mr-1" /> Featured
+                                    </motion.span>
+                                  )}
+                                  {productItem.stock === 0 && (
+                                    <motion.span
+                                      className="bg-red-500 text-white text-xs px-1.5 xs:px-2 py-0.5 xs:py-1 rounded-full shadow-md"
+                                      initial={{ x: -10, opacity: 0 }}
+                                      animate={{ x: 0, opacity: 1 }}
+                                      transition={{ delay: 0.3 }}
+                                      whileHover={{ scale: 1.05 }}
+                                    >
+                                      Sold Out
+                                    </motion.span>
+                                  )}
+                                  {productItem.stock > 0 && productItem.stock <= 5 && (
+                                    <motion.span
+                                      className="bg-yellow-500 text-white text-xs px-1.5 xs:px-2 py-0.5 xs:py-1 rounded-full shadow-md"
+                                      initial={{ x: -10, opacity: 0 }}
+                                      animate={{ x: 0, opacity: 1 }}
+                                      transition={{ delay: 0.4 }}
+                                      whileHover={{ scale: 1.05 }}
+                                    >
+                                      Low Stock
+                                    </motion.span>
+                                  )}
+                                </div>
+                              </motion.div>
+
+                              <div className="p-3 xs:p-4 pt-2 flex flex-col flex-grow">
+                                <div className="flex justify-between items-start mb-1">
+                                  <h3
+                                    onClick={() => router.push(`/listing/${productItem.id}`)}
+                                    className={`font-bold text-xs xs:text-sm sm:text-md lg:text-lg transition-colors cursor-pointer line-clamp-2 ${
+                                      theme === "dark"
+                                        ? "text-white hover:text-indigo-400"
+                                        : "text-gray-900 hover:text-indigo-600"
+                                    }`}
+                                    title={productItem.name}
+                                  >
+                                    {productItem.name}
+                                  </h3>
+                                  <button
+                                    onClick={() => handleToggleWishlist(productItem.id)}
+                                    className={`transition-colors p-1 -mr-1 ${
+                                      isWishlisted
+                                        ? "text-red-500 hover:text-red-600"
+                                        : theme === "dark"
+                                        ? "text-gray-400 hover:text-red-500"
+                                        : "text-gray-500 hover:text-red-500"
+                                    }`}
+                                    disabled={togglingWishlist[productItem.id]}
+                                    aria-label="Wishlist"
+                                  >
+                                    <Heart
+                                      className={`w-4 xs:w-5 h-4 xs:h-5 ${isWishlisted ? "fill-red-500" : ""} ${
+                                        togglingWishlist[productItem.id] ? "opacity-50 animate-pulse" : ""
+                                      }`}
+                                    />
+                                  </button>
+                                </div>
+
+                                <div className="flex items-center mb-1 xs:mb-2">
+                                  <div className="flex">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`w-3 xs:w-4 h-3 xs:h-4 ${
+                                          i < Math.floor(productItem.rating || 0)
+                                            ? "text-yellow-400 fill-yellow-400"
+                                            : theme === "dark"
+                                            ? "text-gray-600"
+                                            : "text-gray-300"
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span
+                                    className={`text-xs ml-1 xs:ml-1.5 ${
+                                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                                    }`}
+                                  >
+                                    ({productItem.reviews?.length || 0} reviews)
+                                  </span>
+                                </div>
+
+                                <p
+                                  className={`text-xs line-clamp-2 mb-2 xs:mb-3 flex-grow min-h-[36px] xs:min-h-[40px] ${
+                                    theme === "dark" ? "text-gray-300" : "text-gray-600"
                                   }`}
-                                  size="sm"
                                 >
-                                  <Eye className="w-4 h-4" /> Quick View
+                                  {productItem.description || "No description available."}
+                                </p>
+
+                                <div className="flex items-center justify-between mb-2 xs:mb-3">
+                                  <div>
+                                    <span
+                                      className={`font-semibold text-sm xs:text-base sm:text-lg ${
+                                        theme === "dark" ? "text-indigo-400" : "text-indigo-600"
+                                      }`}
+                                    >
+                                      KES{" "}
+                                      {(productItem.isOnOffer && productItem.offerPrice
+                                        ? productItem.offerPrice
+                                        : productItem.price || 0
+                                      ).toLocaleString()}
+                                    </span>
+                                    {productItem.isOnOffer && productItem.offerPrice && (
+                                      <span
+                                        className={`text-xs line-through ml-1 ${
+                                          theme === "dark" ? "text-gray-400" : "text-gray-500"
+                                        }`}
+                                      >
+                                        KES {(productItem.price || 0).toLocaleString()}
+                                      </span>
+                                    )}
+                                    {productItem.stock > 0 && (
+                                      <span
+                                        className={`text-xs ml-1 xs:ml-2 block xs:inline ${
+                                          productItem.stock <= 5 ? "text-yellow-600" : "text-green-600"
+                                        }`}
+                                      >
+                                        {productItem.stock} in stock
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex gap-1">
+                                    {parseColors(productItem.colors)
+                                      .slice(0, 3)
+                                      .map((colorItem, index) => (
+                                        <span
+                                          key={index}
+                                          className={`w-4 xs:w-5 h-4 xs:h-5 rounded-full shadow-sm ${
+                                            theme === "dark" ? "border border-gray-600" : "border border-gray-300"
+                                          }`}
+                                          style={{ backgroundColor: colorItem.hex }}
+                                          title={colorItem.name}
+                                        />
+                                      ))}
+                                    {parseColors(productItem.colors).length > 3 && (
+                                      <div
+                                        className={`w-4 xs:w-5 h-4 xs:h-5 rounded-full flex items-center justify-center text-xs font-semibold ${
+                                          theme === "dark"
+                                            ? "bg-gray-600 border border-gray-500 text-gray-300"
+                                            : "bg-gray-200 border border-gray-300 text-gray-600"
+                                        }`}
+                                      >
+                                        +{parseColors(productItem.colors).length - 3}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <Button
+                                  onClick={() => handleAddToCart(productItem)}
+                                  className={`w-full mt-auto text-xs xs:text-sm sm:text-base ${
+                                    productItem.stock === 0
+                                      ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
+                                      : theme === "dark"
+                                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                                      : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                                  }`}
+                                  disabled={productItem.stock === 0}
+                                >
+                                  {productItem.stock === 0 ? (
+                                    "Out of Stock"
+                                  ) : (
+                                    <>
+                                      <ShoppingBag className="w-3 xs:w-4 h-3 xs:h-4 mr-1 xs:mr-2" /> Add to Cart
+                                    </>
+                                  )}
                                 </Button>
                               </div>
-                              {/* Badges */}
-                              <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-                                {productItem.isFeatured && (
-                                  <motion.span
-                                    className={`text-xs px-2 py-1 rounded-full flex items-center shadow-md ${
-                                      theme === "dark"
-                                        ? "bg-gradient-to-r from-purple-700 to-pink-600 text-white"
-                                        : "bg-gradient-to-r from-purple-600 to-pink-500 text-white"
-                                    }`}
-                                    initial={{ x: -10, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: 0.2 }}
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    <Zap className="w-3 h-3 mr-1" /> Featured
-                                  </motion.span>
-                                )}
-                                {productItem.stock === 0 && (
-                                  <motion.span
-                                    className="bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md"
-                                    initial={{ x: -10, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: 0.3 }}
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    Sold Out
-                                  </motion.span>
-                                )}
-                                {productItem.stock > 0 && productItem.stock <= 5 && (
-                                  <motion.span
-                                    className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full shadow-md"
-                                    initial={{ x: -10, opacity: 0 }}
-                                    animate={{ x: 0, opacity: 1 }}
-                                    transition={{ delay: 0.4 }}
-                                    whileHover={{ scale: 1.05 }}
-                                  >
-                                    Low Stock
-                                  </motion.span>
-                                )}
-                              </div>
                             </motion.div>
-
-                            {/* Product Info */}
-                            <div className="p-4 pt-2 flex flex-col flex-grow">
-                              <div className="flex justify-between items-start mb-1">
-                                <h3
-                                  onClick={() => router.push(`/listing/${productItem.id}`)}
-                                  className={`font-bold text-sm sm:text-md lg:text-lg transition-colors cursor-pointer line-clamp-2 ${
-                                    theme === "dark"
-                                      ? "text-white hover:text-indigo-400"
-                                      : "text-gray-900 hover:text-indigo-600"
-                                  }`}
-                                  title={productItem.name}
-                                >
-                                  {productItem.name}
-                                </h3>
-                                <button
-                                  onClick={() => handleToggleWishlist(productItem.id)}
-                                  className={`transition-colors p-1 -mr-1 ${
-                                    isWishlisted
-                                      ? "text-red-500 hover:text-red-600"
-                                      : theme === "dark"
-                                      ? "text-gray-400 hover:text-red-500"
-                                      : "text-gray-500 hover:text-red-500"
-                                  }`}
-                                  disabled={togglingWishlist[productItem.id]}
-                                  aria-label="Toggle Wishlist"
-                                >
-                                  <Heart
-                                    className={`w-5 h-5 ${isWishlisted ? "fill-red-500" : ""} ${
-                                      togglingWishlist[productItem.id] ? "opacity-50 animate-pulse" : ""
-                                    }`}
-                                  />
-                                </button>
-                              </div>
-
-                              {/* Rating */}
-                              <div className="flex items-center mb-2">
-                                <div className="flex">
-                                  {[...Array(5)].map((_, i) => (
-                                    <Star
-                                      key={i}
-                                      className={`w-4 h-4 ${
-                                        i < Math.floor(productItem.rating || 0)
-                                          ? "text-yellow-400 fill-yellow-400"
-                                          : theme === "dark"
-                                          ? "text-gray-600"
-                                          : "text-gray-300"
-                                      }`}
-                                    />
-                                  ))}
-                                </div>
-                                <span
-                                  className={`text-xs ml-1.5 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}
-                                >
-                                  ({productItem.reviews?.length || 0} reviews)
-                                </span>
-                              </div>
-
-                              {/* Description */}
-                              <p
-                                className={`text-xs sm:text-sm line-clamp-2 mb-3 flex-grow min-h-[40px] ${
-                                  theme === "dark" ? "text-gray-300" : "text-gray-600"
-                                }`}
-                              >
-                                {productItem.description || "No description available."}
-                              </p>
-
-                              {/* Price and Colors */}
-                              <div className="flex items-center justify-between mb-3">
-                                <div>
-                                  <span
-                                    className={`font-semibold text-base sm:text-lg ${
-                                      theme === "dark" ? "text-indigo-400" : "text-indigo-700"
-                                    }`}
-                                  >
-                                    KES{" "}
-                                    {(productItem.isOnOffer && productItem.offerPrice
-                                      ? productItem.offerPrice
-                                      : productItem.price || 0
-                                    ).toLocaleString()}
-                                  </span>
-                                  {productItem.isOnOffer && productItem.offerPrice && (
-                                    <span
-                                      className={`text-xs line-through ml-1 ${
-                                        theme === "dark" ? "text-gray-400" : "text-gray-500"
-                                      }`}
-                                    >
-                                      KES {(productItem.price || 0).toLocaleString()}
-                                    </span>
-                                  )}
-                                  {productItem.stock > 0 && (
-                                    <span
-                                      className={`text-xs ml-2 block sm:inline ${
-                                        productItem.stock <= 5 ? "text-yellow-500" : "text-green-600"
-                                      }`}
-                                    >
-                                      {productItem.stock} in stock
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="flex gap-1">
-                                  {(JSON.parse(productItem.colors) || []).slice(0, 3).map((colorItem, index) => (
-                                    <motion.div
-                                      key={index}
-                                      className={`w-4 h-4 rounded-full shadow-sm ${
-                                        theme === "dark" ? "border border-gray-600" : "border border-gray-300"
-                                      }`}
-                                      style={{ backgroundColor: colorItem.hex }}
-                                      title={colorItem.name}
-                                      whileHover={{ scale: 1.2 }}
-                                    />
-                                  ))}
-                                  {productItem.colors && productItem.colors.length > 3 && (
-                                    <div
-                                      className={`w-4 h-4 rounded-full flex items-center justify-center text-xs font-medium ${
-                                        theme === "dark"
-                                          ? "bg-gray-600 border border-gray-500 text-gray-300"
-                                          : "bg-gray-200 border border-gray-300 text-gray-600"
-                                      }`}
-                                    >
-                                      +{productItem.colors.length - 3}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-
-                              {/* Add to Cart Button */}
-                              <Button
-                                onClick={() => handleAddToCart(productItem)}
-                                className={`w-full mt-auto text-sm sm:text-base ${
-                                  productItem.stock === 0
-                                    ? "bg-gray-400 hover:bg-gray-400 cursor-not-allowed"
-                                    : theme === "dark"
-                                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                                    : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
-                                }`}
-                                disabled={productItem.stock === 0}
-                              >
-                                {productItem.stock === 0 ? (
-                                  "Out of Stock"
-                                ) : (
-                                  <>
-                                    <ShoppingBag className="w-4 h-4 mr-2" /> Add to Cart
-                                  </>
-                                )}
-                              </Button>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                          );
+                        })}
                     </AnimatePresence>
                   </motion.div>
 
-                  {/* Infinite Scroll Loader */}
-                  <div ref={loadMoreRef} className="h-16 flex items-center justify-center">
+                  <div ref={loadMoreRef} className="h-12 xs:h-16 flex items-center justify-center">
                     {isLoading && products.length > 0 && (
                       <motion.div className="flex items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500 mr-3"></div>
-                        <span className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
+                        <div className="animate-spin rounded-full h-6 xs:h-8 w-6 xs:w-8 border-t-2 border-b-2 border-indigo-600 mr-2 xs:mr-3"></div>
+                        <span className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                           Loading more products...
                         </span>
                       </motion.div>
                     )}
                     {!hasMore && products.length > 0 && (
-                      <motion.div className="text-center py-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <motion.div
+                        className="text-center py-3 xs:py-4"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                      >
                         <div
-                          className={`p-4 rounded-lg inline-block ${
-                            theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"
+                          className={`p-3 xs:p-4 rounded-lg inline-block ${
+                            theme === "dark" ? "bg-gray-800/50" : "bg-gray-100/50"
                           }`}
                         >
-                          <p className={theme === "dark" ? "text-gray-300" : "text-gray-600"}>
+                          <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
                             You've reached the end of the product list.
                           </p>
                         </div>

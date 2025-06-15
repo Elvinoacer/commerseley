@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useAdminNotificationStore } from "@/store/useAdminNotificationStore";
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Sun, Moon } from "lucide-react";
@@ -63,7 +63,13 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
   const { theme, setTheme } = useTheme();
   const { notifications } = useAdminNotificationStore();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [isMounted, setIsMounted] = useState(false);
   const hasUnreadNotifications = notifications.some((notification) => !notification.isRead);
+
+  // Ensure theme-dependent elements render only on client
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const menuGroups: MenuGroup[] = [
     {
@@ -175,7 +181,6 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
         redirect: false,
         callbackUrl: "/auth/login",
       });
-
       toast.success("You have been logged out successfully");
       router.push(result.url);
       router.refresh();
@@ -190,6 +195,10 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
       handleLogout();
     } else {
       router.push(href);
+      // Close sidebar on mobile after navigation
+      if (window.innerWidth < 1024) {
+        toggle();
+      }
     }
   };
 
@@ -203,14 +212,22 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
       animate={{ width: isOpen ? 256 : 64 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className={cn(
-        "fixed left-0 top-0 z-40 h-screen flex flex-col",
+        // Absolute on mobile, fixed on desktop
+        "lg:fixed absolute left-0 top-0 z-40 h-screen flex flex-col",
         "bg-white dark:bg-gray-900",
         "border-r border-gray-200 dark:border-gray-800",
-        "shadow-xl"
+        "shadow-xl",
+        // Hide sidebar when closed on mobile
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        "transition-transform duration-300 lg:transition-none",
+        // Prevent sidebar from scrolling
+        "overflow-hidden"
       )}
+      role="navigation"
+      aria-label="Super Admin Sidebar"
     >
-      {/* Sidebar Header */}
-      <div className={cn("flex h-16 items-center justify-between px-4", "bg-gray-50 dark:bg-gray-800")}>
+      {/* Sidebar Header - Fixed */}
+      <div className={cn("flex h-16 items-center justify-between px-4 shrink-0", "bg-gray-50 dark:bg-gray-800")}>
         {isOpen && (
           <motion.h1
             initial={{ opacity: 0 }}
@@ -221,18 +238,19 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
           </motion.h1>
         )}
         <Button
-          variant={"ghost"}
-          size={"icon"}
+          variant="ghost"
+          size="icon"
           onClick={toggle}
           className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+          aria-label={isOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
           {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
       </div>
 
-      {/* Sidebar Content */}
-      <div className="overflow-y-auto h-[calc(100vh-8rem)] custom-scrollbar">
-        <div className="space-y-1 py-4 px-2">
+      {/* Scrollable Content - Only menu items */}
+      <div className={cn("flex-1", isOpen ? "overflow-y-auto custom-scrollbar" : "overflow-hidden", "py-4 px-2")}>
+        <div className="space-y-1">
           {/* Grouped Items */}
           {menuGroups.map((group) => (
             <div key={group.name} className="mb-2">
@@ -245,6 +263,15 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                       "hover:bg-gray-100 dark:hover:bg-gray-800",
                       "transition-colors duration-200"
                     )}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        toggleGroup(group.name);
+                      }
+                    }}
+                    aria-expanded={openGroups[group.name]}
+                    aria-label={`Toggle ${group.name} menu`}
                   >
                     <div className="flex items-center">
                       <group.icon className="h-4 w-4" />
@@ -271,6 +298,14 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                                   "hover:bg-gray-100 dark:hover:bg-gray-800",
                                   "transition-colors duration-200"
                                 )}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" || e.key === " ") {
+                                    handleItemClick(item.href);
+                                  }
+                                }}
+                                aria-label={`Navigate to ${item.name}`}
                               >
                                 <item.icon className="h-4 w-4" />
                                 <span className="ml-3">{item.name}</span>
@@ -289,6 +324,7 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                     size="icon"
                     onClick={() => toggleGroup(group.name)}
                     className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+                    aria-label={`Toggle ${group.name} menu`}
                   >
                     <group.icon className="h-4 w-4" />
                   </Button>
@@ -308,6 +344,14 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                   "transition-colors duration-200",
                   !isOpen && "justify-center"
                 )}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleItemClick(item.href);
+                  }
+                }}
+                aria-label={`Navigate to ${item.name}`}
               >
                 <div className="relative">
                   <item.icon className="h-4 w-4" />
@@ -330,9 +374,13 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
         </div>
       </div>
 
-      {/* User Profile Section */}
+      {/* User Profile Section - Fixed */}
       <div
-        className={cn("mt-auto border-t p-4", "border-gray-200 dark:border-gray-800", "bg-gray-50 dark:bg-gray-800")}
+        className={cn(
+          "mt-auto border-t p-4 shrink-0",
+          "border-gray-200 dark:border-gray-800",
+          "bg-gray-50 dark:bg-gray-800"
+        )}
       >
         {isOpen ? (
           <div className="flex items-center justify-between">
@@ -351,14 +399,17 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                 <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{session?.user?.email}</p>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            {isMounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center space-y-2">
@@ -371,14 +422,17 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
                 className="rounded-full"
               />
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
+            {isMounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+            )}
           </div>
         )}
 
@@ -393,6 +447,14 @@ function SuperAdminSidebar({ isOpen, toggle, session }: SidebarProps) {
             !isOpen && "justify-center"
           )}
           onClick={() => handleLogout()}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              handleLogout();
+            }
+          }}
+          aria-label="Log out"
         >
           <LogOut className="h-4 w-4" />
           {isOpen && <span className="ml-3 text-sm">Logout</span>}

@@ -59,6 +59,7 @@ function Header() {
           variant="ghost"
           className="text-sm cursor-pointer font-semibold hover:bg-gray-100 dark:hover:bg-gray-800/50"
           onClick={() => router.push("/auth/login")}
+          aria-label="Log in"
         >
           Login
         </Button>
@@ -74,6 +75,7 @@ function Header() {
           <Button
             variant="ghost"
             className="relative h-10 w-10 rounded-full overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-800/50"
+            aria-label="User profile menu"
           >
             {userImage ? (
               <Image src={userImage} alt="User profile" fill className="object-cover" />
@@ -115,7 +117,7 @@ function Header() {
             className="space-y-2"
           >
             <div className="flex items-center">
-              <Button onClick={() => setMobileView("menu")} variant="ghost" size="icon">
+              <Button onClick={() => setMobileView("menu")} variant="ghost" size="icon" aria-label="Back to main menu">
                 <ArrowLeft />
               </Button>
             </div>
@@ -128,6 +130,14 @@ function Header() {
                 className={`block cursor-pointer w-full p-2 hover:bg-gray-100 dark:hover:bg-gray-800/50 rounded ${
                   isActive("/account") ? "bg-blue-100 dark:bg-blue-900/50" : ""
                 }`}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    setShowSheetDialog(false);
+                    router.push("/account");
+                  }
+                }}
               >
                 Your Account
               </p>
@@ -138,6 +148,7 @@ function Header() {
                   handleLogout();
                 }}
                 className="w-full"
+                aria-label="Log out"
               >
                 Logout
               </Button>
@@ -166,6 +177,14 @@ function Header() {
                     setShowSheetDialog(false);
                     router.push(navItem.to);
                   }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setShowSheetDialog(false);
+                      router.push(navItem.to);
+                    }
+                  }}
                 >
                   {navItem.icon || null}
                   {navItem.title}
@@ -185,6 +204,14 @@ function Header() {
                     setShowSheetDialog(false);
                     router.push(item.to);
                   }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      setShowSheetDialog(false);
+                      router.push(item.to);
+                    }
+                  }}
                 >
                   {item.icon}
                   {item.title}
@@ -195,6 +222,7 @@ function Header() {
               <Button
                 onClick={() => setMobileView("account")}
                 className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                aria-label="View account options"
               >
                 <User className="mr-1 h-4 w-4" />
                 Account
@@ -207,16 +235,10 @@ function Header() {
                 className={`w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50 ${
                   isActive("/cart") ? "bg-blue-100 dark:bg-blue-900/50" : ""
                 }`}
+                aria-label={`View cart with ${items?.length || 0} items`}
               >
                 <ShoppingBag className="mr-1 h-4 w-4" />
                 Cart ({items?.length || 0})
-              </Button>
-              <Button
-                onClick={toggleTheme}
-                className="w-full justify-start hover:bg-gray-100 dark:hover:bg-gray-800/50"
-              >
-                {theme === "dark" ? <Sun className="mr-1 h-4 w-4" /> : <Moon className="mr-1 h-4 w-4" />}
-                {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </Button>
             </div>
           </motion.div>
@@ -226,7 +248,7 @@ function Header() {
 
   return (
     <motion.header
-      className="sticky overflow-hidden top-0 z-50 shadow-sm"
+      className="sticky overflow-hidden top-0 z-50 shadow-sm dark:bg-gray-900 bg-white"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 120, damping: 20 }}
@@ -236,12 +258,11 @@ function Header() {
             ? "radial-gradient(ellipse at top, rgba(9, 9, 44, 0.9) 0%, rgba(4, 2, 19, 0.95) 100%)"
             : "radial-gradient(ellipse at top, rgba(255, 255, 255, 0.96) 0%, rgba(236, 243, 255, 0.9) 100%)",
       }}
+      role="banner"
     >
-      {/* Galaxy effect elements - only in dark mode */}
       {theme === "dark" && (
         <>
-          {/* Twinkling stars */}
-          <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
             {[...Array(50)].map((_, i) => (
               <div
                 key={i}
@@ -257,29 +278,27 @@ function Header() {
               />
             ))}
           </div>
-
-          {/* Galactic core glow */}
           <div
             className="absolute top-1/4 -left-1/4 w-64 h-64 rounded-full filter blur-[80px] pointer-events-none"
             style={{
               background: "radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%)",
             }}
+            aria-hidden="true"
           />
-
-          {/* Nebula effect */}
           <div
             className="absolute -bottom-1/4 -right-1/4 w-96 h-96 rounded-full filter blur-[100px] pointer-events-none"
             style={{
               background: "radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)",
               mixBlendMode: "screen",
             }}
+            aria-hidden="true"
           />
         </>
       )}
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex items-center justify-between h-20">
-          <Link className="text-2xl text-blue-950 dark:text-white font-bold" href="/">
+          <Link className="text-2xl text-blue-950 dark:text-white font-bold" href="/" aria-label="Commersely home">
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
               <Image
                 src={commerselylogo}
@@ -291,7 +310,7 @@ function Header() {
             </motion.div>
           </Link>
           <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center">
-            <nav className="flex items-center space-x-8">
+            <nav className="flex items-center space-x-8" role="navigation" aria-label="Main navigation">
               {navItems.map((item, index) => (
                 <motion.div key={index} whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 300 }}>
                   <Link
@@ -301,6 +320,7 @@ function Header() {
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-700 hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
                     }`}
+                    aria-current={isActive(item.to) ? "page" : undefined}
                   >
                     {item.title}
                   </Link>
@@ -309,7 +329,7 @@ function Header() {
             </nav>
           </div>
           <div className="hidden lg:flex items-center space-x-6">
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-6" role="navigation" aria-label="Legal navigation">
               {legalItems.map((item, index) => (
                 <motion.div key={index} whileHover={{ y: -2 }} transition={{ type: "spring", stiffness: 300 }}>
                   <Link
@@ -319,6 +339,7 @@ function Header() {
                         ? "text-blue-600 dark:text-blue-400"
                         : "text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
                     }`}
+                    aria-current={isActive(item.to) ? "page" : undefined}
                   >
                     {item.title}
                   </Link>
@@ -330,6 +351,8 @@ function Header() {
               onClick={() => router.push("/cart")}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              role="button"
+              aria-label={`View cart with ${items?.length || 0} items`}
             >
               <ShoppingCart className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               <AnimatePresence>
@@ -351,6 +374,7 @@ function Header() {
                 size="icon"
                 onClick={toggleTheme}
                 className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               >
                 <motion.div animate={{ rotate: theme === "dark" ? 360 : 0 }} transition={{ duration: 0.5 }}>
                   {theme === "dark" ? (
@@ -363,6 +387,60 @@ function Header() {
             </motion.div>
             {renderUserDisplay()}
           </div>
+          <div className="lg:hidden flex items-center space-x-4">
+            <motion.div
+              className="relative cursor-pointer"
+              onClick={() => router.push("/cart")}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              role="button"
+              aria-label={`View cart with ${items?.length || 0} items`}
+            >
+              <ShoppingCart className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              <AnimatePresence>
+                {items?.length > 0 && (
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="absolute -top-1 -right-1 h-4 w-4 bg-blue-600 text-white text-xs rounded-full flex items-center justify-center"
+                  >
+                    {items?.length}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
+                aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+              >
+                <motion.div animate={{ rotate: theme === "dark" ? 360 : 0 }} transition={{ duration: 0.5 }}>
+                  {theme === "dark" ? (
+                    <Sun className="h-6 w-6 text-yellow-400" />
+                  ) : (
+                    <Moon className="h-6 w-6 text-gray-700" />
+                  )}
+                </motion.div>
+              </Button>
+            </motion.div>
+            {renderUserDisplay()}
+            <Button
+              onClick={() => setShowSheetDialog(!showSheetDialog)}
+              size="icon"
+              variant="ghost"
+              className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
+              aria-label="Open mobile menu"
+              aria-expanded={showSheetDialog}
+            >
+              <motion.div whileHover={{ rotate: 90 }} transition={{ type: "spring", stiffness: 300 }}>
+                <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              </motion.div>
+            </Button>
+          </div>
           <div className="lg:hidden">
             <Sheet
               open={showSheetDialog}
@@ -371,19 +449,12 @@ function Header() {
                 setMobileView("menu");
               }}
             >
-              <Button
-                onClick={() => setShowSheetDialog(!showSheetDialog)}
-                size="icon"
-                variant="ghost"
-                className="hover:bg-gray-100 dark:hover:bg-gray-800/50"
-              >
-                <motion.div whileHover={{ rotate: 90 }} transition={{ type: "spring", stiffness: 300 }}>
-                  <Menu className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-                </motion.div>
-              </Button>
               <SheetContent
                 side="left"
-                className="w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-r border-gray-200 dark:border-gray-800"
+                className={`w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-r border-gray-200 dark:border-gray-800 ${
+                  theme === "dark" ? "dark" : ""
+                }`}
+                aria-label="Mobile menu"
               >
                 <SheetHeader>
                   <SheetTitle className="text-left text-gray-900 dark:text-white">
@@ -399,19 +470,28 @@ function Header() {
         </div>
       </div>
 
-      {/* Animated border gradient */}
       <motion.div
         className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
         animate={{ x: ["-100%", "100%"] }}
         transition={{ repeat: Infinity, duration: 5, ease: "linear" }}
+        aria-hidden="true"
       />
 
-      {/* Twinkle animation definition */}
       <style jsx global>{`
         @keyframes twinkle {
-        0% { opacity: 0.2; transform: translate(0, 0); }
-  50% { opacity: 1; transform: translate(2px, -3px); }
-  100% { opacity: 0.3; transform: translate(-1px, 1px); }
+          0% {
+            opacity: 0.2;
+            transform: translate(0, 0);
+          }
+          50% {
+            opacity: 1;
+            transform: translate(2px, -3px);
+          }
+          100% {
+            opacity: 0.3;
+            transform: translate(-1px, 1px);
+          }
+        }
       `}</style>
     </motion.header>
   );
