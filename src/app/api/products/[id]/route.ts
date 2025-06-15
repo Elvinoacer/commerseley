@@ -205,6 +205,16 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    // Delete related CartItem records
+    await prisma.cartItem.deleteMany({
+      where: { productId: id },
+    });
+
+    // Delete related Wishlist entries
+    await prisma.wishlist.deleteMany({
+      where: { product: { some: { id } } },
+    });
+
     // Log admin activity
     await prisma.adminActivity.create({
       data: {
