@@ -26,16 +26,15 @@ model User {
   updatedAt     DateTime            @updatedAt
   refreshToken  String?             @unique
   cart          Cart?
-   accounts      Account[]
+  accounts      Account[]
   sessions      Session[]
   wishlist      Wishlist[]
   addresses     Address[]
   orders        Order[]
   reviews       Review[]            @relation("UserReviews")
   AdminActivity AdminActivity[]
-  notifications AdminNotification[] // New relationship
+  notifications AdminNotification[]
 }
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -145,7 +144,6 @@ model product {
   price       Float
   stock       Int
   isOnOffer   Boolean?
-  wishlist    Wishlist[]
   soldCount   Int
   rating      Float?     @default(0)
   images      String[]
@@ -153,10 +151,14 @@ model product {
   updatedAt   DateTime   @updatedAt
   isFeatured  Boolean    @default(false)
   offerPrice  Float?
-  reviews     Review[]   @relation("ProductReviews")
-  CartItem    CartItem[]
-}
 
+  // Relations
+  reviews     Review[]   @relation("ProductReviews")
+  CartItem    CartItem[] @relation("CartItemToproduct")
+  wishlist    Wishlist[] @relation("WishlistToproduct")
+
+  @@index([categoryId])
+}
 model Review {
   id        String   @id @default(cuid())
   userId    String
@@ -174,12 +176,16 @@ model Review {
 }
 
 model Wishlist {
-  id      String    @id @default(uuid())
-  userId  String
-  user    User      @relation(fields: [userId], references: [id])
-  product product[]
-}
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  productId String
+  product   product  @relation("WishlistToproduct", fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  @@unique([userId, productId])
+}
 model Cart {
   id        String     @id @default(cuid())
   userId    String     @unique
@@ -188,13 +194,12 @@ model Cart {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
-
 model CartItem {
   id        String   @id @default(cuid())
   cartId    String
   cart      Cart     @relation(fields: [cartId], references: [id])
   productId String
-  product   product  @relation(fields: [productId], references: [id])
+  product   product  @relation("CartItemToproduct", fields: [productId], references: [id], onDelete: Cascade)
   quantity  Int
   size      String?
   color     String
@@ -203,7 +208,6 @@ model CartItem {
 
   @@unique([cartId, productId, size, color])
 }
-
 model FeatureBanner {
   id           String   @id @default(cuid())
   imageUrl     String

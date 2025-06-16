@@ -84,25 +84,51 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     const userId = user.id;
     const { id } = params;
 
-    const category = await prisma.category.findUnique({ where: { id } });
+    const category = await prisma.category.findUnique({
+      where: { id },
+      include: {
+        products: {
+          include: {
+            CartItem: true,
+            reviews: true,
+            wishlist: true,
+          },
+        },
+      },
+    });
+
     if (!category) {
       return NextResponse.json({ success: false, message: "Category not found" }, { status: 404 });
     }
 
-    const productCount = await prisma.product.count({
-      where: { categoryId: id },
+    // First delete all cart items associated with these products
+    await prisma.cartItem.deleteMany({
+      where: {
+        productId: {
+          in: category.products.map((p) => p.id),
+        },
+      },
     });
 
-    if (productCount > 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Cannot delete category with associated products",
+    // Delete all reviews associated with these products
+    await prisma.review.deleteMany({
+      where: {
+        productId: {
+          in: category.products.map((p) => p.id),
         },
-        { status: 400 }
-      );
-    }
+      },
+    });
 
+    // Delete all wishlist items associated with these products
+    await prisma.wishlist.deleteMany({
+      where: {
+        productId: {
+          in: category.products.map((p) => p.id),
+        },
+      },
+    });
+
+    // Create activity log
     await prisma.adminActivity.create({
       data: {
         adminId: userId,
@@ -110,20 +136,32 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
         details: {
           categoryId: category.id,
           categoryName: category.name,
+          deletedProductsCount: category.products.length,
         },
       },
     });
 
+    // Now delete the category (which will delete products via cascade)
     await prisma.category.delete({
       where: { id },
     });
 
-    return NextResponse.json({ success: true, message: "Category deleted successfully" }, { status: 204 });
+    return NextResponse.json({
+      success: true,
+      message: `Category and ${category.products.length} associated products deleted successfully`,
+    });
   } catch (error: any) {
     console.error("Error deleting category:", error);
     if (error?.code === "P2025") {
       return NextResponse.json({ success: false, message: "Category not found" }, { status: 404 });
     }
-    return NextResponse.json({ success: false, message: "Failed to delete category" }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || "Failed to delete category",
+        code: error.code,
+      },
+      { status: 500 }
+    );
   }
 }

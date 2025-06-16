@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import axios from "axios";
 import { API_ROUTES } from "@/utils/api";
 import { Category, CategoryResponse, CategoriesResponse } from "@/types";
-import { useAuthStore } from "./useAuthStore";
 
 interface Pagination {
   currentPage: number;
@@ -20,9 +19,9 @@ interface CategoryStore {
   searchTerm: string;
   fetchCategories: (page?: number, limit?: number, search?: string) => Promise<void>;
   fetchCategoryById: (id: string) => Promise<Category | null>;
-  createCategory: (name: string, description?: string) => Promise<string | null>;
-  updateCategory: (id: string, name: string, description?: string) => Promise<boolean>;
-  deleteCategory: (id: string) => Promise<boolean>;
+  createCategory: (name: string, description?: string, userRole?: string) => Promise<string | null>;
+  updateCategory: (id: string, name: string, description?: string, userRole?: string) => Promise<boolean>;
+  deleteCategory: (id: string, userRole?: string) => Promise<boolean>;
   setPagination: (pagination: Partial<Pagination>) => void;
   setSearchTerm: (term: string) => void;
 }
@@ -137,14 +136,12 @@ export const useCategoryStore = create<CategoryStore>()(
         }
       },
 
-      updateCategory: async (id: string, name: string, description?: string) => {
-        const { user } = useAuthStore.getState();
+      updateCategory: async (id: string, name: string, description?: string, userRole?: string) => {
         const { pagination, searchTerm } = get();
-        if (user?.role !== "SUPER_ADMIN") {
+        if (userRole !== "SUPER_ADMIN") {
           set({ error: "Unauthorized request" });
           return false;
         }
-
         set({ isLoading: true, error: null });
         try {
           const response = await axiosInstance.put<CategoryResponse>(`/${id}`, {
@@ -169,14 +166,12 @@ export const useCategoryStore = create<CategoryStore>()(
         }
       },
 
-      deleteCategory: async (id: string) => {
-        const { user } = useAuthStore.getState();
+      deleteCategory: async (id: string, userRole?: string) => {
         const { pagination, searchTerm } = get();
-        if (user?.role !== "SUPER_ADMIN") {
+        if (userRole !== "SUPER_ADMIN") {
           set({ error: "Unauthorized request" });
           return false;
         }
-
         set({ isLoading: true, error: null });
         try {
           await axiosInstance.delete<CategoryResponse>(`/${id}`);

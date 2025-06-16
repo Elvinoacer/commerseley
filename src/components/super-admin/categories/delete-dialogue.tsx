@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useCategoryStore } from "@/store/useCategories";
 import {
   AlertDialog,
@@ -29,10 +30,13 @@ const DeleteDialog = ({ categoryId, children, customerId }: DeleteCategoryDialog
   const { deleteCategory } = useCategoryStore();
   const { deleteCustomer } = useCustomersStore();
   const router = useRouter();
+  const { data: session } = useSession(); // Get session data from NextAuth
+
+  const userRole = session?.user?.role; // Adjust based on your session structure
 
   const handleDeleteCategory = async () => {
     try {
-      const success = categoryId ? await deleteCategory(categoryId) : false;
+      const success = categoryId ? await deleteCategory(categoryId, userRole) : false;
       if (success) {
         toast.success("Category deleted successfully");
       } else {
@@ -43,6 +47,7 @@ const DeleteDialog = ({ categoryId, children, customerId }: DeleteCategoryDialog
       toast.error("Failed to delete category");
     }
   };
+
   async function handleDeleteCustomer(customerId: string) {
     try {
       const success = await deleteCustomer(customerId);
@@ -74,8 +79,7 @@ const DeleteDialog = ({ categoryId, children, customerId }: DeleteCategoryDialog
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              // @ts-ignore
-              onClick={customerId ? handleDeleteCustomer(customerId) : handleDeleteCategory}
+              onClick={() => (customerId ? handleDeleteCustomer(customerId) : handleDeleteCategory())}
               className="bg-red-500 hover:bg-red-600"
             >
               Delete
