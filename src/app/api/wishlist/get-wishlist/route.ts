@@ -1,6 +1,6 @@
+import { requireAuth } from "@/lib/auth-helpers";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { requireAuth } from "@/lib/auth-helpers";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,19 +15,41 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: "User ID required", success: false }, { status: 400 });
     }
 
+    // Get wishlist
     const wishlist = await prisma.wishlist.findFirst({
       where: { userId },
-      include: { product: true },
     });
 
-    const totalItems = wishlist ? wishlist.product.length : 0;
-    const totalPages = Math.ceil(totalItems / limit);
+    // Get paginated products in the wishlist
+    const products = await prisma.product.findMany({
+      where: {
+        wishlist: {
+          some: {
+            userId,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    });
 
-    const paginatedProducts = wishlist ? wishlist.product.slice(skip, skip + limit) : [];
+    // Get total count of products in wishlist
+    const totalItems = await prisma.product.count({
+      where: {
+        wishlist: {
+          some: {
+            userId,
+          },
+        },
+      },
+    });
+
+    const totalPages = Math.ceil(totalItems / limit);
 
     return NextResponse.json({
       success: true,
-      wishlist: { product: paginatedProducts },
+      wishlist: wishlist ? { ...wishlist, product: products } : { product: [] }, // Ensure consistent structure
       currentPage: page,
       totalPages,
       itemsPerPage: limit,

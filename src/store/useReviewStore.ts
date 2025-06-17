@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 import axios from "axios";
 import { API_ROUTES } from "@/utils/api";
 import { Review, ReviewResponse, ReviewsResponse } from "@/types";
-import { useAuthStore } from "./useAuthStore";
 
 interface ReviewStore {
   reviews: Review[];
@@ -11,9 +10,9 @@ interface ReviewStore {
   error: string | null;
   fetchReviewsByProduct: (productId: string) => Promise<void>;
   fetchReviewById: (id: string) => Promise<Review | null>;
-  createReview: (productId: string, rating: number, comment?: string) => Promise<string | null>;
-  updateReview: (id: string, rating: number, comment?: string) => Promise<boolean>;
-  deleteReview: (id: string) => Promise<boolean>;
+  createReview: (productId: string, rating: number, comment?: string, userId?: string) => Promise<string | null>;
+  updateReview: (id: string, rating: number, comment?: string, userId?: string) => Promise<boolean>;
+  deleteReview: (id: string, userId?: string) => Promise<boolean>;
 }
 
 const axiosInstance = axios.create({
@@ -65,9 +64,8 @@ export const useReviewStore = create<ReviewStore>()(
           return null;
         }
       },
-      createReview: async (productId: string, rating: number, comment?: string) => {
-        const { user } = useAuthStore.getState();
-        if (!user) {
+      createReview: async (productId: string, rating: number, comment?: string, userId?: string) => {
+        if (!userId) {
           set({ error: "Unauthorized request" });
           return null;
         }
@@ -78,6 +76,7 @@ export const useReviewStore = create<ReviewStore>()(
             productId,
             rating,
             comment,
+            userId, // Optionally send userId to the backend for validation
           });
           const review = response.data;
           if (review) {
@@ -99,9 +98,8 @@ export const useReviewStore = create<ReviewStore>()(
           return null;
         }
       },
-      updateReview: async (id: string, rating: number, comment?: string) => {
-        const { user } = useAuthStore.getState();
-        if (!user) {
+      updateReview: async (id: string, rating: number, comment?: string, userId?: string) => {
+        if (!userId) {
           set({ error: "Unauthorized request" });
           return false;
         }
@@ -111,6 +109,7 @@ export const useReviewStore = create<ReviewStore>()(
           const response = await axiosInstance.put<ReviewResponse>(`/${id}`, {
             rating,
             comment,
+            userId, // Optionally send userId to the backend for validation
           });
           const updatedReview = response.data;
           if (updatedReview) {
@@ -132,16 +131,17 @@ export const useReviewStore = create<ReviewStore>()(
           return false;
         }
       },
-      deleteReview: async (id: string) => {
-        const { user } = useAuthStore.getState();
-        if (!user) {
+      deleteReview: async (id: string, userId?: string) => {
+        if (!userId) {
           set({ error: "Unauthorized request" });
           return false;
         }
 
         set({ isLoading: true, error: null });
         try {
-          await axiosInstance.delete<ReviewResponse>(`/${id}`);
+          await axiosInstance.delete<ReviewResponse>(`/${id}`, {
+            data: { userId }, // Optionally send userId to the backend for validation
+          });
           set({
             reviews: get().reviews.filter((r) => r.id !== id),
             isLoading: false,

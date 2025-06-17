@@ -14,11 +14,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User ID or product ID is undefined", success: false }, { status: 400 });
     }
 
-    const userData = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { name: true, email: true },
-    });
-
+    // Verify product exists
     const product = await prisma.product.findUnique({
       where: { id: productId },
       select: { id: true, name: true },
@@ -28,89 +24,57 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Product not found", success: false }, { status: 404 });
     }
 
-    let wishlist = await prisma.wishlist.findFirst({
-      where: { userId: userId },
-      include: { product: true },
+    // Check if product is already in wishlist
+    const existingWishlistItem = await prisma.wishlist.findUnique({
+      where: {
+        userId_productId: {
+          userId,
+          productId,
+        },
+      },
     });
 
-    if (!wishlist) {
-      wishlist = await prisma.wishlist.create({
-        data: {
-          userId: userId,
-          product: {
-            connect: { id: productId },
+    if (existingWishlistItem) {
+      // Remove from wishlist
+      await prisma.wishlist.delete({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
           },
-        },
-        include: {
-          product: true,
-        },
-      });
-
-      await logAdminNotification({
-        type: NotificationType.WISHLIST_ITEM_ADDED,
-        details: {
-          userId,
-          userName: userData?.name,
-          userEmail: userData?.email,
-          productId,
-          productName: product.name,
         },
       });
 
       return NextResponse.json({
-        wishlist,
-        message: "Product added to wishlist",
         success: true,
-      });
-    }
-
-    const isProductInWishlist = wishlist.product.some((p) => p.id === productId);
-
-    if (isProductInWishlist) {
-      wishlist = await prisma.wishlist.update({
-        where: { id: wishlist.id },
-        data: {
-          product: {
-            disconnect: { id: productId },
-          },
-        },
-        include: {
-          product: true,
-        },
-      });
-      return NextResponse.json({
-        wishlist,
         message: "Product removed from wishlist",
-        success: true,
+        isInWishlist: false,
       });
     } else {
-      wishlist = await prisma.wishlist.update({
-        where: { id: wishlist.id },
+      // Add to wishlist
+      await prisma.wishlist.create({
         data: {
-          product: {
-            connect: { id: productId },
-          },
-        },
-        include: {
-          product: true,
+          userId,
+          productId,
         },
       });
 
+      // Log admin notification
       await logAdminNotification({
         type: NotificationType.WISHLIST_ITEM_ADDED,
         details: {
           userId,
-          userName: userData?.name,
-          userEmail: userData?.email,
+          userName: user.email, // or another existing property of user
+          userEmail: user.email,
           productId,
           productName: product.name,
         },
       });
 
       return NextResponse.json({
-        wishlist,
-        message: "Product added to wishlist",
         success: true,
+        message: "Product added to wishlist",
+        isInWishlist: true,
       });
     }
   } catch (error) {

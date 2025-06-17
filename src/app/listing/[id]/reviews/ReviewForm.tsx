@@ -23,8 +23,8 @@ const ReviewForm = ({ productId, existingReview, onCancel, onSubmit }: ReviewFor
   const [error, setError] = useState("");
 
   const { createReview, updateReview } = useReviewStore();
-  const { data } = useSession();
-  const { user } = data;
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +46,9 @@ const ReviewForm = ({ productId, existingReview, onCancel, onSubmit }: ReviewFor
       let success = false;
 
       if (existingReview) {
-        success = await updateReview(existingReview.id, rating, comment || undefined);
+        success = await updateReview(existingReview.id, rating, comment || undefined, user.id);
       } else {
-        const reviewId = await createReview(productId, rating, comment || undefined);
+        const reviewId = await createReview(productId, rating, comment || undefined, user.id);
         success = !!reviewId;
       }
 

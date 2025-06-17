@@ -22,8 +22,8 @@ const ReviewPage = ({ params }: { params: Promise<{ id: string }> }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [product, setProduct] = useState<Product | null>(null);
 
-  const { data } = useSession();
-  const { user } = data || {};
+  const { data: session } = useSession();
+  const { user } = session || {};
   const { reviews, isLoading: isReviewLoading, fetchReviewsByProduct } = useReviewStore();
   const { getProductById } = useProductStore();
 
@@ -49,8 +49,13 @@ const ReviewPage = ({ params }: { params: Promise<{ id: string }> }) => {
   }, [productId, getProductById, fetchReviewsByProduct]);
 
   const handleDeleteReview = async (reviewId: string) => {
+    if (!user) {
+      setError("You must be logged in to delete a review");
+      return;
+    }
+
     try {
-      const success = await useReviewStore.getState().deleteReview(reviewId);
+      const success = await useReviewStore.getState().deleteReview(reviewId, user.id);
       if (!success) {
         throw new Error("Failed to delete review");
       }

@@ -91,7 +91,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     await updateProductRating(review.productId);
 
-    return NextResponse.json({ success: true, message: "Review deleted successfully" }, { status: 204 });
+    return NextResponse.json({ success: true, message: "Review deleted successfully" }, { status: 200 });
   } catch (error: any) {
     console.error("Error deleting review:", error);
     if (error?.code === "P2025") {
