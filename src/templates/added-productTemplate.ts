@@ -26,7 +26,7 @@ export function productTemplate(productWithContents: ProductEmailTemplate) {
     const description = prod.description || "No description available.";
 
     return `
-      <a href="${baseUrl}"/listing"/${productId}" class="product-card">
+      <a href="${baseUrl}/listing/${productId}" class="product-card">
         <img
           src="${productImage}"
           alt="${productName}"
