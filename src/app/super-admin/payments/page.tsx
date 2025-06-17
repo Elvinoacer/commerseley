@@ -5,10 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useOrderStore } from "@/store/useOrderStore";
 import { FiCreditCard, FiTruck, FiDollarSign, FiCheck, FiX } from "react-icons/fi";
 import { FaMoneyBillWave } from "react-icons/fa";
+import { formatCurrency } from "@/utils/format-currency";
 
 const PaymentMethodsAdmin = () => {
-  const { isCashOnDeliveryEnabled, fetchCashOnDeliverySetting, updateCashOnDeliverySetting, isLoading } =
-    useOrderStore();
+  const {
+    isCashOnDeliveryEnabled,
+    fetchCashOnDeliverySetting,
+    updateCashOnDeliverySetting,
+    fetchCODStats,
+    codStats,
+    isLoading,
+  } = useOrderStore();
   const [isUpdating, setIsUpdating] = useState(false);
   const [notification, setNotification] = useState<{
     show: boolean;
@@ -18,7 +25,8 @@ const PaymentMethodsAdmin = () => {
 
   useEffect(() => {
     fetchCashOnDeliverySetting();
-  }, [fetchCashOnDeliverySetting]);
+    fetchCODStats();
+  }, [fetchCashOnDeliverySetting, fetchCODStats]);
 
   const toggleCashOnDelivery = async () => {
     setIsUpdating(true);
@@ -174,7 +182,11 @@ const PaymentMethodsAdmin = () => {
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 truncate">Total Orders (COD)</p>
                   <h3 className="text-xl md:text-2xl font-bold mt-1 md:mt-2 text-gray-900 dark:text-gray-100 truncate">
-                    1,245
+                    {isLoading || !codStats ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : (
+                      codStats.totalCODOrders.toLocaleString()
+                    )}
                   </h3>
                 </div>
                 <div className="bg-blue-100 dark:bg-blue-900/50 p-2 md:p-3 rounded-full ml-2">
@@ -188,7 +200,11 @@ const PaymentMethodsAdmin = () => {
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 truncate">COD Usage Rate</p>
                   <h3 className="text-xl md:text-2xl font-bold mt-1 md:mt-2 text-gray-900 dark:text-gray-100 truncate">
-                    32%
+                    {isLoading || !codStats ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : (
+                      `${codStats.codUsageRate.toFixed(1)}%`
+                    )}
                   </h3>
                 </div>
                 <div className="bg-purple-100 dark:bg-purple-900/50 p-2 md:p-3 rounded-full ml-2">
@@ -202,7 +218,14 @@ const PaymentMethodsAdmin = () => {
                 <div className="min-w-0">
                   <p className="text-xs md:text-sm text-gray-600 dark:text-gray-300 truncate">Avg. COD Order Value</p>
                   <h3 className="text-xl md:text-2xl font-bold mt-1 md:mt-2 text-gray-900 dark:text-gray-100 truncate">
-                    $45.67
+                    {isLoading || !codStats ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : (
+                      `${formatCurrency(+codStats?.avgCODOrderValue?.toFixed(2) || 0, {
+                        locale: "en-KE", // Kenyan English locale
+                        currency: "KES", // Kenyan Shillings currency code
+                      })}`
+                    )}
                   </h3>
                 </div>
                 <div className="bg-green-100 dark:bg-green-900/50 p-2 md:p-3 rounded-full ml-2">

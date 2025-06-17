@@ -34,6 +34,12 @@ export const NOTIFICATIONDATA = {
     smallDescription: "The item you're looking for is currently unavailable. Sign up for restock alerts!",
     text: "Hello, \n\nWe wanted to let you know that an item you recently viewed or added to your wishlist is currently out of stock. We apologize for any inconvenience this may cause.\n\nWe're working hard to replenish our inventory as quickly as possible. In the meantime, you can:\n\n1. **Sign up for restock notifications:** Be the first to know when it's back!\n2. **Browse similar products:** We have many other fantastic items you might love.\n\nThank you for your patience and understanding. We appreciate your business!\n\nSincerely,\nThe Team",
   },
+  DELETED_PRODUCTS: {
+    title: "Notice: Some Products Have Been Discontinued.",
+    smallDescription: "We've removed certain products from our store. Explore our current offerings!",
+    text: "Hello, \n\nAs part of our commitment to providing you with the best shopping experience, we've made the decision to discontinue some products from our store. This allows us to focus on bringing you fresh, high-quality items that better align with your needs.\n\nIf you had a favorite among the discontinued products, we apologize for any inconvenience. We invite you to explore our current collection, where you’ll find plenty of exciting alternatives.\n\nThank you for your understanding and continued support. If you have any questions, our team is here to assist.\n\nHappy Shopping!",
+    allProducts: `${baseUrl}/listing`,
+  },
 };
 
 export enum NotificationAction {
@@ -42,4 +48,5 @@ export enum NotificationAction {
   UPDATED_CATEGORY = "UPDATED_CATEGORY",
   OUT_OF_STOCK = "OUT_OF_STOCK",
   ADDED_COLLECTION = "ADDED_COLLECTION",
+  DELETED_PRODUCTS = "DELETED_PRODUCTS",
 }

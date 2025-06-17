@@ -14,6 +14,7 @@ import { useCustomersStore } from "@/store/useCustomerStore";
 import { UserWithOrders } from "@/types";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -25,17 +26,28 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [customerToDelete, setCustomerToDelete] = useState<string | null>(null);
   const { deleteCustomer } = useCustomersStore();
+  const { data: session } = useSession();
+  const user = session?.user;
+  console.log(user);
 
   const handleDeleteClick = (customerId: string) => {
+    if (!user) {
+      toast.error("You must be logged in to delete a customer");
+      return;
+    }
+    if (user.role !== "SUPER_ADMIN") {
+      toast.error("You are not authorized to delete customers");
+      return;
+    }
     setCustomerToDelete(customerId);
     setDeleteDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
-    if (!customerToDelete) return;
+    if (!customerToDelete || !user) return;
 
     try {
-      const success = await deleteCustomer(customerToDelete);
+      const success = await deleteCustomer(customerToDelete, user.id, user.role);
       if (success) {
         toast.success("Customer deleted successfully");
       } else {
@@ -121,7 +133,7 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
                 {new Date(customer.createdAt).toLocaleDateString()}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-300">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                 {customer.orders?.length || 0}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -146,12 +158,12 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
       </table>
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600">
+        <AlertDialogContent className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-gray-100">Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription className="text-gray-600 dark:text-gray-300">
-              This action cannot be undone. This will permanently delete the user and remove all their data from our
-              servers.
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              This action cannot be undone. This will permanently delete the user and all their associated data,
+              including orders and reviews, from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -160,7 +172,7 @@ export default function CustomerTable({ customers }: CustomerTableProps) {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
-              className="bg-red-500 dark:bg-red-400 text-white hover:bg-red-600 dark:hover:bg-red-500"
+              className="bg-red-600 dark:bg-red-500 text-white hover:bg-red-700 dark:hover:bg-red-600"
             >
               Delete
             </AlertDialogAction>

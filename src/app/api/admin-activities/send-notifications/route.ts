@@ -5,6 +5,7 @@ import { productTemplate } from "@/templates/added-productTemplate";
 import { outOfStock } from "@/templates/out-of-stocTemplate";
 import { removedCategory } from "@/templates/removed-categoryTemplate";
 import { updatedCategory } from "@/templates/updatedCategoryTemplate";
+import { deletedProducts } from "@/templates/deleted-productsTemplate";
 import { allLinks, baseUrl, NotificationAction, NOTIFICATIONDATA } from "@/lib/custom-ntf";
 import { requireSuperAdmin } from "@/lib/auth-helpers";
 
@@ -181,6 +182,37 @@ export async function POST(req: NextRequest) {
           success: true,
           message: "Out of stock notifications sent successfully",
           data: outOfStockResult,
+        });
+
+      case NotificationAction.DELETED_PRODUCTS:
+        const deletedProductsActivity = await prisma.adminActivity.findFirst({
+          where: { action: "DELETED_PRODUCTS" },
+          orderBy: { createdAt: "desc" },
+        });
+
+        if (!deletedProductsActivity) {
+          return NextResponse.json({ success: false, message: "No deleted products activity found" }, { status: 404 });
+        }
+
+        const deletedProductsResult = await notificationService.sendBulkNotifications(
+          {
+            from: process.env.USER_EMAIL!,
+            subject: NOTIFICATIONDATA.DELETED_PRODUCTS.title,
+            text: NOTIFICATIONDATA.DELETED_PRODUCTS.text,
+            html: deletedProducts(),
+          },
+          {
+            title: NOTIFICATIONDATA.DELETED_PRODUCTS.title,
+            body: NOTIFICATIONDATA.DELETED_PRODUCTS.smallDescription,
+            data: { icon: customIcon, lead: baseUrl + "/listing" },
+          },
+          1000
+        );
+
+        return NextResponse.json({
+          success: true,
+          message: "Deleted products notifications sent successfully",
+          data: deletedProductsResult,
         });
 
       default:

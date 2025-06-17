@@ -54,7 +54,7 @@ export async function GET(req: NextRequest, { params }: { params: { customerId: 
 export async function DELETE(req: NextRequest, { params }: { params: { customerId: string } }) {
   try {
     await requireSuperAdmin(req);
-    const { customerId } = params;
+    const { customerId } = await params; // Note the await here for Next.js 13.4+
 
     const user = await prisma.user.findUnique({
       where: { id: customerId },
@@ -65,15 +65,50 @@ export async function DELETE(req: NextRequest, { params }: { params: { customerI
     }
 
     await prisma.$transaction([
-      prisma.cartItem.deleteMany({ where: { cart: { userId: customerId } } }),
-      prisma.cart.deleteMany({ where: { userId: customerId } }),
-      prisma.wishlist.deleteMany({ where: { userId: customerId } }),
-      prisma.address.deleteMany({ where: { userId: customerId } }),
-      prisma.review.deleteMany({ where: { userId: customerId } }),
-      prisma.orderItem.deleteMany({ where: { order: { userId: customerId } } }),
-      prisma.order.deleteMany({ where: { userId: customerId } }),
-      prisma.subscription.deleteMany({ where: { email: user.email } }),
-      prisma.user.delete({ where: { id: customerId } }),
+      // First delete order items (depends on orders)
+      prisma.orderItem.deleteMany({
+        where: { order: { userId: customerId } },
+      }),
+
+      // Then delete orders (depends on addresses and coupons)
+      prisma.order.deleteMany({
+        where: { userId: customerId },
+      }),
+
+      // Then delete cart items (depends on cart)
+      prisma.cartItem.deleteMany({
+        where: { cart: { userId: customerId } },
+      }),
+
+      // Then delete cart
+      prisma.cart.deleteMany({
+        where: { userId: customerId },
+      }),
+
+      // Then delete wishlist items
+      prisma.wishlist.deleteMany({
+        where: { userId: customerId },
+      }),
+
+      // Then delete reviews
+      prisma.review.deleteMany({
+        where: { userId: customerId },
+      }),
+
+      // Then delete addresses (no longer referenced by orders)
+      prisma.address.deleteMany({
+        where: { userId: customerId },
+      }),
+
+      // Then delete subscription
+      prisma.subscription.deleteMany({
+        where: { email: user.email },
+      }),
+
+      // Finally delete the user
+      prisma.user.delete({
+        where: { id: customerId },
+      }),
     ]);
 
     return NextResponse.json({

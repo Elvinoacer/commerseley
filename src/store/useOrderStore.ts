@@ -67,6 +67,12 @@ interface Pagination {
   itemsPerPage: number;
 }
 
+interface CODStats {
+  totalCODOrders: number;
+  codUsageRate: number;
+  avgCODOrderValue: number;
+}
+
 interface OrderStore {
   currentOrder: Order | null;
   isLoading: boolean;
@@ -76,15 +82,13 @@ interface OrderStore {
   error: string | null;
   isCashOnDeliveryEnabled: boolean;
   pagination: Pagination;
+  codStats: CODStats | null;
   fetchCashOnDeliverySetting: () => Promise<boolean>;
   updateCashOnDeliverySetting: (enabled: boolean) => Promise<boolean>;
-
+  fetchCODStats: () => Promise<CODStats | null>;
   createFinalOrder: (orderData: CreateOrderData) => Promise<Order | null>;
   getOrder: (orderId: string) => Promise<Order | null>;
-  updateOrderStatus: (
-    orderId: string,
-    status: Order["status"]
-  ) => Promise<boolean>;
+  updateOrderStatus: (orderId: string, status: Order["status"]) => Promise<boolean>;
   getAllOrders: (page?: number, limit?: number) => Promise<AdminOrder[] | null>;
   getOrdersByUserId: () => Promise<Order[] | null>;
   setCurrentOrder: (order: Order | null) => void;
@@ -118,16 +122,14 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     totalItems: 0,
     itemsPerPage: 10,
   },
+  codStats: null,
 
   fetchCashOnDeliverySetting: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(
-        `${API_ROUTES.ADMIN_SETTINGS}/cash-on-delivery`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${API_ROUTES.ADMIN_SETTINGS}/cash-on-delivery`, {
+        withCredentials: true,
+      });
       set({
         isLoading: false,
         isCashOnDeliveryEnabled: response.data.data.isCashOnDelivery,
@@ -161,14 +163,28 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     }
   },
 
+  fetchCODStats: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axiosInstance.get<{ success: boolean; data: CODStats }>("/cod-stats");
+      if (!response.data.success) {
+        throw new Error("Failed to fetch COD statistics");
+      }
+      set({ isLoading: false, codStats: response.data.data });
+      return response.data.data;
+    } catch (error: any) {
+      set({
+        error: error.response?.data?.message || "Failed to fetch COD statistics",
+        isLoading: false,
+      });
+      return null;
+    }
+  },
+
   initiatePayment: async (paymentData) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.post(
-        `${API_ROUTES.ORDER}/initiate-payment`,
-        paymentData,
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${API_ROUTES.ORDER}/initiate-payment`, paymentData, { withCredentials: true });
       set({ isLoading: false });
       return response.data.paymentUrl;
     } catch (error) {
@@ -184,10 +200,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
         `${API_ROUTES.ORDER}/create-final-order`,
         {
           ...orderData,
-          paymentStatus:
-            orderData.paymentMethod === "CASH_ON_DELIVERY"
-              ? "PENDING"
-              : "COMPLETED",
+          paymentStatus: orderData.paymentMethod === "CASH_ON_DELIVERY" ? "PENDING" : "COMPLETED",
         },
         { withCredentials: true }
       );
@@ -211,22 +224,15 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
     const { pagination } = get();
     set({ isLoading: true, error: null });
     try {
-      await axios.put(
-        `${API_ROUTES.ORDER}/${orderId}/status`,
-        { status },
-        { withCredentials: true }
-      );
+      await axios.put(`${API_ROUTES.ORDER}/${orderId}/status`, { status }, { withCredentials: true });
       set((state) => ({
         currentOrder:
           state.currentOrder && state.currentOrder.id === orderId
             ? { ...state.currentOrder, status }
             : state.currentOrder,
         isLoading: false,
-        adminOrders: state.adminOrders.map((item) =>
-          item.id === orderId ? { ...item, status } : item
-        ),
+        adminOrders: state.adminOrders.map((item) => (item.id === orderId ? { ...item, status } : item)),
       }));
-      // Refresh current page after update
       await get().getAllOrders(pagination.currentPage, pagination.itemsPerPage);
       return true;
     } catch (error) {
@@ -238,12 +244,9 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getAllOrders: async (page = 1, limit = 10) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(
-        `${API_ROUTES.ORDER}/get-all-orders-for-admin?page=${page}&limit=${limit}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${API_ROUTES.ORDER}/get-all-orders-for-admin?page=${page}&limit=${limit}`, {
+        withCredentials: true,
+      });
       set({
         isLoading: false,
         adminOrders: response.data.data,
@@ -264,10 +267,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getOrdersByUserId: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(
-        `${API_ROUTES.ORDER}/get-order-by-user-id`,
-        { withCredentials: true }
-      );
+      const response = await axios.get(`${API_ROUTES.ORDER}/get-order-by-user-id`, { withCredentials: true });
       set({ isLoading: false, userOrders: response.data });
       return response.data;
     } catch (error) {
@@ -281,10 +281,7 @@ export const useOrderStore = create<OrderStore>((set, get) => ({
   getOrder: async (orderId) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await axios.get(
-        `${API_ROUTES.ORDER}/get-single-order/${orderId}`,
-        { withCredentials: true }
-      );
+      const response = await axios.get(`${API_ROUTES.ORDER}/get-single-order/${orderId}`, { withCredentials: true });
       set({ isLoading: false, currentOrder: response.data });
       return response.data;
     } catch (error) {

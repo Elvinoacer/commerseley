@@ -3,7 +3,6 @@ import { API_ROUTES } from "@/utils/api";
 import axios from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { useAuthStore } from "./useAuthStore";
 
 interface Pagination {
   currentPage: number;
@@ -21,7 +20,7 @@ type CustomerStore = {
   getCustomerById: (
     customerId: string
   ) => Promise<{ success: boolean; message: string; data: UserWithRelations } | null>;
-  deleteCustomer: (customerId: string) => Promise<boolean>;
+  deleteCustomer: (customerId: string, userId?: string, userRole?: string) => Promise<boolean>;
   setPagination: (pagination: Partial<Pagination>) => void;
 };
 
@@ -102,15 +101,16 @@ export const useCustomersStore = create<CustomerStore>()(
           return null;
         }
       },
-      deleteCustomer: async (customerId: string) => {
+      deleteCustomer: async (customerId: string, userId?: string, userRole?: string) => {
         try {
-          const { user } = useAuthStore.getState();
-          if (!user || user.role !== "SUPER_ADMIN") {
+          if (!userId || userRole !== "SUPER_ADMIN") {
             throw new Error("Unauthorized request");
           }
 
           set({ isLoading: true, error: null });
-          const response = await axiosInstance.delete<{ success: boolean; message: string }>(`/${customerId}`);
+          const response = await axiosInstance.delete<{ success: boolean; message: string }>(`/${customerId}`, {
+            data: { userId }, // Send userId for backend validation
+          });
 
           if (!response.data.success) {
             throw new Error("Failed to delete customer");
