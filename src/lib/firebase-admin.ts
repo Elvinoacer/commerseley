@@ -17,9 +17,14 @@
 
 import admin from "firebase-admin";
 import { ServiceAccount } from "firebase-admin";
+import firebaseServiceAccount from "../../push-notifications-7a046-firebase-adminsdk-fbsvc-777b37f6e1.json";
 
 // Parse the service account JSON from the environment variable
-const serviceAccount: ServiceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON as string);
+const serviceAccount: ServiceAccount = {
+  projectId: firebaseServiceAccount.project_id,
+  clientEmail: firebaseServiceAccount.client_email,
+  privateKey: firebaseServiceAccount.private_key,
+};
 
 // Initialize the Admin SDK only if it hasn't been already
 if (!admin.apps.length) {
