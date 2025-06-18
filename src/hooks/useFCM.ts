@@ -1,31 +1,3 @@
-// // src/hooks/useFCM.ts
-// import { getFCMToken } from "@/lib/firebase-client";
-// import { useEffect } from "react";
-
-// export const useFCM = () => {
-//   useEffect(() => {
-//     const initialize = async () => {
-//       if ("serviceWorker" in navigator && "PushManager" in window) {
-//         try {
-//           // Request notification permission first
-//           const permission = await Notification.requestPermission();
-//           if (permission === "granted") {
-//             await getFCMToken();
-//           } else {
-//             console.warn("Notification permission not granted");
-//           }
-//         } catch (error) {
-//           console.error("Error initializing FCM:", error);
-//         }
-//       } else {
-//         console.warn("Push notifications not supported");
-//       }
-//     };
-
-//     initialize();
-//   }, []);
-// };
-
 // src/hooks/useFCM.ts
 import { getFCMToken } from "@/lib/firebase-client";
 import { useEffect } from "react";

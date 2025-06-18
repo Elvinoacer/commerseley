@@ -2,26 +2,24 @@
 
 import BannerCarousel from "@/components/additions/home-carousel";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { getFCMToken } from "@/lib/firebase-client";
 import { useSettingsStore } from "@/store/useSettingsStore";
-import { fadeIn, staggerContainer, textVariant } from "@/utils/motion";
-import { AnimatePresence, motion } from "framer-motion";
+import { useSubscriptionStore } from "@/store/useSubscription";
+import { fadeIn, staggerContainer } from "@/utils/motion";
+import { motion } from "framer-motion";
+import { ArrowRight, Mail } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { InfiniteMarquee } from "./infinite-marquee";
-import CategoriesGrid from "./home-categories";
-import StoreLocation from "./physical-address";
-import { useFCM } from "@/hooks/useFCM";
-import { getFCMToken } from "@/lib/firebase-client";
-import { useSubscriptionStore } from "@/store/useSubscription";
-import { useToast } from "@/hooks/use-toast";
-import { useTheme } from "next-themes";
-import { ArrowRight, Mail } from "lucide-react";
-import { gridItems } from "./grid-items";
-import WinterCollectionSection from "./wintercollection-section";
 import FeaturedProducts from "./featured-products";
+import { gridItems } from "./grid-items";
+import CategoriesGrid from "./home-categories";
+import { InfiniteMarquee } from "./infinite-marquee";
+import StoreLocation from "./physical-address";
+import WinterCollectionSection from "./wintercollection-section";
 
 function HomePage() {
-  useFCM();
   const { theme } = useTheme();
   const [subscriptionEmail, setSubscriptionEmail] = useState("");
   const { subscribe } = useSubscriptionStore();

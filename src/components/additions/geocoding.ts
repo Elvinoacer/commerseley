@@ -21,27 +21,9 @@ export async function getAddressFromCoords(lat: number, lng: number): Promise<st
 }
 
 // Browser's built-in geocoding (more accurate)
+// Currently not supported in browsers, so always return null
 async function browserGeocoding(lat: number, lng: number): Promise<string | null> {
-  try {
-    // @ts-ignore - TypeScript doesn't know about this experimental API
-    if (!window.GeolocationCoordinates || !navigator.geolocation?.reverseGeocode) {
-      return null;
-    }
-
-    const location = await navigator.geolocation.reverseGeocode({
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 5000,
-    });
-
-    if (location && location[0]) {
-      const { street, city, country, postalCode } = location[0];
-      return [street, city, postalCode, country].filter(Boolean).join(", ");
-    }
-    return null;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 // OpenStreetMap Nominatim API (no API key needed)

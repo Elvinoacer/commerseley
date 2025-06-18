@@ -7,6 +7,13 @@ import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
 import { getAddressFromCoords } from "./geocoding";
 
+// Default store location (Nairobi coordinates)
+const DEFAULT_STORE_LOCATION = {
+  lat: -1.286389,
+  lng: 36.817223,
+  address: "123 Fashion Avenue, Nairobi, Kenya",
+};
+
 // Dynamically import the Map component to avoid SSR issues with Leaflet
 const MapWithNoSSR = dynamic(() => import("./MapComponent"), {
   ssr: false,
@@ -40,42 +47,32 @@ const StoreLocation = () => {
   const { theme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [storeLocation, setStoreLocation] = useState({
-    lat: -1.286389,
-    lng: 36.817223,
-    address: "123 Fashion Avenue, Nairobi, Kenya",
-  });
+  const [storeLocation, setStoreLocation] = useState(DEFAULT_STORE_LOCATION);
 
   useEffect(() => {
     setIsMounted(true);
-    setIsLoading(false); // Adjust based on actual data fetching
-    const getLocation = async () => {
+
+    // Try to get more accurate address from coordinates
+    const fetchAddress = async () => {
       try {
-        if (window.navigator.geolocation) {
-          window.navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const response = await getAddressFromCoords(position.coords.latitude, position.coords.longitude);
-              setStoreLocation({
-                address: response || "123 Fashion Avenue, Nairobi, Kenya",
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              });
-              setIsLoading(false);
-            },
-            (error) => {
-              console.error("Error getting location:", error);
-              setIsLoading(false);
-            }
-          );
+        const address = await getAddressFromCoords(DEFAULT_STORE_LOCATION.lat, DEFAULT_STORE_LOCATION.lng);
+        if (address) {
+          setStoreLocation((prev) => ({
+            ...prev,
+            address,
+          }));
         }
       } catch (error) {
         console.error("Error fetching address:", error);
+      } finally {
         setIsLoading(false);
       }
     };
-    getLocation();
+
+    fetchAddress();
   }, []);
 
+  // Rest of the component remains the same...
   return (
     <section
       className={`relative py-12 sm:py-16 md:py-20 transition-colors duration-300 ${

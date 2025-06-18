@@ -6,6 +6,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster as SonnerToaster } from "sonner";
 import { ThemeProvider } from "./ThemeProvider";
+import { NotificationPermissionModal } from "@/components/additions/NotificationPermissionModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -138,6 +139,7 @@ export default function RootLayout({
         >
           <Providers>
             <CommonLayout>{children}</CommonLayout>
+            <NotificationPermissionModal />
           </Providers>
           <Toaster />
           <SonnerToaster />
