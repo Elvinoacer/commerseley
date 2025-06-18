@@ -56,12 +56,8 @@
 // });
 
 // public/firebase-messaging-sw.js
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"
-);
-importScripts(
-  "https://www.gstatic.com/firebasejs/9.6.0/firebase-messaging-compat.js"
-);
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js");
+importScripts("https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js");
 
 const firebaseConfig = {
   apiKey: "AIzaSyA3p8FunVaYm3zWRdGpRujbSq7La_rcy-I",
@@ -73,15 +69,12 @@ const firebaseConfig = {
   measurementId: "G-7S5W0SVRWN",
 };
 
-firebase.initializeApp(firebaseConfig);
-const messaging = firebase.messaging();
+const app = firebase.initializeApp(firebaseConfig);
+const messaging = firebase.messaging(app);
 
 // Customize background notification handler
 messaging.onBackgroundMessage((payload) => {
-  console.log(
-    "[firebase-messaging-sw.js] Received background message ",
-    payload
-  );
+  console.log("[firebase-messaging-sw.js] Received background message ", payload);
 
   // Customize notification here
   const notificationTitle = payload.notification?.title || "New Message";
@@ -91,10 +84,7 @@ messaging.onBackgroundMessage((payload) => {
     data: payload.data || {}, // Pass any data for click handling
   };
 
-  return self.registration.showNotification(
-    notificationTitle,
-    notificationOptions
-  );
+  return self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 // Add click event listener for notifications
@@ -103,10 +93,7 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   // Handle notification click
-  const urlToOpen = new URL(
-    event.notification.data?.link || "/",
-    self.location.origin
-  ).href;
+  const urlToOpen = new URL(event.notification.data?.link || "/", self.location.origin).href;
 
   event.waitUntil(
     clients.matchAll({ type: "window" }).then((windowClients) => {
