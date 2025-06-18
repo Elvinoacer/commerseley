@@ -1,5 +1,5 @@
 // src/services/notification.service.ts
-import admin from "../lib/firebase-admin";
+import { admin } from "../lib/firebase-admin";
 // @ts-ignore
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@/generated/prisma";
