@@ -46,7 +46,82 @@ class NotificationService {
   }
 
   /**
-   * Process notifications in batches to avoid memory issues
+   * Send notifications to both subscribers and users
+   */
+  async sendToAll(
+    emailOptions: EmailOptions,
+    notificationOptions: NotificationOptions,
+    batchSize = 1000
+  ): Promise<NotificationResult> {
+    // Process subscribers
+    const subscriberResult = await this.sendBulkNotifications(emailOptions, notificationOptions, batchSize);
+
+    // Process users
+    const userResult = await this.sendToUsers(emailOptions, notificationOptions, batchSize);
+
+    // Combine results
+    return {
+      emailSuccessCount: subscriberResult.emailSuccessCount + userResult.emailSuccessCount,
+      emailFailureCount: subscriberResult.emailFailureCount + userResult.emailFailureCount,
+      pushSuccessCount: subscriberResult.pushSuccessCount + userResult.pushSuccessCount,
+      pushFailureCount: subscriberResult.pushFailureCount + userResult.pushFailureCount,
+      duplicateTokensSkipped: subscriberResult.duplicateTokensSkipped + userResult.duplicateTokensSkipped,
+    };
+  }
+
+  /**
+   * Send notifications to users (from User model)
+   */
+  async sendToUsers(
+    emailOptions: EmailOptions,
+    notificationOptions: NotificationOptions,
+    batchSize = 1000
+  ): Promise<NotificationResult> {
+    const result: NotificationResult = {
+      emailSuccessCount: 0,
+      emailFailureCount: 0,
+      pushSuccessCount: 0,
+      pushFailureCount: 0,
+      duplicateTokensSkipped: 0,
+    };
+
+    // Get total count of active users
+    const totalUsers = await this.prisma.user.count({
+      where: {
+        emailVerified: { not: null }, // Only users with verified emails
+        role: "USER", // Only regular users (exclude admins if needed)
+      },
+    });
+
+    console.log(`Processing ${totalUsers} users in batches of ${batchSize}`);
+
+    // Process in batches
+    for (let skip = 0; skip < totalUsers; skip += batchSize) {
+      const batch = await this.prisma.user.findMany({
+        where: {
+          emailVerified: { not: null },
+          role: "USER",
+        },
+        skip,
+        take: batchSize,
+        select: {
+          email: true,
+          // Assuming you might add notification tokens to users later
+          // notificationToken: true,
+        },
+      });
+
+      // Process emails for users
+      await this.processEmails(batch, emailOptions, result);
+
+      console.log(`Processed user batch ${skip / batchSize + 1}/${Math.ceil(totalUsers / batchSize)}`);
+    }
+
+    return result;
+  }
+
+  /**
+   * Process notifications in batches to avoid memory issues (for subscribers)
    */
   async sendBulkNotifications(
     emailOptions: EmailOptions,
@@ -88,9 +163,8 @@ class NotificationService {
       result.emailFailureCount += batchResult.emailFailureCount;
       result.pushSuccessCount += batchResult.pushSuccessCount;
       result.pushFailureCount += batchResult.pushFailureCount;
-      //   result.duplicateTokensSkipped += batchResult.duplicateTokensSkipped;
 
-      console.log(`Processed batch ${skip / batchSize + 1}/${Math.ceil(totalSubscribers / batchSize)}`);
+      console.log(`Processed subscriber batch ${skip / batchSize + 1}/${Math.ceil(totalSubscribers / batchSize)}`);
     }
 
     return result;
@@ -127,7 +201,7 @@ class NotificationService {
   }
 
   /**
-   * Send emails to a batch of subscribers
+   * Send emails to a batch of recipients (works for both users and subscribers)
    */
   private async processEmails(
     batch: { email: string | null }[],
@@ -135,18 +209,18 @@ class NotificationService {
     result: { emailSuccessCount: number; emailFailureCount: number }
   ): Promise<void> {
     const emailPromises = batch
-      .filter((subscriber) => subscriber.email)
-      .map((subscriber) => {
+      .filter((recipient) => recipient.email)
+      .map((recipient) => {
         return this.mailer
           .sendMail({
             ...emailOptions,
-            to: subscriber.email!,
+            to: recipient.email!,
           })
           .then(() => {
             result.emailSuccessCount++;
           })
           .catch((error: any) => {
-            console.error(`Failed to send email to ${subscriber.email}:`, error);
+            console.error(`Failed to send email to ${recipient.email}:`, error);
             result.emailFailureCount++;
           });
       });
@@ -217,96 +291,6 @@ class NotificationService {
       });
 
     await Promise.all(pushPromises);
-  }
-
-  /**
-   * Alternative method for sending to all subscribers using multicast (more efficient for push)
-   */
-  async sendMulticastNotification(
-    emailOptions: EmailOptions,
-    notificationOptions: NotificationOptions,
-    batchSize = 1000
-  ): Promise<NotificationResult> {
-    const result: NotificationResult = {
-      emailSuccessCount: 0,
-      emailFailureCount: 0,
-      pushSuccessCount: 0,
-      pushFailureCount: 0,
-      duplicateTokensSkipped: 0,
-    };
-
-    // Get total count of active subscribers
-    const totalSubscribers = await this.prisma.subscription.count({
-      where: { isSubscribed: true },
-    });
-
-    console.log(`Processing ${totalSubscribers} subscribers in batches of ${batchSize}`);
-
-    // Process in batches
-    for (let skip = 0; skip < totalSubscribers; skip += batchSize) {
-      const batch = await this.prisma.subscription.findMany({
-        where: { isSubscribed: true },
-        skip,
-        take: batchSize,
-        select: {
-          email: true,
-          notificationToken: true,
-        },
-      });
-
-      // Process emails
-      await this.processEmails(batch, emailOptions, result);
-
-      // Process push notifications using multicast (more efficient)
-      const uniqueTokens = this.getUniqueTokens(batch);
-      result.duplicateTokensSkipped += batch.filter((s) => s.notificationToken).length - uniqueTokens.length;
-
-      if (uniqueTokens.length > 0) {
-        try {
-          const multicastMessage: admin.messaging.MulticastMessage = {
-            tokens: uniqueTokens,
-            notification: {
-              title: notificationOptions.title,
-              body: notificationOptions.body,
-            },
-            data: notificationOptions.data,
-            webpush: {
-              notification: {
-                icon: "/icons/icon-192x192.png",
-                badge: "/icons/icon-192x192.png",
-              },
-              fcmOptions: {
-                link: "/notifications",
-              },
-            },
-          };
-
-          const response = await admin.messaging().sendEachForMulticast(multicastMessage);
-          result.pushSuccessCount += response.successCount;
-          result.pushFailureCount += response.failureCount;
-        } catch (error) {
-          console.error("Failed to send multicast notification:", error);
-          result.pushFailureCount += uniqueTokens.length;
-        }
-      }
-
-      console.log(`Processed batch ${skip / batchSize + 1}/${Math.ceil(totalSubscribers / batchSize)}`);
-    }
-
-    return result;
-  }
-
-  /**
-   * Extract unique tokens from a batch of subscribers
-   */
-  private getUniqueTokens(batch: { notificationToken: string | null }[]): string[] {
-    const tokens = new Set<string>();
-    batch.forEach((subscriber) => {
-      if (subscriber.notificationToken) {
-        tokens.add(subscriber.notificationToken);
-      }
-    });
-    return Array.from(tokens);
   }
 
   /**

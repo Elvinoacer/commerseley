@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
           return NextResponse.json({ success: false, message: "Please add at least one product" }, { status: 404 });
         }
 
-        const productResult = await notificationService.sendBulkNotifications(
+        const productResult = await notificationService.sendToAll(
           {
             from: process.env.USER_EMAIL!,
             subject: NOTIFICATIONDATA.ADDED_PRODUCT.title,
