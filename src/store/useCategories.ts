@@ -45,7 +45,7 @@ export const useCategoryStore = create<CategoryStore>()(
       },
       searchTerm: "",
 
-      fetchCategories: async (page = 1, limit = 10, search = "") => {
+      fetchCategories: async (page = 1, limit = 20, search = "") => {
         const { pagination } = get();
         set({ isLoading: true, error: null });
         try {
