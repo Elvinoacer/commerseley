@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Category } from "@/types";
+import { useSession } from "next-auth/react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -28,6 +29,7 @@ interface EditCategoryModalProps {
 const EditCategoryModal = ({ category, children }: EditCategoryModalProps) => {
   const [open, setOpen] = useState(false);
   const { updateCategory } = useCategoryStore();
+   const { data } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,7 +50,7 @@ const EditCategoryModal = ({ category, children }: EditCategoryModalProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const success = await updateCategory(category.id, values.name, values.description);
+      const success = await updateCategory(category.id, values.name, values.description, data?.user?.role);
       if (success) {
         toast.success("Category updated successfully");
         setOpen(false);
