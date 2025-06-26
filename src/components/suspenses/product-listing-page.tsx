@@ -414,7 +414,9 @@ function ProductListingPage() {
               </div>
             </div>
 
-            <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
+            {/* Colors */}
+
+            {/* <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
               <h3
                 className={`mb-2 font-semibold text-sm sm:text-base ${
                   theme === "dark" ? "text-white" : "text-indigo-700"
@@ -446,7 +448,7 @@ function ProductListingPage() {
                     />
                   ))}
               </div>
-            </div>
+            </div> */}
 
             <div className={`p-3 rounded-lg shadow-sm ${theme === "dark" ? "bg-gray-800/50" : "bg-indigo-50/50"}`}>
               <h3

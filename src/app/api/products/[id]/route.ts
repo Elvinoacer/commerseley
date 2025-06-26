@@ -198,7 +198,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const user = await requireSuperAdmin(req);
-    const { id } = params;
+    const { id } = await params;
 
     const product = await prisma.product.findUnique({ where: { id } });
     if (!product) {
@@ -212,7 +212,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
     // Delete related Wishlist entries
     await prisma.wishlist.deleteMany({
-      where: { product: { some: { id } } },
+      where: { productId: id },
     });
 
     // Log admin activity

@@ -4,18 +4,46 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCouponStore } from "@/store/useCouponStore";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { motion, AnimatePresence } from "framer-motion";
+
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
 
 function SuperAdminCouponsListingPage() {
   const { isLoading, couponList, fetchCoupons, deleteCoupon, pagination, setPagination } = useCouponStore();
   const router = useRouter();
   const fetchCouponRef = useRef(false);
   const { toast } = useToast();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [couponToDelete, setCouponToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!fetchCouponRef.current) {
@@ -24,16 +52,23 @@ function SuperAdminCouponsListingPage() {
     }
   }, [fetchCoupons, pagination.currentPage, pagination.itemsPerPage]);
 
-  const handleDeleteCoupon = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this coupon?")) {
-      const result = await deleteCoupon(id);
+  async function handleDeleteCoupon(id: string) {
+    setCouponToDelete(id);
+    setShowDeleteModal(true);
+  }
+
+  async function confirmDeleteCoupon() {
+    if (couponToDelete) {
+      const result = await deleteCoupon(couponToDelete);
       if (result) {
         toast({
           title: "Coupon deleted successfully",
         });
       }
+      setShowDeleteModal(false);
+      setCouponToDelete(null);
     }
-  };
+  }
 
   const handlePageChange = (newPage: number) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
@@ -82,8 +117,8 @@ function SuperAdminCouponsListingPage() {
             w-8 h-8 sm:w-10 sm:h-10 p-0 text-xs sm:text-sm
             ${
               pagination.currentPage === i
-                ? "text-white dark:text-gray-900 bg-blue-600 dark:bg-blue-300" // Example: Strong contrast for active button
-                : "text-gray-800 dark:text-gray-100" // Enhanced contrast for outline variant
+                ? "text-white dark:text-gray-900 bg-blue-600 dark:bg-blue-300"
+                : "text-gray-800 dark:text-gray-100"
             }
             border-gray-200 dark:border-gray-600
             hover:bg-indigo-100 dark:hover:bg-indigo-800
@@ -230,8 +265,6 @@ function SuperAdminCouponsListingPage() {
         {pagination.totalItems > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
             <div className="text-sm sm:text-base text-gray-800 dark:text-gray-100">
-              {" "}
-              {/* Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100 */}
               Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}-
               {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{" "}
               {pagination.totalItems} coupons
@@ -242,7 +275,6 @@ function SuperAdminCouponsListingPage() {
                 size="sm"
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={pagination.currentPage === 1}
-                // Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100
                 className="text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 aria-label="Previous page"
               >
@@ -255,7 +287,6 @@ function SuperAdminCouponsListingPage() {
                 size="sm"
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={pagination.currentPage === pagination.totalPages}
-                // Changed text-gray-600 to text-gray-800 and text-gray-300 to text-gray-100
                 className="text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-indigo-100 dark:hover:bg-indigo-800 h-8 w-8 sm:h-9 sm:w-9 p-0"
                 aria-label="Next page"
               >
@@ -265,6 +296,56 @@ function SuperAdminCouponsListingPage() {
             </div>
           </div>
         )}
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {showDeleteModal && (
+            <>
+              <motion.div
+                variants={backdropVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+                onClick={() => setShowDeleteModal(false)}
+              />
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6"
+              >
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
+                      <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Confirm Delete</h2>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Are you sure you want to delete this coupon? This action cannot be undone.
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteModal(false)}
+                      className="border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={confirmDeleteCoupon}
+                      className="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white"
+                    >
+                      Delete Coupon
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -43,6 +43,31 @@ const itemVariants = {
   },
 };
 
+const modalVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+const backdropVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
+
 function SuperAdminProductListingPage() {
   const {
     products,
@@ -61,6 +86,8 @@ function SuperAdminProductListingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout>();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     if (!productFetchRef.current) {
@@ -78,14 +105,21 @@ function SuperAdminProductListingPage() {
   }, []);
 
   async function handleDeleteProduct(getId: string) {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      const result = await deleteProduct(getId);
+    setProductToDelete(getId);
+    setShowDeleteModal(true);
+  }
+
+  async function confirmDeleteProduct() {
+    if (productToDelete) {
+      const result = await deleteProduct(productToDelete);
       if (result) {
         toast({
           title: "Product deleted successfully",
         });
         fetchAllProductsForAdmin({ page: currentPage, search: searchQuery });
       }
+      setShowDeleteModal(false);
+      setProductToDelete(null);
     }
   }
 
@@ -267,6 +301,7 @@ function SuperAdminProductListingPage() {
 
                             return (
                               <motion.tr
+                                ВЕЅ
                                 key={product.id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -490,6 +525,56 @@ function SuperAdminProductListingPage() {
             )}
           </div>
         </motion.div>
+
+        {/* Delete Confirmation Modal */}
+        <AnimatePresence>
+          {showDeleteModal && (
+            <>
+              <motion.div
+                variants={backdropVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+                onClick={() => setShowDeleteModal(false)}
+              />
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6"
+              >
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
+                      <Trash2 className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Confirm Delete</h2>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    Are you sure you want to delete this product? This action cannot be undone.
+                  </p>
+                  <div className="flex justify-end gap-3">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDeleteModal(false)}
+                      className="border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={confirmDeleteProduct}
+                      className="bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white"
+                    >
+                      Delete Product
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
