@@ -14,6 +14,7 @@ import { Icons } from "@/components/icons";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const containerVariants = {
@@ -63,6 +64,8 @@ export function LoginForm() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/home";
   const [particles] = useState(getStableParticles());
   const [showPassword, setShowPassword] = useState(false); // State for password visibility
 
@@ -84,6 +87,7 @@ export function LoginForm() {
       const result = await signIn("credentials", {
         ...data,
         redirect: false,
+        callbackUrl,
       });
 
       if (result?.error) {
@@ -119,13 +123,7 @@ export function LoginForm() {
       });
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      switch (session.user?.role) {
-        case "SUPER_ADMIN":
-          router.push("/super-admin");
-          break;
-        default:
-          router.push("/home");
-      }
+      router.push(callbackUrl);
     } catch (error) {
       let errorMessage = "Login failed. Please try again.";
       if (error instanceof Error) errorMessage = error.message;
@@ -144,7 +142,7 @@ export function LoginForm() {
   };
 
   const handleOAuth = (provider: "google" | "github") => {
-    toast.promise(signIn(provider), {
+    toast.promise(signIn(provider, { callbackUrl }), {
       loading: `Signing in with ${provider}...`,
       success: `Signed in with ${provider} successfully!`,
       error: (error) => (error instanceof Error ? error.message : `Failed to sign in with ${provider}`),

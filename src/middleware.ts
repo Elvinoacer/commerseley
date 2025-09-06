@@ -42,7 +42,9 @@ export async function middleware(request: NextRequest) {
   // 2. Check protected routes
   if (!publicRoutes.some((pubr) => isMatchingPath(pubr, pathname))) {
     if (!token) {
-      return NextResponse.redirect(new URL("/auth/login", request.url));
+      const loginUrl = new URL("/auth/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
     // Handle role-based access

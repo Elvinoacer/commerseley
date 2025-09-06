@@ -189,7 +189,7 @@ function ProductListingPage() {
   useEffect(() => {
     const options = {
       root: null,
-      rootMargin: "200px",
+      rootMargin: "400px",
       threshold: 0.1,
     };
 
@@ -654,7 +654,7 @@ function ProductListingPage() {
               ) : (
                 <>
                   <motion.div
-                    className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 xs:gap-4 sm:gap-5"
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 xs:gap-4 sm:gap-5"
                     layout
                   >
                     <AnimatePresence>
@@ -894,31 +894,14 @@ function ProductListingPage() {
                     </AnimatePresence>
                   </motion.div>
 
-                  <div ref={loadMoreRef} className="h-12 xs:h-16 flex items-center justify-center">
-                    {isLoading && products.length > 0 && (
-                      <motion.div className="flex items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                        <div className="animate-spin rounded-full h-6 xs:h-8 w-6 xs:w-8 border-t-2 border-b-2 border-indigo-600 mr-2 xs:mr-3"></div>
-                        <span className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                          Loading more products...
-                        </span>
-                      </motion.div>
+                  <div ref={loadMoreRef} className="h-24 flex items-center justify-center">
+                    {hasMore && (
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
                     )}
                     {!hasMore && products.length > 0 && (
-                      <motion.div
-                        className="text-center py-3 xs:py-4"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                      >
-                        <div
-                          className={`p-3 xs:p-4 rounded-lg inline-block ${
-                            theme === "dark" ? "bg-gray-800/50" : "bg-gray-100/50"
-                          }`}
-                        >
-                          <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                            You've reached the end of the product list.
-                          </p>
-                        </div>
-                      </motion.div>
+                      <p className={`text-lg ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`}>
+                        You've reached the end of the product list.
+                      </p>
                     )}
                   </div>
                 </>

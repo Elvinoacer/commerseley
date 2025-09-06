@@ -54,7 +54,7 @@ function CategoriesGrid() {
         {/* Categories Grid */}
         <motion.div
           variants={staggerContainer(0.1, 0.1)}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 md:gap-6"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
           {categories
             .filter((category) => category.products?.length > 0)
@@ -63,64 +63,32 @@ function CategoriesGrid() {
               <motion.div
                 key={category.id}
                 variants={fadeIn("up", "tween", index * 0.1, 0.5)}
-                className={`relative group overflow-hidden rounded-lg sm:rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 touch-manipulation border ${
-                  theme === "dark"
-                    ? "border-indigo-500/20 hover:border-indigo-500/40"
-                    : "border-gray-200/20 hover:border-gray-300/40"
+                className={`relative group overflow-hidden rounded-2xl transition-all duration-300 touch-manipulation cursor-pointer ${
+                  theme === "dark" ? "bg-gray-800" : "bg-white"
                 }`}
-                whileHover={{ y: -6, scale: 1.02 }}
+                whileHover={{ y: -5, boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}
                 onClick={() => router.push(`/listing?category=${category.id}`)}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 120 }}
-                viewport={{ once: true }}
               >
-                {/* Image Container */}
-                <div className="aspect-square relative">
+                <div className="aspect-w-1 aspect-h-1 relative overflow-hidden">
                   <motion.img
                     src={category.products[0]?.images[0] || "/placeholder-product.jpg"}
                     alt={category.name}
-                    className="w-full h-full object-cover"
-                    initial={{ scale: 1.05 }}
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 25vw"
                   />
-                  {/* Dynamic Gradient Overlay */}
-                  <motion.div
-                    className={`absolute inset-0 ${
-                      theme === "dark"
-                        ? "bg-gradient-to-t from-black/70 via-black/40 to-transparent"
-                        : "bg-gradient-to-t from-black/60 via-black/30 to-transparent"
-                    }`}
-                    whileHover={{ opacity: 0.8 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-
-                {/* Category Info */}
-                <div className="absolute inset-0 flex flex-col justify-end p-2 sm:p-3">
-                  <motion.div
-                    className={`p-2 sm:p-3 rounded-lg backdrop-blur-md ${
-                      theme === "dark"
-                        ? "bg-black/40 text-white border border-indigo-500/30"
-                        : "bg-white/70 text-gray-900 border border-gray-200/30"
-                    }`}
-                    whileHover={{ y: -4 }}
-                    transition={{ duration: 0.3 }}
+                  <div
+                    className={`absolute inset-0 flex items-center justify-center p-4 text-white bg-black/40 transition-colors duration-300 group-hover:bg-black/60"`}
                   >
-                    <h3
-                      className={`text-xs sm:text-sm md:text-base font-bold ${
-                        theme === "dark" ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      {category.name}
-                    </h3>
-                    <p className={`text-xs sm:text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                      {category.products?.length || 0} product{category.products?.length !== 1 ? "s" : ""}
-                    </p>
-                  </motion.div>
+                    <h3 className="text-xl font-bold text-center">{category.name}</h3>
+                  </div>
+                </div>
+                <div
+                  className={`absolute bottom-4 right-4 px-2 py-1 rounded-full text-xs font-semibold backdrop-blur-sm transition-opacity duration-300 opacity-0 group-hover:opacity-100 ${
+                    theme === "dark" ? "bg-gray-700/80 text-white" : "bg-gray-200/80 text-gray-800"
+                  }`}
+                >
+                  {category.products?.length || 0} product{category.products?.length !== 1 ? "s" : ""}
                 </div>
               </motion.div>
             ))}

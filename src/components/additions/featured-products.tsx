@@ -64,7 +64,7 @@ function FeaturedProducts({ featuredProducts }: { featuredProducts: FeaturedProd
 
         <motion.div
           variants={staggerContainer(0.1, 0.1)}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 md:gap-8"
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
         >
           {isLoading
             ? Array(4)
@@ -87,89 +87,77 @@ function FeaturedProducts({ featuredProducts }: { featuredProducts: FeaturedProd
                 <motion.div
                   key={productItem.id}
                   variants={cardVariants}
-                  className={`relative group overflow-hidden rounded-lg sm:rounded-xl shadow-md hover:shadow-2xl border transition-all duration-300 touch-manipulation ${
+                  className={`relative group overflow-hidden rounded-2xl transition-all duration-300 touch-manipulation flex flex-col justify-between backdrop-blur-md ${
                     theme === "dark"
-                      ? "bg-gray-800/80 border-indigo-500/20 hover:border-indigo-500/40"
-                      : "bg-white/90 border-gray-200/20 hover:border-gray-300/40"
+                      ? "bg-gray-800/60 border-indigo-500/30 hover:border-indigo-500/40"
+                      : "bg-white/60 border-gray-200/30 hover:border-gray-300/40"
                   }`}
                   whileHover={{
-                    y: -6,
-                    scale: 1.02,
+                    y: -8,
+                    scale: 1.03,
                     boxShadow:
-                      theme === "dark" ? "0 8px 24px rgba(99, 102, 241, 0.3)" : "0 8px 24px rgba(29, 78, 216, 0.2)",
+                      theme === "dark" ? "0 10px 30px rgba(99, 102, 241, 0.4)" : "0 10px 30px rgba(29, 78, 216, 0.25)",
                   }}
                 >
-                  <div className="aspect-[3/4] relative overflow-hidden">
-                    <motion.img
-                      src={productItem.images[0]}
-                      alt={productItem.name}
-                      className="w-full h-full object-cover"
-                      initial={{ scale: 1.05 }}
-                      whileHover={{ scale: 1.15 }}
-                      transition={{ duration: 0.5, ease: "easeOut" }}
-                      loading="lazy"
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    />
-                    <motion.div
-                      className={`absolute inset-0 bg-gradient-to-t ${
-                        theme === "dark"
-                          ? "from-black/70 via-black/30 to-transparent"
-                          : "from-black/60 via-black/20 to-transparent"
-                      } opacity-0 group-hover:opacity-80 sm:group-hover:opacity-100 transition-opacity duration-300`}
-                      whileHover={{ opacity: 0.9 }}
-                    />
-                    <motion.div
-                      className={`absolute top-3 left-3 sm:top-4 sm:left-4 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-semibold ${
-                        theme === "dark" ? "bg-indigo-600 text-white" : "bg-blue-500 text-white"
-                      }`}
-                      whileHover={{ scale: 1.1, boxShadow: "0 0 12px rgba(59, 130, 246, 0.6)" }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      {productItem.category || "New"}
-                    </motion.div>
+                  <div className="flex-grow">
+                    <div className="aspect-[4/5] relative overflow-hidden">
+                      <motion.img
+                        src={productItem.images[0]}
+                        alt={productItem.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                      />
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90"`}
+                      ></div>
+                      <motion.div
+                        className={`absolute top-3 left-3 sm:top-4 sm:left-4 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm ${
+                          theme === "dark" ? "bg-indigo-600/70 text-white" : "bg-blue-500/70 text-white"
+                        }`}
+                        whileHover={{ scale: 1.1, boxShadow: "0 0 12px rgba(59, 130, 246, 0.6)" }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {productItem.category || "New"}
+                      </motion.div>
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                        <motion.h3
+                          initial={{ y: 20, opacity: 0 }}
+                          className="text-lg font-bold line-clamp-2 transform transition-transform duration-300 group-hover:translate-y-0"
+                          animate={{ y: 0, opacity: 1 }}
+                        >
+                          {productItem.name}
+                        </motion.h3>
+                        <motion.p
+                          initial={{ y: 20, opacity: 0 }}
+                          className="text-sm font-medium transform transition-transform duration-300 group-hover:translate-y-0"
+                          animate={{ y: 0, opacity: 1 }}
+                        >
+                          KES {productItem.price.toLocaleString()}
+                        </motion.p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-4 sm:p-6">
-                    <h3
-                      className={`text-base sm:text-lg md:text-xl font-semibold line-clamp-2 ${
-                        theme === "dark" ? "text-white" : "text-gray-900"
-                      }`}
-                    >
-                      {productItem.name}
-                    </h3>
-                    <p
-                      className={`text-xs sm:text-sm md:text-base mt-1 ${
-                        theme === "dark" ? "text-gray-300" : "text-gray-600"
-                      }`}
-                    >
-                      KES {productItem.price.toLocaleString()}
-                    </p>
-                  </div>
-                  <motion.div
-                    className="absolute inset-0 flex items-end justify-center pb-4 sm:pb-6"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileHover={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
+                  <div className="p-4 bg-white/10 backdrop-blur-lg">
                     <motion.button
                       onClick={() => router.push(`/listing/${productItem.id}`)}
-                      className={`relative px-4 sm:px-6 py-2 sm:py-3 rounded-md text-xs sm:text-sm md:text-base font-medium overflow-hidden touch-manipulation ${
+                      className={`w-full px-4 py-3 rounded-lg text-sm font-bold overflow-hidden touch-manipulation transition-all duration-300 ${
                         theme === "dark"
-                          ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
-                          : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white"
+                          ? "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-purple-500/40"
+                          : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg hover:shadow-blue-500/30"
                       }`}
                       variants={buttonVariants}
                       whileHover="hover"
                       whileTap="tap"
                     >
-                      <span className="relative z-10">Quick View</span>
-                      <motion.span
-                        className="absolute inset-0 bg-white/20"
-                        initial={{ x: "-100%" }}
-                        whileHover={{ x: "100%" }}
-                        transition={{ duration: 0.4 }}
-                      />
+                      <span className="relative z-10">View Details</span>
                     </motion.button>
-                  </motion.div>
+                  </div>
+                  <motion.div
+                    className={`absolute top-0 right-0 -mt-4 -mr-4 w-20 h-20 rounded-full transition-all duration-500 transform-gpu group-hover:scale-150 group-hover:opacity-100 opacity-0 animate-pulse ${
+                      theme === "dark" ? "bg-purple-500/40" : "bg-blue-500/30"
+                    }`}
+                  ></motion.div>
                 </motion.div>
               ))}
         </motion.div>
